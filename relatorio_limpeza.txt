@@ -1,0 +1,83 @@
+RELATORIO DE LIMPEZA - ia-promocoes
+Data: 2026-06-17
+
+MAPA GERAL
+- Projeto Python simples com agentes sequenciais, painel Streamlit, arquivos CSV de estado e HTML/TXT gerados.
+- Pastas grandes/geradas identificadas: venv/, perfil_mercadolivre/, __pycache__/, backups/.
+- Pasta de seguranca criada para remocao logica: backup_remocao/.
+
+ARQUIVOS ESSENCIAIS
+- agente_ofertas.py: coleta ofertas do Mercado Livre.
+- agente_curadoria.py: filtra ofertas, score e historico de precos.
+- agente_afiliado.py: gera links afiliados meli.la.
+- importar_afiliados.py: importa afiliados para posts_prontos.csv.
+- gerador_texto.py: gera texto de post com fallback quando IA local falha.
+- agente_publicador.py: exporta posts aprovados para TXT.
+- agente_telegram.py: envia aprovados ao Telegram e marca enviados.
+- agente_site.py: gera site_promocoes.html.
+- painel.py: painel Streamlit.
+- iniciar_ia.py: orquestrador oficial do fluxo completo.
+- csv_utils.py: schemas e escrita segura de CSVs.
+- schema_posts.py: schema oficial de posts_prontos.csv.
+- produtos_busca.csv: entrada/saida da coleta.
+- produtos_filtrados.csv: saida da curadoria.
+- produtos_afiliados.csv: saida do afiliado.
+- posts_prontos.csv: base final de posts.
+- historico_precos.csv: historico usado pela curadoria.
+- .env: configuracoes e tokens locais.
+
+ARQUIVOS OPCIONAIS
+- app.py: fluxo manual antigo usado pelo painel para produto cadastrado manualmente.
+- analisador.py: regra simples usada por app.py.
+- coletor.py: stub de link afiliado usado por app.py.
+- buscador.py: busca publica via API, utilitario auxiliar.
+- extrator.py: extrai item_id/dados de link, utilitario auxiliar.
+- login_ml.py: utilitario manual de login Mercado Livre.
+- gerar_token.py: utilitario manual para gerar URL OAuth Mercado Livre.
+- trocar_code.py: utilitario manual para trocar code por token.
+- corrigir_posts.py: manutencao segura do schema de posts.
+- limpar_invalidos.py: manutencao segura para remover posts invalidos.
+- produtos.csv: cadastro manual usado pelo painel/app.py.
+- site_promocoes.html: artefato gerado.
+- whatsapp.txt, telegram.txt, instagram.txt, promobit.txt: artefatos gerados.
+
+ARQUIVOS DE TESTE
+- teste.py
+- teste_busca_publica.py
+- teste_buscador.py
+- teste_env.py
+- teste_envio.py
+- teste_extrator.py
+- teste_item.py
+- teste_meli_token.py
+- teste_playwright.py
+- teste_telegram.py
+- teste_mercadolivre.png
+
+ARQUIVOS DUPLICADOS
+- agente_busca.py: coletor antigo por termos; substituido pelo fluxo oficial agente_ofertas.py.
+- exportar_posts.py: exportador antigo; substituido por agente_publicador.py.
+- rodar_tudo.py: orquestrador duplicado; substituido por iniciar_ia.py.
+- corrigir_posts_colunas.py: manutencao duplicada; substituida por corrigir_posts.py/schema_posts.py.
+- limpar_posts.py: manutencao duplicada; substituida por corrigir_posts.py/schema_posts.py.
+- recriar_posts.py: manutencao duplicada; substituida por corrigir_posts.py/schema_posts.py.
+- agente_ia.py: arquivo vazio/orfao, sem uso no fluxo oficial.
+
+ARQUIVOS CANDIDATOS A EXCLUSAO
+- Todos os arquivos de teste listados acima.
+- debug_telegram.py: diagnostico manual antigo de Telegram.
+- agente_busca.py: duplicado legado.
+- agente_validador.py: validador legado fora do fluxo oficial.
+- exportar_posts.py: duplicado legado.
+- rodar_tudo.py: duplicado legado.
+- corrigir_posts_colunas.py: duplicado legado.
+- limpar_posts.py: duplicado legado.
+- recriar_posts.py: duplicado legado.
+- posts_prontos_backup.csv, posts_prontos_backup_antes_recriar.csv, posts_prontos_backup_final.csv: backups antigos somente com cabecalho.
+- posts_para_copiar.txt e promocoes.txt: artefatos manuais/temporarios.
+- agente_ia.py: arquivo vazio/orfao.
+
+OBSERVACOES
+- Nenhum arquivo sera apagado fisicamente nesta auditoria.
+- Candidatos serao movidos para backup_remocao/ para reversao simples.
+- venv/, perfil_mercadolivre/ e backups/ nao foram movidos porque sao ambiente, perfil de navegador e historico de seguranca.

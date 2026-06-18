@@ -1,0 +1,120 @@
+RELATORIO DE HOMOLOGACAO - ia-promocoes
+Data: 2026-06-17
+
+ESCOPO VALIDADO
+- agente_ofertas.py
+- agente_curadoria.py
+- agente_afiliado.py
+- importar_afiliados.py
+- gerador_texto.py
+- agente_telegram.py
+- agente_site.py
+- painel.py
+- iniciar_ia.py
+- csv_utils.py
+- schema_posts.py
+
+ERROS ENCONTRADOS
+- Comando literal python nao existe no ambiente atual:
+  zsh:1: command not found: python
+- painel.py ainda chamava exportar_posts.py, que era duplicado do agente oficial agente_publicador.py.
+- Imports nao utilizados em agente_telegram.py, agente_site.py, agente_publicador.py, limpar_invalidos.py e coletor.py.
+- Scripts legados e testes antigos poluiam a raiz do projeto.
+- Havia orquestradores/exportadores duplicados: rodar_tudo.py e exportar_posts.py.
+- Havia manutencoes duplicadas de posts: corrigir_posts_colunas.py, limpar_posts.py e recriar_posts.py.
+- agente_ia.py estava vazio e sem uso.
+
+ERROS CORRIGIDOS
+- painel.py agora usa agente_publicador.py no botao de exportacao.
+- agente_telegram.py agora nao importa pandas sem uso e usa timeout=30 no envio HTTP.
+- agente_site.py, agente_publicador.py, limpar_invalidos.py e coletor.py tiveram imports desnecessarios removidos.
+- CSVs oficiais foram validados contra schemas fixos:
+  produtos_busca.csv: OK
+  produtos_filtrados.csv: OK
+  produtos_afiliados.csv: OK
+  posts_prontos.csv: OK
+- Scripts oficiais compilados com sucesso usando venv/bin/python.
+- relatorio_limpeza.txt criado antes da movimentacao de arquivos.
+- backup_remocao/ criada para remocao logica sem apagar arquivos.
+
+ARQUIVOS REMOVIDOS
+- Nenhum arquivo foi apagado.
+
+ARQUIVOS MOVIDOS PARA BACKUP
+- backup_remocao/agente_busca.py
+- backup_remocao/agente_ia.py
+- backup_remocao/agente_validador.py
+- backup_remocao/corrigir_posts_colunas.py
+- backup_remocao/debug_telegram.py
+- backup_remocao/exportar_posts.py
+- backup_remocao/limpar_posts.py
+- backup_remocao/posts_para_copiar.txt
+- backup_remocao/posts_prontos_backup.csv
+- backup_remocao/posts_prontos_backup_antes_recriar.csv
+- backup_remocao/posts_prontos_backup_final.csv
+- backup_remocao/promocoes.txt
+- backup_remocao/recriar_posts.py
+- backup_remocao/rodar_tudo.py
+- backup_remocao/teste.py
+- backup_remocao/teste_busca_publica.py
+- backup_remocao/teste_buscador.py
+- backup_remocao/teste_env.py
+- backup_remocao/teste_envio.py
+- backup_remocao/teste_extrator.py
+- backup_remocao/teste_item.py
+- backup_remocao/teste_meli_token.py
+- backup_remocao/teste_mercadolivre.png
+- backup_remocao/teste_playwright.py
+- backup_remocao/teste_telegram.py
+
+VALIDACOES EXECUTADAS
+- venv/bin/python -m py_compile *.py
+- venv/bin/python -m py_compile agente_ofertas.py agente_curadoria.py agente_afiliado.py importar_afiliados.py gerador_texto.py agente_telegram.py agente_site.py painel.py iniciar_ia.py
+- venv/bin/python agente_publicador.py
+- venv/bin/python agente_site.py
+- Validacao programatica de colunas dos CSVs oficiais.
+
+RESULTADOS DE VALIDACAO
+- Compilacao dos scripts restantes: OK.
+- Compilacao explicita dos scripts oficiais: OK.
+- agente_publicador.py: OK, 18 posts exportados.
+- agente_site.py: OK, site_promocoes.html gerado com 18 produtos publicados.
+- posts_prontos.csv: OK, 18 linhas e 11 colunas oficiais.
+- produtos_busca.csv: OK.
+- produtos_filtrados.csv: OK.
+- produtos_afiliados.csv: OK.
+
+PENDENCIAS RESTANTES
+- O comando python -m py_compile *.py falha neste ambiente porque o binario python nao existe no PATH. Usar venv/bin/python.
+- Nao executei agente_ofertas.py e agente_afiliado.py em fluxo real completo durante a homologacao final para evitar abrir navegador, usar perfil Mercado Livre e coletar ofertas ao vivo sem necessidade.
+- Nao executei agente_telegram.py para evitar disparo real de mensagens ao Telegram. O script foi compilado e revisado; envio real depende de TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID no .env.
+- login_ml.py, gerar_token.py e trocar_code.py foram mantidos como utilitarios opcionais de autenticacao.
+
+COMANDO UNICO HOMOLOGADO
+- venv/bin/python iniciar_ia.py
+
+HOMOLOGACAO COMPLETA REAL - 2026-06-17 21:34
+- agente_ofertas.py: OK
+- agente_curadoria.py: OK
+- agente_afiliado.py: OK
+- importar_afiliados.py: OK
+- agente_telegram.py: OK
+- agente_site.py: OK
+
+CONTAGENS DA HOMOLOGACAO COMPLETA
+- produtos_busca.csv: 68 ofertas encontradas.
+- produtos_filtrados.csv: 13 ofertas filtradas.
+- produtos_afiliados.csv: 13 produtos com link afiliado.
+- posts_prontos.csv: 31 posts totais.
+- Aprovados automaticamente na importacao desta rodada: 9.
+- Pendentes nesta rodada: 4.
+- Aprovados totais apos homologacao: 27.
+- Enviados ao Telegram: 27.
+- Publicados no site: 27.
+
+OBSERVACOES DA HOMOLOGACAO COMPLETA
+- Playwright tratou timeout de produto sem parar o fluxo.
+- Conta Mercado Livre estava conectada: links meli.la foram gerados.
+- Telegram enviou mensagens reais e marcou status_telegram como enviado.
+- Ollama/IA local nao respondeu neste ambiente; gerador_texto.py usou fallback simples e o fluxo continuou.
+- Neste shell, command -v python nao retornou binario. Para usar exatamente python iniciar_ia.py, ative o venv antes.
