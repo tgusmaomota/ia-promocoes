@@ -1,9 +1,48 @@
-venv/
-__pycache__/
-*.pyc
+# Ambiente local
 .env
-.DS_Store
-perfil_mercadolivre/
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+ENV/
+
+# Python/cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Banco e dados locais
 banco.db
+*.sqlite
+*.sqlite3
+*.db-journal
 backups/
 logs/
+*.log
+
+# Perfis de navegador e automacao
+perfil_mercadolivre/
+perfil_shopee/
+playwright-report/
+test-results/
+
+# Arquivos temporarios e artefatos de execucao
+.DS_Store
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+.ia_promocoes.pid
+.ia_promocoes.stop
+
+# IDE/editor
+.vscode/
+.idea/
