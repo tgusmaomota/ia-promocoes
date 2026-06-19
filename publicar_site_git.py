@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 from gerar_site import SITE_DIR, gerar_site
+from banco import registrar_evento_sistema
 
 
 DOMINIO = "promogg.com.br"
@@ -65,33 +66,34 @@ def copiar_site_para_dist():
 
 
 def subir_site(mensagem="Atualiza site IA-Promocoes"):
-    destino = copiar_site_para_dist()
-    validar_git()
+    try:
+        destino = copiar_site_para_dist()
+        validar_git()
 
-    arquivos = [
-        str(DIST_DIR),
-        str(WORKFLOW_PATH),
-        str(README_PATH),
-        "publicar_site_git.py",
-        "ia_promocoes.py",
-    ]
-    executar(["git", "add", *arquivos])
+        arquivos = [
+            str(SITE_DIR), str(DIST_DIR), "gerar_site.py", str(WORKFLOW_PATH),
+            str(README_PATH), "publicar_site_git.py", "ia_promocoes.py",
+        ]
+        executar(["git", "add", *arquivos])
 
-    status = executar(["git", "status", "--short"])
-    commit_criado = bool(status)
-    if commit_criado:
-        executar(["git", "commit", "-m", mensagem])
-    else:
-        print("Nenhuma alteração nova para commit.")
+        status = executar(["git", "status", "--short"])
+        commit_criado = bool(status)
+        if commit_criado:
+            executar(["git", "commit", "-m", mensagem])
+        else:
+            print("Nenhuma alteração nova para commit.")
 
-    branch = branch_atual()
-    executar(["git", "push", "origin", branch])
-    return {
-        "destino": str(destino),
-        "dominio": DOMINIO,
-        "branch": branch,
-        "commit_criado": commit_criado,
-    }
+        branch = branch_atual()
+        executar(["git", "push", "origin", branch])
+    except RuntimeError as erro:
+        registrar_evento_sistema("deploy_github", "github_pages", "erro", "Falha no deploy GitHub Pages", str(erro))
+        raise
+
+    registrar_evento_sistema(
+        "deploy_github", "github_pages", "concluido", "Deploy enviado ao GitHub Pages",
+        f"branch={branch} commit_criado={commit_criado}",
+    )
+    return {"destino": str(destino), "dominio": DOMINIO, "branch": branch, "commit_criado": commit_criado}
 
 
 def main():

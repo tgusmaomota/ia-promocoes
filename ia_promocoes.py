@@ -1,21 +1,26 @@
 import argparse
+import json
 import os
 import subprocess
 import sys
 import time
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from banco import conectar, inicializar_banco, migrar_csvs, registrar_log, resumo
+from banco import conectar, inicializar_banco, migrar_csvs, registrar_evento_sistema, registrar_log, resumo
 from deploy_site import copiar_site
-from gerar_site import gerar_site
+from gerar_site import gerar_site, validar_site_publico
 from servidor_site import servir_site
 
 
 PID_FILE = Path(".ia_promocoes.pid")
 STOP_FILE = Path(".ia_promocoes.stop")
+STATE_FILE = Path(".ia_promocoes.producao.json")
+PRODUCAO_LOG = Path("logs") / "producao.log"
+ANALYTICS_PID_FILE = Path(".promogg_analytics.pid")
+PAINEL_PID_FILE = Path(".promogg_painel.pid")
 
 
 load_dotenv()
@@ -44,6 +49,47 @@ def robo_rodando():
     return pid if pid and processo_ativo(pid) else None
 
 
+def _pid_servico(arquivo):
+    try:
+        pid = int(arquivo.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        return None
+    return pid if processo_ativo(pid) else None
+
+
+def _executavel_projeto():
+    return str(Path("venv/bin/python")) if Path("venv/bin/python").exists() else sys.executable
+
+
+def _iniciar_servico(nome, pid_file, log_nome, argumentos):
+    pid = _pid_servico(pid_file)
+    if pid:
+        return pid, False
+    Path("logs").mkdir(exist_ok=True)
+    with (Path("logs") / log_nome).open("a", encoding="utf-8") as log:
+        processo = subprocess.Popen(
+            [_executavel_projeto(), *argumentos], cwd=Path.cwd(), stdin=subprocess.DEVNULL,
+            stdout=log, stderr=subprocess.STDOUT, start_new_session=True,
+        )
+    pid_file.write_text(str(processo.pid), encoding="utf-8")
+    registrar_evento_sistema("servico", "master", "sucesso", f"Serviço iniciado: {nome}", f"pid={processo.pid}")
+    return processo.pid, True
+
+
+def _parar_servico(nome, pid_file):
+    pid = _pid_servico(pid_file)
+    if not pid:
+        pid_file.unlink(missing_ok=True)
+        return False
+    try:
+        os.kill(pid, 15)
+    except OSError:
+        pass
+    pid_file.unlink(missing_ok=True)
+    registrar_evento_sistema("servico", "master", "sucesso", f"Serviço parado: {nome}", f"pid={pid}")
+    return True
+
+
 def preparar_base(migrar=False):
     inicializar_banco()
     if migrar:
@@ -59,18 +105,35 @@ def esperar_com_parada(segundos):
     return True
 
 
-def comando_iniciar():
+def _salvar_estado_producao(**dados):
+    estado = {"atualizado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), **dados}
+    STATE_FILE.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def estado_producao():
+    try:
+        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _executar_worker_producao():
     from publicador_telegram import gerar_site_local, gerar_whatsapp_manual
     from scheduler import ciclo_completo, inteiro_env
+    from saude_sistema import obter_relatorio_saude
 
     pid = robo_rodando()
-    if pid:
+    if pid and pid != os.getpid():
         print(f"IA-Promocoes já está rodando. PID: {pid}")
         return 0
+
+    print("Centro de controle: python3 ia_promocoes.py painel")
+    print("Use o painel para aprovar, rejeitar, editar e publicar ofertas.")
 
     STOP_FILE.unlink(missing_ok=True)
     PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
     intervalo = inteiro_env("INTERVALO_COLETA_MINUTOS", 30)
+    _salvar_estado_producao(pid=os.getpid(), iniciado_em=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), intervalo_minutos=intervalo, status="rodando")
 
     registrar_log(
         "operacao",
@@ -85,17 +148,55 @@ def comando_iniciar():
                 gerar_whatsapp_manual()
                 copiar_site("dist_site")
                 registrar_log("site", "Site público preparado automaticamente em dist_site/")
+                saude = obter_relatorio_saude()
+                registrar_evento_sistema("saude", "producao", "sucesso", "Verificação de saúde concluída", f"status={saude['status_geral']}")
+                _salvar_estado_producao(pid=os.getpid(), iniciado_em=estado_producao().get("iniciado_em"), intervalo_minutos=intervalo, status="rodando", ultimo_ciclo=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             except Exception as erro:
                 registrar_log("operacao", f"Erro no ciclo automático: {erro}", nivel="error")
+                registrar_evento_sistema("producao", "scheduler", "erro", "Falha no ciclo de produção", str(erro))
 
             if not esperar_com_parada(intervalo * 60):
                 break
     finally:
         registrar_log("operacao", "Robô parado com segurança")
+        registrar_evento_sistema("producao", "scheduler", "sucesso", "Serviço de produção parado")
         PID_FILE.unlink(missing_ok=True)
         STOP_FILE.unlink(missing_ok=True)
+        _salvar_estado_producao(status="parado", encerrado_em=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     return 0
+
+
+def _iniciar_servico_producao():
+    pid = robo_rodando()
+    if pid:
+        print(f"IA-Promocoes já está rodando. PID: {pid}")
+        return 0
+    STOP_FILE.unlink(missing_ok=True)
+    PRODUCAO_LOG.parent.mkdir(exist_ok=True)
+    executavel = Path("venv/bin/python") if Path("venv/bin/python").exists() else Path(sys.executable)
+    with PRODUCAO_LOG.open("a", encoding="utf-8") as log:
+        processo = subprocess.Popen(
+            [str(executavel), __file__, "_worker-producao"],
+            cwd=Path.cwd(),
+            stdin=subprocess.DEVNULL,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    PID_FILE.write_text(str(processo.pid), encoding="utf-8")
+    _salvar_estado_producao(pid=processo.pid, iniciado_em=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), status="iniciando")
+    print(f"Serviço de produção iniciado. PID: {processo.pid}")
+    print("Painel permanece disponível: python3 ia_promocoes.py painel")
+    return 0
+
+
+def comando_iniciar():
+    return _iniciar_servico_producao()
+
+
+def comando_producao():
+    return _iniciar_servico_producao()
 
 
 def comando_parar():
@@ -110,6 +211,19 @@ def comando_parar():
         print("Robô não estava rodando. Flag de parada registrada/limpa.")
 
     return 0
+
+
+def comando_reiniciar():
+    pid = robo_rodando()
+    if pid:
+        comando_parar()
+        limite = time.time() + 35
+        while robo_rodando() and time.time() < limite:
+            time.sleep(1)
+        if robo_rodando():
+            print("O serviço ainda está finalizando; reinício cancelado para evitar múltiplas instâncias.")
+            return 1
+    return _iniciar_servico_producao()
 
 
 def buscar_uma_coluna(query, params=()):
@@ -135,7 +249,14 @@ def logs_recentes(nivel=None, limite=5):
         return [dict(row) for row in conn.execute(query, params).fetchall()]
 
 
+def resumir_mensagem(mensagem, limite=220):
+    mensagem = str(mensagem or "").replace("\n", " ").strip()
+    return mensagem if len(mensagem) <= limite else mensagem[:limite - 3] + "..."
+
+
 def imprimir_status():
+    from estado_sistema import obter_estado_sistema
+
     preparar_base()
     pid = robo_rodando()
     dados = resumo()
@@ -157,8 +278,31 @@ def imprimir_status():
         "SELECT data_publicacao FROM postagens WHERE status = 'publicado' ORDER BY data_publicacao DESC LIMIT 1"
     )
 
+    mestre = obter_estado_sistema()
+    indicador_estado = {"ONLINE": "🟢", "MANUTENCAO": "🟡", "OFFLINE": "🔴"}.get(mestre["estado"], "🟡")
     print("Status IA-Promocoes")
+    print(f"Estado atual: {indicador_estado} {mestre['estado']}")
+    print(f"Motivo: {mestre.get('motivo') or 'sem observação'}")
     print(f"Robô: {'rodando' if pid else 'parado'}" + (f" (PID {pid})" if pid else ""))
+    estado = estado_producao()
+    if estado:
+        print(f"Início do serviço: {estado.get('iniciado_em', 'sem registro')}")
+        print(f"Último ciclo: {estado.get('ultimo_ciclo', 'sem registro')}")
+    servicos = {
+        "Site": True,
+        "Scheduler": bool(pid),
+        "Monitor": bool(pid) and mestre["estado"] == "ONLINE",
+        "Telegram": bool(pid) and mestre["estado"] == "ONLINE",
+        "IA Consultiva": mestre["estado"] != "OFFLINE",
+        "IA Revisora": mestre["estado"] != "OFFLINE",
+        "Analytics": bool(_pid_servico(ANALYTICS_PID_FILE)),
+        "Painel": bool(_pid_servico(PAINEL_PID_FILE)),
+        "Deploy": mestre["estado"] == "ONLINE",
+    }
+    print("\nServiços:")
+    for nome, ativo in servicos.items():
+        simbolo = "🟢" if ativo and mestre["estado"] == "ONLINE" else "🟡" if ativo else "🔴"
+        print(f"{simbolo} {nome}: {'ativo' if ativo else 'parado'}")
     print(f"Pendentes: {dados['fila_pendente']}")
     print(f"Publicados hoje: {publicados_hoje or 0}")
     print(f"Última coleta: {ultima_coleta or 'sem registro'}")
@@ -168,7 +312,7 @@ def imprimir_status():
     if erros:
         print("\nErros recentes:")
         for erro in erros:
-            print(f"- {erro['criado_em']} [{erro['etapa']}] {erro['mensagem']}")
+            print(f"- {erro['criado_em']} [{erro['etapa']}] {resumir_mensagem(erro['mensagem'])}")
     else:
         print("\nErros recentes: nenhum")
 
@@ -204,16 +348,207 @@ def comando_publicar_um():
 
 def comando_painel():
     preparar_base()
-    return subprocess.call([sys.executable, "-m", "streamlit", "run", "painel.py"])
+    executavel = Path("venv/bin/python") if Path("venv/bin/python").exists() else Path(sys.executable)
+    return subprocess.call([str(executavel), "-m", "streamlit", "run", "painel.py"])
+
+
+def _atualizar_site_por_estado():
+    destino = copiar_site("dist_site")
+    registrar_evento_sistema("site_estado", "master", "sucesso", "Site atualizado conforme estado mestre", str(destino))
+
+
+def comando_online():
+    from estado_sistema import ONLINE, definir_estado_sistema
+
+    definir_estado_sistema(ONLINE, "MASTER ONLINE acionado")
+    _atualizar_site_por_estado()
+    try:
+        deploy_ok = comando_publicar() == 0
+    except Exception as erro:
+        deploy_ok = False
+        registrar_evento_sistema("deploy_github", "master", "erro", "Falha ao publicar ao entrar em ONLINE", str(erro))
+    producao = _iniciar_servico("scheduler", PID_FILE, "producao.log", [__file__, "_worker-producao"])[0] if not robo_rodando() else robo_rodando()
+    analytics, _ = _iniciar_servico("analytics", ANALYTICS_PID_FILE, "analytics.log", ["servidor_analytics.py"])
+    painel, _ = _iniciar_servico("painel", PAINEL_PID_FILE, "painel.log", ["-m", "streamlit", "run", "painel.py", "--server.headless", "true"])
+    registrar_evento_sistema("master", "operacao", "sucesso", "Sistema MASTER ONLINE", f"scheduler={producao} analytics={analytics} painel={painel}")
+    print("Sistema online")
+    print(f"- Site online e deploy {'confirmado' if deploy_ok else 'pendente de verificação'}")
+    print("- Monitoramento ativo no scheduler")
+    print("- IA ativa por serviços locais")
+    print("- Telegram controlado pelo scheduler")
+    print(f"- Painel ativo: PID {painel}")
+    return 0
+
+
+def comando_manutencao():
+    from estado_sistema import MANUTENCAO, definir_estado_sistema
+
+    definir_estado_sistema(MANUTENCAO, "MASTER MANUTENCAO acionado")
+    comando_parar()
+    _atualizar_site_por_estado()
+    painel, _ = _iniciar_servico("painel", PAINEL_PID_FILE, "painel.log", ["-m", "streamlit", "run", "painel.py", "--server.headless", "true"])
+    registrar_evento_sistema("master", "operacao", "aviso", "Sistema em manutenção", f"painel={painel}")
+    print("Painel ativo | Banco ativo | IA ativa | Coleta pausada | Publicações pausadas")
+    return 0
+
+
+def comando_offline():
+    from estado_sistema import OFFLINE, definir_estado_sistema
+
+    definir_estado_sistema(OFFLINE, "MASTER OFFLINE acionado")
+    comando_parar()
+    _parar_servico("analytics", ANALYTICS_PID_FILE)
+    _parar_servico("painel", PAINEL_PID_FILE)
+    _atualizar_site_por_estado()
+    registrar_evento_sistema("master", "operacao", "sucesso", "Sistema desligado com segurança")
+    print("Sistema desligado com segurança. Banco, histórico e backups foram preservados.")
+    return 0
 
 
 def comando_gerar_site():
-    from publicador_telegram import gerar_whatsapp_manual
-
     preparar_base()
     resultado = gerar_site()
-    gerar_whatsapp_manual()
     print(f"Site gerado em site/ com {resultado['ofertas']} ofertas.")
+    return 0
+
+
+def comando_validar():
+    from promogg_assistente import validar_assistente
+    from saude_sistema import validar_saude_sistema
+    from operacao_sistema import validar_operacao_sistema
+    from ia_revisora import validar_revisora
+    from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
+
+    erros = validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora()
+    estado_original = obter_estado_sistema()
+    try:
+        definir_estado_sistema(MANUTENCAO, "validação automática")
+        gerar_site()
+        if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
+            erros.append("Banner de manutenção não foi gerado")
+        definir_estado_sistema(OFFLINE, "validação automática")
+        gerar_site()
+        if "Promogg temporariamente offline" not in Path("site/index.html").read_text(encoding="utf-8"):
+            erros.append("Página offline não foi gerada")
+        definir_estado_sistema(ONLINE, "validação automática")
+        if obter_estado_sistema()["estado"] != ONLINE:
+            erros.append("Persistência do estado ONLINE falhou")
+    except Exception as erro:
+        erros.append(f"Validação do estado mestre falhou: {erro}")
+    finally:
+        definir_estado_sistema(estado_original["estado"], estado_original.get("motivo", ""))
+        gerar_site()
+    if erros:
+        print("Validação do site público falhou:")
+        for erro in erros:
+            print(f"- {erro}")
+        return 1
+    print("Validação concluída: site, SEO, analytics, assistentes, banco, saúde e backup operacionais.")
+    return 0
+
+
+def comando_saude():
+    from saude_sistema import imprimir_relatorio_saude
+
+    preparar_base()
+    imprimir_relatorio_saude()
+    return 0
+
+
+def comando_relatorio_operacional():
+    from operacao_sistema import imprimir_relatorio_operacional
+
+    preparar_base()
+    imprimir_relatorio_operacional()
+    return 0
+
+
+def comando_backup():
+    from operacao_sistema import criar_backup_emergencia
+
+    preparar_base()
+    try:
+        destino = criar_backup_emergencia()
+    except Exception as erro:
+        registrar_log("backup", f"Falha ao criar backup operacional: {erro}", nivel="error")
+        registrar_evento_sistema("backup", "operacao", "critico", "Falha ao criar backup de emergência", str(erro))
+        print("Não foi possível criar o backup. Consulte `python3 ia_promocoes.py saude`.")
+        return 1
+    print(f"Backup de emergência criado: {destino}")
+    print("O arquivo não inclui .env, tokens, cookies ou outros segredos.")
+    return 0
+
+
+def comando_restaurar():
+    from operacao_sistema import imprimir_backups_disponiveis
+
+    preparar_base()
+    imprimir_backups_disponiveis()
+    return 0
+
+
+def comando_revisar_ofertas():
+    from ia_revisora import revisar_ofertas
+
+    preparar_base()
+    analises = revisar_ofertas()
+    print(f"IA revisora concluiu {len(analises)} análise(s). Nenhuma aprovação foi alterada.")
+    for analise in analises:
+        print(f"- #{analise['postagem_id']} | {analise['score_revisora']:.1f}/100 | {analise['sugestao']} | {analise['titulo']}")
+    return 0
+
+
+def comando_treinar_revisora():
+    from ia_revisora import treinar_revisora
+
+    preparar_base()
+    categorias = treinar_revisora()
+    print(f"Memória estatística da revisora atualizada para {categorias} categoria(s).")
+    print("Nenhum modelo foi treinado ou alterado.")
+    return 0
+
+
+def comando_limpar_seguro():
+    from limpeza_segura import executar_limpeza_segura
+
+    preparar_base()
+    backup, quarentena, movidos = executar_limpeza_segura()
+    print(f"Backup pré-limpeza: {backup}")
+    if movidos:
+        print(f"Arquivos movidos para quarentena: {quarentena}")
+        for caminho in movidos:
+            print(f"- {caminho}")
+    else:
+        print("Nenhum candidato confirmado estava presente; nada foi movido.")
+    return 0
+
+
+def comando_mapa():
+    caminho = Path("MAPA_PROJETO.md")
+    if not caminho.exists():
+        print("MAPA_PROJETO.md não encontrado.")
+        return 1
+    print(caminho.read_text(encoding="utf-8"))
+    return 0
+
+
+def comando_perguntar(pergunta):
+    from promogg_assistente import responder_pergunta
+
+    if not pergunta.strip():
+        print("Informe uma pergunta. Exemplo: python3 ia_promocoes.py perguntar \"Qual o preço atual do Xbox?\"")
+        return 1
+    print(responder_pergunta(pergunta)["texto"])
+    return 0
+
+
+def comando_treinar_memoria():
+    from promogg_assistente import treinar_memoria
+
+    preparar_base()
+    total = treinar_memoria()
+    print(f"Memória local atualizada para {total} produtos.")
+    print("Nenhum modelo foi treinado ou alterado; apenas resumos locais foram recalculados.")
     return 0
 
 
@@ -257,16 +592,37 @@ def comando_subir_site():
     return 0
 
 
+def comando_publicar():
+    from estado_sistema import ONLINE, obter_estado_sistema
+
+    if obter_estado_sistema()["estado"] != ONLINE:
+        print("Publicação remota pausada pelo estado mestre. Use ONLINE para publicar.")
+        return 1
+    print("Validando sistema antes da publicação...")
+    if comando_validar() != 0:
+        print("Publicação cancelada: a validação encontrou problemas.")
+        return 1
+    print("Gerando e enviando a versão estática para o GitHub Pages...")
+    resultado = comando_subir_site()
+    if resultado == 0:
+        registrar_evento_sistema("deploy_github", "publicacao", "sucesso", "Publicação de produção concluída")
+    return resultado
+
+
 def comando_relatorio():
     preparar_base()
     hoje = date.today().strftime("%Y-%m-%d")
 
     with conectar() as conn:
         coletados = conn.execute("SELECT COUNT(*) FROM produtos").fetchone()[0]
-        aprovados = conn.execute("SELECT COUNT(*) FROM promocoes WHERE status = 'aprovado'").fetchone()[0]
+        aprovados = conn.execute(
+            "SELECT COUNT(*) FROM promocoes WHERE status IN ('aprovado', 'aprovado_auto', 'aprovado_manual')"
+        ).fetchone()[0]
         rejeitados = conn.execute("SELECT COUNT(*) FROM promocoes WHERE status = 'rejeitado'").fetchone()[0]
         publicados = conn.execute("SELECT COUNT(*) FROM postagens WHERE status = 'publicado'").fetchone()[0]
-        pendentes = conn.execute("SELECT COUNT(*) FROM postagens WHERE status = 'pendente'").fetchone()[0]
+        pendentes = conn.execute(
+            "SELECT COUNT(*) FROM postagens WHERE status = 'pendente_revisao'"
+        ).fetchone()[0]
         publicados_hoje = conn.execute(
             """
             SELECT COUNT(*)
@@ -323,40 +679,100 @@ def comando_relatorio():
     return 0
 
 
+def comando_relatorio_precos():
+    from consulta_precos import imprimir_resumo_precos
+
+    preparar_base()
+    imprimir_resumo_precos()
+    return 0
+
+
+def comando_monitorar_precos():
+    from monitor_precos import monitorar_precos_diariamente
+
+    preparar_base()
+    resultado = monitorar_precos_diariamente(forcar=True)
+    print("Monitoramento de preços:")
+    for chave, valor in resultado.items():
+        print(f"- {chave}: {valor}")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Operação final do IA-Promocoes")
     parser.add_argument(
         "comando",
         choices=[
             "iniciar",
+            "producao",
+            "online",
+            "manutencao",
+            "offline",
+            "_worker-producao",
             "parar",
+            "reiniciar",
             "status",
             "painel",
             "simular",
             "publicar-um",
             "coletar",
             "gerar-site",
+            "validar",
             "servir-site",
             "publicar-site",
             "subir-site",
+            "publicar",
             "relatorio",
+            "relatorio-precos",
+            "monitorar-precos",
+            "perguntar",
+            "treinar-memoria",
+            "saude",
+            "relatorio-operacional",
+            "backup",
+            "restaurar",
+            "revisar-ofertas",
+            "treinar-revisora",
+            "limpar-seguro",
+            "mapa",
         ],
     )
+    parser.add_argument("argumentos", nargs="*")
     args = parser.parse_args()
 
     comandos = {
         "iniciar": comando_iniciar,
+        "producao": comando_producao,
+        "online": comando_online,
+        "manutencao": comando_manutencao,
+        "offline": comando_offline,
+        "_worker-producao": _executar_worker_producao,
         "parar": comando_parar,
+        "reiniciar": comando_reiniciar,
         "status": lambda: (imprimir_status() or 0),
         "painel": comando_painel,
         "simular": comando_simular,
         "publicar-um": comando_publicar_um,
         "coletar": comando_coletar,
         "gerar-site": comando_gerar_site,
+        "validar": comando_validar,
         "servir-site": comando_servir_site,
         "publicar-site": comando_publicar_site,
         "subir-site": comando_subir_site,
+        "publicar": comando_publicar,
         "relatorio": comando_relatorio,
+        "relatorio-precos": comando_relatorio_precos,
+        "monitorar-precos": comando_monitorar_precos,
+        "perguntar": lambda: comando_perguntar(" ".join(args.argumentos)),
+        "treinar-memoria": comando_treinar_memoria,
+        "saude": comando_saude,
+        "relatorio-operacional": comando_relatorio_operacional,
+        "backup": comando_backup,
+        "restaurar": comando_restaurar,
+        "revisar-ofertas": comando_revisar_ofertas,
+        "treinar-revisora": comando_treinar_revisora,
+        "limpar-seguro": comando_limpar_seguro,
+        "mapa": comando_mapa,
     }
     return comandos[args.comando]()
 
