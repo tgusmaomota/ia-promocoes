@@ -33,6 +33,7 @@ NOT_FOUND_PATH = SITE_DIR / "404.html"
 OG_IMAGE_PATH = SITE_DIR / "og-promogg.svg"
 SOBRE_DIR = SITE_DIR / "sobre"
 SEGURANCA_DIR = SITE_DIR / "seguranca"
+OAUTH_CALLBACK_DIR = SITE_DIR / "oauth" / "callback"
 BASE_URL = "https://promogg.com.br"
 ITEM_ID_RE = re.compile(r"^[A-Za-z0-9_-]{4,80}$")
 
@@ -1221,6 +1222,12 @@ def gerar_paginas_institucionais():
         (destino / "index.html").write_text(f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="index, follow"><title>{escape(titulo)}</title><meta name="description" content="{escape(descricao, quote=True)}"><link rel="canonical" href="{url}"><meta property="og:type" content="website"><meta property="og:title" content="{escape(titulo)}"><meta property="og:description" content="{escape(descricao, quote=True)}"><meta property="og:url" content="{url}"><meta property="og:image" content="{BASE_URL}/og-promogg.svg"><link rel="icon" href="../favicon.ico" sizes="any"><link rel="stylesheet" href="../style.css"></head><body><header class="site-header"><div class="header-inner"><a class="brand" href="../" aria-label="Página inicial"><img src="../logo.svg" class="brand-logo" alt="PROMOGG"></a></div></header><main class="content"><article class="container detail-page">{conteudo}</article></main>{rodape_publico(datetime.now().strftime('%d/%m/%Y %H:%M'))}</body></html>""", encoding="utf-8")
 
 
+def gerar_callback_oauth():
+    """Página estática de retorno OAuth: exibe o código localmente, sem enviá-lo ao site."""
+    OAUTH_CALLBACK_DIR.mkdir(parents=True, exist_ok=True)
+    (OAUTH_CALLBACK_DIR / "index.html").write_text("""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow"><title>Autorização Mercado Livre | Promogg</title><link rel="icon" href="../../favicon.ico" sizes="any"><link rel="stylesheet" href="../../style.css"></head><body><main class="offline-page"><section class="container"><img src="../../logo.svg" class="brand-logo" alt="PROMOGG"><h1>Autorização recebida</h1><p class="hero-copy">Copie o código abaixo e use-o somente no terminal local. Não compartilhe este código.</p><code id="codigo">Código não encontrado na URL.</code><p class="detail-notice">Execute: <strong>venv/bin/python trocar_token_meli.py "SEU_CODE"</strong></p></section></main><script>const c=new URLSearchParams(location.search).get('code');if(c)document.querySelector('#codigo').textContent=c;</script></body></html>""", encoding="utf-8")
+
+
 def gerar_paginas_produtos(ofertas):
     if PRODUTOS_DIR.exists():
         shutil.rmtree(PRODUTOS_DIR)
@@ -1263,6 +1270,7 @@ def gerar_site():
     escrever_imagem_social()
     INDEX_PATH.write_text(montar_index(), encoding="utf-8")
     gerar_paginas_institucionais()
+    gerar_callback_oauth()
     gerar_sitemap(ofertas, categorias)
     gerar_robots()
     gerar_404(categorias)
@@ -1346,7 +1354,7 @@ def validar_site_publico():
             erros.append(f"SEO da página inicial incompleto ({marcador})")
     if not all(caminho.exists() for caminho in (FAVICON_PATH, FAVICON_ICO_PATH, LOGO_SVG_PATH, LOGO_PNG_PATH, OG_IMAGE_PATH, NOT_FOUND_PATH)):
         erros.append("favicon, logo, imagem social ou página 404 não foram gerados")
-    if not (SOBRE_DIR / "index.html").exists() or not (SEGURANCA_DIR / "index.html").exists():
+    if not (SOBRE_DIR / "index.html").exists() or not (SEGURANCA_DIR / "index.html").exists() or not (OAUTH_CALLBACK_DIR / "index.html").exists():
         erros.append("páginas institucionais não foram geradas")
     if not ROBOTS_PATH.exists() or "sitemap:" not in ROBOTS_PATH.read_text(encoding="utf-8").lower():
         erros.append("robots.txt inválido ou sem sitemap")

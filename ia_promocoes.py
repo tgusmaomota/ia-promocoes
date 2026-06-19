@@ -419,9 +419,12 @@ def comando_validar():
     from ia_revisora import validar_revisora
     from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
 
-    erros = validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora()
+    erros = []
     estado_original = obter_estado_sistema()
     try:
+        definir_estado_sistema(ONLINE, "validação automática")
+        gerar_site()
+        erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora()
         definir_estado_sistema(MANUTENCAO, "validação automática")
         gerar_site()
         if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
