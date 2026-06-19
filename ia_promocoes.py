@@ -418,13 +418,14 @@ def comando_validar():
     from operacao_sistema import validar_operacao_sistema
     from ia_revisora import validar_revisora
     from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
+    from meli_oauth import validar_oauth_local
 
     erros = []
     estado_original = obter_estado_sistema()
     try:
         definir_estado_sistema(ONLINE, "validação automática")
         gerar_site()
-        erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora()
+        erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora() + validar_oauth_local()
         definir_estado_sistema(MANUTENCAO, "validação automática")
         gerar_site()
         if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
@@ -532,6 +533,50 @@ def comando_mapa():
         print("MAPA_PROJETO.md não encontrado.")
         return 1
     print(caminho.read_text(encoding="utf-8"))
+    return 0
+
+
+def _imprimir_perfil_meli(perfil):
+    print(f"HTTP status: {perfil['http_status']}")
+    print(f"user_id: {perfil['user_id']}")
+    print(f"nickname: {perfil['nickname']}")
+    print(f"site_id: {perfil['site_id']}")
+
+
+def comando_meli_auth():
+    from meli_oauth import ErroOAuthMercadoLivre, autenticar_interativo
+
+    try:
+        perfil = autenticar_interativo()
+    except ErroOAuthMercadoLivre as erro:
+        print(str(erro))
+        return 1
+    print("Tokens OAuth salvos no .env local. Nenhum token foi exibido.")
+    _imprimir_perfil_meli(perfil)
+    return 0
+
+
+def comando_meli_testar_token():
+    from meli_oauth import ErroOAuthMercadoLivre, testar_token
+
+    try:
+        _imprimir_perfil_meli(testar_token())
+    except ErroOAuthMercadoLivre as erro:
+        print(str(erro))
+        return 1
+    return 0
+
+
+def comando_meli_refresh_token():
+    from meli_oauth import ErroOAuthMercadoLivre, refresh_token
+
+    try:
+        perfil = refresh_token()
+    except ErroOAuthMercadoLivre as erro:
+        print(str(erro))
+        return 1
+    print("Tokens OAuth renovados no .env local. Nenhum token foi exibido.")
+    _imprimir_perfil_meli(perfil)
     return 0
 
 
@@ -738,6 +783,9 @@ def main():
             "treinar-revisora",
             "limpar-seguro",
             "mapa",
+            "meli-auth",
+            "meli-testar-token",
+            "meli-refresh-token",
         ],
     )
     parser.add_argument("argumentos", nargs="*")
@@ -776,6 +824,9 @@ def main():
         "treinar-revisora": comando_treinar_revisora,
         "limpar-seguro": comando_limpar_seguro,
         "mapa": comando_mapa,
+        "meli-auth": comando_meli_auth,
+        "meli-testar-token": comando_meli_testar_token,
+        "meli-refresh-token": comando_meli_refresh_token,
     }
     return comandos[args.comando]()
 
