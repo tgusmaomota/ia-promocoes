@@ -256,6 +256,9 @@ def resumir_mensagem(mensagem, limite=220):
 
 def imprimir_status():
     from estado_sistema import obter_estado_sistema
+    from coletor_mercadolivre_api import busca_api_bloqueada
+    from banco import obter_saude_coleta_api
+    from meli_oauth import status_oauth_local
 
     preparar_base()
     pid = robo_rodando()
@@ -284,6 +287,20 @@ def imprimir_status():
     print(f"Estado atual: {indicador_estado} {mestre['estado']}")
     print(f"Motivo: {mestre.get('motivo') or 'sem observação'}")
     print(f"Robô: {'rodando' if pid else 'parado'}" + (f" (PID {pid})" if pid else ""))
+    saude_busca = obter_saude_coleta_api()
+    modo_coleta = os.getenv("MELI_COLETA_MODO", "auto").strip().lower() or "auto"
+    if busca_api_bloqueada():
+        busca_api = f"403 em cache até {saude_busca.get('bloqueado_ate')}"
+    elif saude_busca.get("status") == "ok":
+        busca_api = "OK"
+    elif saude_busca.get("status") == "403":
+        busca_api = "403 (cache expirado)"
+    else:
+        busca_api = "sem registro"
+    print(f"OAuth Mercado Livre: {'OK (configurado)' if status_oauth_local() else 'Erro (configuração ausente)'}")
+    print(f"API busca Mercado Livre: {busca_api}")
+    print(f"Coleta ativa: {modo_coleta}")
+    print(f"Fallback ativo: {'sim' if modo_coleta == 'auto' and busca_api_bloqueada() else 'não'}")
     estado = estado_producao()
     if estado:
         print(f"Início do serviço: {estado.get('iniciado_em', 'sem registro')}")
@@ -319,13 +336,56 @@ def imprimir_status():
 
 def comando_coletar():
     from publicador_telegram import gerar_site_local, gerar_whatsapp_manual
-    from scheduler import ciclo_completo
+    from coletor_mercadolivre import coletar as coletar_mercadolivre
+    from fila_postagens import gerar_fila_de_produtos
 
     preparar_base(migrar=True)
-    ciclo_completo(publicar=False)
+    produtos = coletar_mercadolivre()
+    resultado_fila = gerar_fila_de_produtos()
     gerar_site_local()
     gerar_whatsapp_manual()
+    print(
+        f"Coleta manual concluída: candidatos={len(produtos)} "
+        f"aprovados={resultado_fila['aprovados']} pendentes/rejeitados={resultado_fila['rejeitados']}."
+    )
+    print("Telegram não foi acionado.")
     return 0
+
+
+def comando_testar_coleta_api(comparar_playwright=False):
+    """Compara fontes sem inserir, atualizar ou publicar qualquer oferta."""
+    from coletor_mercadolivre_api import coletar_ofertas_api
+
+    try:
+        api = coletar_ofertas_api()
+    except Exception as erro:
+        api = []
+        print(f"API oficial: falhou ({erro})")
+    print(f"API oficial: {len(api)} item(ns) válidos")
+    if api:
+        completos = sum(bool(p.get("item_id") and p.get("titulo") and p.get("preco") and p.get("link") and p.get("categoria_id")) for p in api)
+        print(f"API oficial: {completos}/{len(api)} com ID, título, preço, permalink e categoria")
+
+    playwright = []
+    if comparar_playwright:
+        from agente_ofertas import coletar_ofertas
+
+        try:
+            playwright = coletar_ofertas()
+            print(f"Playwright: {len(playwright)} item(ns) válidos")
+        except Exception as erro:
+            print(f"Playwright: falhou ({erro})")
+    else:
+        print("Playwright: não executado (use o comando com o argumento playwright para comparar; abre navegador).")
+
+    if api and (not comparar_playwright or len(api) >= len(playwright)):
+        print("Recomendação: manter API oficial como fonte principal.")
+    elif playwright:
+        print("Recomendação: manter fallback Playwright enquanto a busca API é ajustada.")
+    else:
+        print("Recomendação: revisar MELI_COLETA_TERMOS e OAuth antes de ativar a coleta API.")
+    print("Modo de comparação: produtos, histórico, fila e site não foram alterados; apenas a saúde da busca API pode ser atualizada.")
+    return 0 if api else 1
 
 
 def comando_simular():
@@ -419,6 +479,7 @@ def comando_validar():
     from ia_revisora import validar_revisora
     from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
     from meli_oauth import validar_oauth_local
+    from coletor_mercadolivre_api import validar_coleta_api
 
     erros = []
     estado_original = obter_estado_sistema()
@@ -426,6 +487,7 @@ def comando_validar():
         definir_estado_sistema(ONLINE, "validação automática")
         gerar_site()
         erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora() + validar_oauth_local()
+        erros += validar_coleta_api()
         definir_estado_sistema(MANUTENCAO, "validação automática")
         gerar_site()
         if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
@@ -786,6 +848,7 @@ def main():
             "meli-auth",
             "meli-testar-token",
             "meli-refresh-token",
+            "testar-coleta-api",
         ],
     )
     parser.add_argument("argumentos", nargs="*")
@@ -827,6 +890,7 @@ def main():
         "meli-auth": comando_meli_auth,
         "meli-testar-token": comando_meli_testar_token,
         "meli-refresh-token": comando_meli_refresh_token,
+        "testar-coleta-api": lambda: comando_testar_coleta_api("playwright" in args.argumentos),
     }
     return comandos[args.comando]()
 
