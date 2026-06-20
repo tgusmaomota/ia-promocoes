@@ -838,17 +838,15 @@ def comando_online():
 def comando_iniciar_producao(dry_run=False):
     from producao_promogg import executar_preflight_producao, imprimir_preflight, registrar_resultado_preflight
 
-    preparar_base()
     resultado = executar_preflight_producao(testar_oauth_remoto=not dry_run, seco=dry_run)
     imprimir_preflight(resultado)
-    if not dry_run:
-        registrar_resultado_preflight(resultado)
     if not resultado["aprovado"]:
         print("Produção não foi iniciada. Corrija as pendências críticas e execute novamente.")
         return 1
     if dry_run:
         print("Modo seco concluído: produção não foi iniciada.")
         return 0
+    registrar_resultado_preflight(resultado)
     print("Pré-voo aprovado. Iniciando operação ONLINE...")
     return comando_online()
 

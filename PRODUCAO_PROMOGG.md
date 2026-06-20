@@ -6,7 +6,7 @@
 python3 ia_promocoes.py iniciar-producao
 ```
 
-O comando verifica ambiente, banco, perfil Playwright, OAuth, catálogo público, links `meli.la`, imagens, SEO, `.env`, proteção do Git, backups e pré-requisitos dos serviços. Só chama `online` quando não houver falha crítica.
+O comando verifica ambiente, banco, perfil Playwright, OAuth, catálogo público, links `meli.la`, imagens, SEO, `.env`, proteção do Git, backups e pré-requisitos dos serviços. Todo o preflight é somente leitura; ele só chama `online` e registra evento operacional quando não houver falha crítica.
 
 Para revisar sem iniciar serviços, deploy ou Telegram:
 
