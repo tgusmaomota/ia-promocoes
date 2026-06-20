@@ -48,8 +48,9 @@ def branch_atual():
     return branch or "main"
 
 
-def copiar_site_para_dist():
-    gerar_site()
+def copiar_site_para_dist(gerar=True):
+    if gerar:
+        gerar_site()
     erros = validar_site_publico()
     if erros:
         raise RuntimeError("Deploy bloqueado: validação do site falhou: " + "; ".join(erros[:5]))
@@ -68,9 +69,9 @@ def copiar_site_para_dist():
     return DIST_DIR.resolve()
 
 
-def subir_site(mensagem="Atualiza site IA-Promocoes"):
+def subir_site(mensagem="Atualiza site IA-Promocoes", reutilizar_site=False):
     try:
-        destino = copiar_site_para_dist()
+        destino = copiar_site_para_dist(gerar=not reutilizar_site)
         validar_git()
 
         arquivos = [

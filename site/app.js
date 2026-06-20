@@ -116,6 +116,14 @@ function criarCard(oferta) {
     categoria.textContent = textoSeguro(oferta.categoria) || "ofertas";
     categoria.title = categoria.textContent;
     topo.append(plataforma, categoria);
+    const sinais = document.createElement("p");
+    sinais.className = "updated";
+    const listaSinais = [];
+    if (Number(oferta.desconto_percentual) > 0) listaSinais.push(`${Number(oferta.desconto_percentual).toFixed(0)}% OFF`);
+    if (oferta.selo_mais_vendido) listaSinais.push("Mais vendido");
+    if (oferta.selo_loja_oficial) listaSinais.push("Loja oficial");
+    sinais.textContent = listaSinais.join(" · ");
+    sinais.hidden = !sinais.textContent;
 
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
@@ -154,7 +162,7 @@ function criarCard(oferta) {
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
     detalhes.textContent = "Ver detalhes";
-    card.append(criarMidia(oferta), topo, titulo, atualizado, label, preco, historico, destaque, link, detalhes);
+    card.append(criarMidia(oferta), topo, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
     return card;
 }
 

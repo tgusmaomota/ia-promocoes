@@ -25,6 +25,8 @@ FAVICON_ICO_PATH = SITE_DIR / "favicon.ico"
 LOGO_SVG_PATH = SITE_DIR / "logo.svg"
 LOGO_PNG_PATH = SITE_DIR / "logo.png"
 OFERTAS_PATH = SITE_DIR / "ofertas.json"
+ASSISTENTE_DADOS_PATH = SITE_DIR / "assistente_dados.json"
+ASSISTENTE_DIR = SITE_DIR / "assistente"
 PRODUTOS_DIR = SITE_DIR / "produto"
 CATEGORIAS_DIR = SITE_DIR / "categoria"
 SITEMAP_PATH = SITE_DIR / "sitemap.xml"
@@ -99,7 +101,8 @@ def listar_ofertas(deduplicar=True):
                    postagens.data_publicacao, produtos.imagem AS imagem_url,
                    produtos.menor_preco, produtos.maior_preco, produtos.preco_medio, produtos.variacao_preco,
                    produtos.destaque_menor_preco, produtos.ultima_verificacao
-                   , produtos.preco_original, produtos.desconto_percentual, produtos.economia_valor
+                   , produtos.preco_original, produtos.desconto_percentual, produtos.economia_valor,
+                   produtos.categoria_caminho, produtos.selo_mais_vendido, produtos.selo_loja_oficial
             FROM postagens
             JOIN produtos ON produtos.id = postagens.produto_id
             WHERE postagens.plataforma = 'mercado_livre'
@@ -146,6 +149,9 @@ def listar_ofertas(deduplicar=True):
             "variacao_preco": variacao_preco,
             "destaque_menor_preco": bool(oferta.get("destaque_menor_preco")),
             "categoria": categoria,
+            "categoria_caminho": str(oferta.get("categoria_caminho") or categoria).strip() or categoria,
+            "selo_mais_vendido": bool(oferta.get("selo_mais_vendido")),
+            "selo_loja_oficial": bool(oferta.get("selo_loja_oficial")),
             "link": link,
             "imagem_url": imagem_publica_valida(oferta.get("imagem_url")),
             "plataforma": "Mercado Livre",
@@ -164,7 +170,6 @@ def listar_ofertas(deduplicar=True):
     for oferta in ofertas:
         item_id = oferta["_item_id"]
         if item_id in item_ids:
-            registrar_log("integridade_site", f"Oferta pública duplicada ignorada: item_id={item_id}", nivel="warning")
             continue
         item_ids.add(item_id)
         unicas.append(oferta)
@@ -173,6 +178,22 @@ def listar_ofertas(deduplicar=True):
 
 def oferta_publica(oferta):
     return {chave: valor for chave, valor in oferta.items() if not chave.startswith("_")}
+
+
+def escrever_dados_assistente(ofertas):
+    """Índice público mínimo para respostas locais, sem dados operacionais."""
+    dados = []
+    for oferta in ofertas:
+        dados.append({
+            "item_id": oferta["_item_id"], "titulo": oferta["titulo"], "preco_atual": oferta["preco"],
+            "menor_preco": oferta["menor_preco"], "maior_preco": oferta.get("maior_preco"),
+            "preco_medio": oferta.get("preco_medio"), "categoria": oferta["categoria"],
+            "categoria_caminho": oferta.get("categoria_caminho") or oferta["categoria"],
+            "desconto_percentual": oferta.get("desconto_percentual"), "economia_valor": oferta.get("economia_valor"),
+            "produto_url": oferta["produto_url"], "imagem_url": oferta.get("imagem_url", ""),
+            "ultima_atualizacao": oferta.get("ultima_verificacao") or oferta.get("data_publicacao"),
+        })
+    ASSISTENTE_DADOS_PATH.write_text(json.dumps({"gerado_em": datetime.now().isoformat(timespec="seconds"), "produtos": dados}, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def escrever_css():
@@ -404,6 +425,10 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 }
 .feedback h3 { margin-bottom: 6px; font-size: 1.1rem; }
 .feedback p { max-width: 480px; margin: 0 auto; color: var(--muted); }
+.trust-section { padding-top: 12px; padding-bottom: 34px; }
+.trust-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.trust-grid h2 { font-size: 1.05rem; margin-bottom: 6px; }.trust-grid p { color: var(--muted); margin: 0; }
+.assistant { max-width: 780px; }.assistant form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin: 24px 0 12px; }.assistant label { grid-column: 1 / -1; font-weight: 700; }.assistant input { min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; }.suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }.suggestions button { padding: 8px 10px; border: 1px solid var(--line); background: #fff; border-radius: 5px; color: var(--teal-dark); font-weight: 700; }
 
 .disclosure { padding: 28px 0; background: #e7f4f1; }
 .disclosure-inner { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
@@ -442,6 +467,7 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     .field:first-child { grid-column: auto; }
     .offer-card { min-height: 230px; }
     .price-summary { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr; }.assistant form { grid-template-columns: 1fr; }.assistant form .button { width: 100%; }
     .footer-inner { display: block; }
     .footer-links { justify-content: flex-start; margin-top: 16px; }
 }
@@ -745,6 +771,14 @@ function criarCard(oferta) {
     categoria.textContent = textoSeguro(oferta.categoria) || "ofertas";
     categoria.title = categoria.textContent;
     topo.append(plataforma, categoria);
+    const sinais = document.createElement("p");
+    sinais.className = "updated";
+    const listaSinais = [];
+    if (Number(oferta.desconto_percentual) > 0) listaSinais.push(`${Number(oferta.desconto_percentual).toFixed(0)}% OFF`);
+    if (oferta.selo_mais_vendido) listaSinais.push("Mais vendido");
+    if (oferta.selo_loja_oficial) listaSinais.push("Loja oficial");
+    sinais.textContent = listaSinais.join(" · ");
+    sinais.hidden = !sinais.textContent;
 
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
@@ -783,7 +817,7 @@ function criarCard(oferta) {
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
     detalhes.textContent = "Ver detalhes";
-    card.append(criarMidia(oferta), topo, titulo, atualizado, label, preco, historico, destaque, link, detalhes);
+    card.append(criarMidia(oferta), topo, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
     return card;
 }
 
@@ -951,6 +985,7 @@ __BANNER__
                 <p class="hero-copy">Ofertas selecionadas com link seguro para você comparar e decidir com tranquilidade.</p>
                 <div class="hero-actions">
                     <a class="button button-primary" href="#ofertas">Ver ofertas</a>
+                    <a class="button button-secondary" href="assistente/">Consultar preços</a>
                     <a class="button button-telegram" data-telegram-link hidden target="_blank" rel="noopener">Entrar no Telegram</a>
                 </div>
             </div>
@@ -999,6 +1034,7 @@ __BANNER__
                 </div>
             </div>
         </section>
+        <section class="content trust-section" aria-label="Como o Promogg funciona"><div class="container trust-grid"><div><h2>Ofertas com contexto</h2><p>Organizamos ofertas públicas, preço atual e histórico para facilitar comparações.</p></div><div><h2>Histórico de preços</h2><p>Quando há verificações suficientes, mostramos menor preço, média e variação.</p></div><div><h2>Transparência</h2><p>Alguns links são afiliados e podem gerar comissão sem alterar o preço para você.</p></div></div></section>
     </main>
     __FOOTER__
     <script src="app.js" defer></script>
@@ -1011,6 +1047,12 @@ __BANNER__
 def montar_pagina_offline(estado):
     atualizado = datetime.now().strftime("%d/%m/%Y %H:%M")
     return f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, follow"><title>Promogg temporariamente offline</title><meta name="description" content="Promogg temporariamente offline para manutenção."><link rel="icon" href="favicon.ico" sizes="any"><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><div class="header-inner"><img src="logo.svg" class="brand-logo" alt="PROMOGG"></div></header><main class="offline-page"><section class="container"><h1>Promogg temporariamente offline para manutenção.</h1><p class="hero-copy">Estamos cuidando de melhorias internas para voltar com uma experiência mais confiável.</p><p class="detail-notice">Banco, histórico e backups permanecem preservados. Última alteração de estado: {escape(estado.get('atualizado_em') or atualizado)}.</p></section></main>{rodape_publico(atualizado)}</body></html>"""
+
+
+def gerar_pagina_assistente():
+    ASSISTENTE_DIR.mkdir(parents=True, exist_ok=True)
+    (ASSISTENTE_DIR / "index.html").write_text("""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="index, follow"><title>Assistente de Preços | Promogg</title><meta name="description" content="Consulte preços e histórico disponíveis no catálogo público do Promogg."><link rel="canonical" href="https://promogg.com.br/assistente/"><link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../style.css"></head><body><header class="site-header"><div class="header-inner"><a class="brand" href="../" aria-label="Página inicial"><img src="../logo.svg" class="brand-logo" alt="PROMOGG"></a></div></header><main class="content"><div class="container assistant"><a class="breadcrumb" href="../">Voltar para as ofertas</a><h1>Assistente de preços</h1><p class="hero-copy">Respostas locais baseadas somente no catálogo público e histórico disponível.</p><form id="assistant-form"><label for="question">Sua pergunta</label><input id="question" type="search" placeholder="Ex.: Qual foi o menor preço do PS5?"><button class="button button-primary" type="submit">Consultar</button></form><div class="suggestions"><button data-q="Quais produtos estão no menor preço?">Menor preço</button><button data-q="Quais ofertas têm maior desconto?">Maior desconto</button><button data-q="Qual categoria tem mais ofertas?">Categorias</button></div><section id="assistant-answer" class="feedback" aria-live="polite"><h2>Pronto para consultar</h2><p>Não enviamos sua pergunta para servidores externos.</p></section></div></main><script src="assistant.js" defer></script></body></html>""", encoding="utf-8")
+    (ASSISTENTE_DIR / "assistant.js").write_text(r"""const box=document.querySelector('#assistant-answer'),form=document.querySelector('#assistant-form'),q=document.querySelector('#question');let produtos=[];const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function link(p){return `<a href="../${esc(p.produto_url)}">${esc(p.titulo)}</a>`}function responder(pergunta){const texto=pergunta.toLowerCase();if(!produtos.length)return 'Não foi possível carregar os dados públicos agora. Tente novamente mais tarde.';if(texto.includes('categoria')){const c={};produtos.forEach(p=>c[p.categoria]=(c[p.categoria]||0)+1);const [n,t]=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];return `A categoria com mais ofertas é <strong>${esc(n)}</strong>, com ${t} oferta(s).`}if(texto.includes('maior desconto')){const p=[...produtos].sort((a,b)=>(b.desconto_percentual||0)-(a.desconto_percentual||0))[0];return p&&p.desconto_percentual?`Maior desconto disponível: ${link(p)} com <strong>${Number(p.desconto_percentual).toFixed(0)}% OFF</strong>.`: 'Ainda não há descontos suficientes no catálogo público.'}if(texto.includes('menor preço')&&!texto.match(/do |da /)){const itens=produtos.filter(p=>Number(p.preco_atual)<=Number(p.menor_preco)+.01).slice(0,5);return itens.length?`Produtos no menor preço registrado: ${itens.map(link).join(', ')}.`:'Não encontrei produtos no menor preço histórico.'}const termos=texto.replace(/qual|foi|menor|preço|preco|vale|comprar|agora|esse|produto|do|da|o|a|\?/g,' ').trim().split(/\s+/).filter(Boolean);const p=produtos.map(x=>({...x,pontos:termos.reduce((n,t)=>n+(x.titulo||'').toLowerCase().includes(t),0)})).sort((a,b)=>b.pontos-a.pontos)[0];if(!p||!p.pontos)return 'Não encontrei um produto correspondente no catálogo público. Tente usar marca ou modelo.';const hist=Number(p.menor_preco)>0,barato=hist&&Number(p.preco_atual)<=Number(p.menor_preco)+.01;return `${link(p)}. Preço atual: <strong>${money(p.preco_atual)}</strong>${hist?`; menor preço registrado: <strong>${money(p.menor_preco)}</strong>`:''}${p.preco_medio?`; média: ${money(p.preco_medio)}`:''}. ${barato?'Está no menor preço registrado disponível.':'Não há sinal histórico suficiente para afirmar que está barato.'} Atualização: ${esc(p.ultima_atualizacao||'indisponível')}.`}function render(t){box.innerHTML=`<h2>Resposta</h2><p>${t}</p>`}form.addEventListener('submit',e=>{e.preventDefault();render(responder(q.value))});document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;render(responder(q.value))});fetch('../assistente_dados.json').then(r=>r.ok?r.json():Promise.reject()).then(d=>produtos=d.produtos||[]).catch(()=>render('Não foi possível carregar os dados públicos agora. O restante do site continua disponível.'));""", encoding="utf-8")
 
 
 def formatar_data_publica(valor):
@@ -1067,6 +1109,14 @@ def montar_pagina_produto(oferta, historico, menor_historico):
     og_imagem = f'\n    <meta property="og:image" content="{escape(imagem, quote=True)}">' if imagem else ""
     twitter_imagem = imagem or f"{BASE_URL}/og-promogg.svg"
     variacao = float(oferta.get("variacao_preco") or 0)
+    preco_original = oferta.get("preco_original")
+    desconto = float(oferta.get("desconto_percentual") or 0)
+    economia = float(oferta.get("economia_valor") or 0)
+    detalhes_preco = ""
+    if preco_original:
+        detalhes_preco += f'<p class="detail-notice"><s>{escape(formatar_preco(preco_original))}</s></p>'
+    if desconto or economia:
+        detalhes_preco += f'<p class="record-badge">{escape(f"{desconto:.0f}% OFF" if desconto else "")}{escape(f" · Economize {formatar_preco(economia)}" if economia else "")}</p>'
     resumo = [
         ("Menor preço", oferta["menor_preco_formatado"]),
         ("Tendência", tendencia_preco(variacao).capitalize()),
@@ -1140,9 +1190,10 @@ def montar_pagina_produto(oferta, historico, menor_historico):
         <article class="product-detail">
             <div class="product-image">{imagem_tag}</div>
             <div class="product-info">
-                <span class="product-category">{escape(oferta['categoria'])}</span>
+                <span class="product-category">{escape(oferta.get('categoria_caminho') or oferta['categoria'])}</span>
                 <h1>{titulo}</h1>
                 <p class="product-price">{escape(oferta['preco_formatado'])}</p>
+                {detalhes_preco}
                 <p class="detail-updated">Última atualização: {escape(formatar_data_publica(oferta.get('ultima_verificacao') or oferta.get('data_publicacao')))}</p>
                 <div class="price-summary">{resumo_html}</div>
                 <a class="button button-secondary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored">Ver oferta no Mercado Livre</a>
@@ -1208,7 +1259,7 @@ def gerar_paginas_categorias(ofertas):
 
 
 def gerar_sitemap(ofertas, categorias):
-    urls = ["/", "/sobre/", "/seguranca/"] + [f"/{oferta['produto_url']}" for oferta in ofertas] + [f"/{url_categoria(categoria)}" for categoria in categorias]
+    urls = ["/", "/sobre/", "/seguranca/", "/assistente/"] + [f"/{oferta['produto_url']}" for oferta in ofertas] + [f"/{url_categoria(categoria)}" for categoria in categorias]
     hoje = datetime.now().date().isoformat()
     entradas = "".join(
         f"  <url><loc>{escape(BASE_URL + caminho)}</loc><lastmod>{hoje}</lastmod></url>\n" for caminho in sorted(set(urls))
@@ -1291,7 +1342,9 @@ def gerar_paginas_produtos(ofertas):
 
 def gerar_site():
     SITE_DIR.mkdir(exist_ok=True)
+    ofertas_brutas = listar_ofertas(deduplicar=False)
     ofertas = listar_ofertas()
+    duplicidades_item = len(ofertas_brutas) - len(ofertas)
     ofertas, falhas_paginas = gerar_paginas_produtos(ofertas)
     paginas_produto = len(ofertas)
     categorias = gerar_paginas_categorias(ofertas)
@@ -1301,6 +1354,7 @@ def gerar_site():
         "total": len(ofertas),
         "ofertas": [oferta_publica(oferta) for oferta in ofertas],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
+    escrever_dados_assistente(ofertas)
     escrever_css()
     escrever_javascript()
     escrever_favicon()
@@ -1308,11 +1362,17 @@ def gerar_site():
     escrever_imagem_social()
     INDEX_PATH.write_text(montar_index(), encoding="utf-8")
     gerar_paginas_institucionais()
+    gerar_pagina_assistente()
     gerar_callback_oauth()
     gerar_sitemap(ofertas, categorias)
     gerar_robots()
     gerar_404(categorias)
     registrar_log("site", f"Site público gerado com {len(ofertas)} ofertas e {paginas_produto} páginas de produto em {SITE_DIR}/")
+    registrar_log(
+        "integridade_catalogo",
+        f"Integridade do catálogo: analisadas={len(ofertas_brutas)} duplicidades_item={duplicidades_item} ofertas_publicas={len(ofertas)} paginas={paginas_produto} status={'OK' if not falhas_paginas else 'ATENÇÃO'}",
+        dados=f"duplicidades_slug={duplicidades_item} falhas_paginas={len(falhas_paginas)}",
+    )
     registrar_log("auditoria_site", f"Catálogo público gerado: ofertas_aprovadas={len(ofertas)} paginas_produto={paginas_produto}")
     registrar_evento_sistema(
         "geracao_site", "site", "concluido", "Site público gerado",
@@ -1342,6 +1402,7 @@ def validar_site_publico():
         "preco_original", "desconto_percentual", "economia_valor",
         "variacao_preco", "destaque_menor_preco", "categoria", "link", "imagem_url",
         "plataforma", "produto_url", "data_publicacao", "ultima_verificacao", "maior_preco", "preco_medio",
+        "categoria_caminho", "selo_mais_vendido", "selo_loja_oficial",
     }
     campos_internos = {"status", "observacao_interna", "aprovado_por", "aprovado_em", "id", "token", "cookie", "banco", "sqlite", "env"}
     try:
@@ -1422,6 +1483,23 @@ def validar_site_publico():
                 break
         if f"{BASE_URL}/sobre/" not in sitemap or f"{BASE_URL}/seguranca/" not in sitemap:
             erros.append("sitemap.xml não contém as páginas institucionais")
+        if f"{BASE_URL}/assistente/" not in sitemap:
+            erros.append("sitemap.xml não contém a página do assistente")
+    try:
+        assistente = json.loads(ASSISTENTE_DADOS_PATH.read_text(encoding="utf-8"))
+        permitidos = {"item_id", "titulo", "preco_atual", "menor_preco", "maior_preco", "preco_medio", "categoria", "categoria_caminho", "desconto_percentual", "economia_valor", "produto_url", "imagem_url", "ultima_atualizacao"}
+        if not isinstance(assistente.get("produtos"), list) or any(set(item) - permitidos for item in assistente.get("produtos", [])):
+            erros.append("assistente_dados.json contém estrutura ou campos não públicos")
+    except (OSError, json.JSONDecodeError):
+        erros.append("assistente_dados.json não foi gerado")
+    if not (ASSISTENTE_DIR / "index.html").exists() or not (ASSISTENTE_DIR / "assistant.js").exists():
+        erros.append("página pública do assistente não foi gerada")
+    else:
+        script_assistente = (ASSISTENTE_DIR / "assistant.js").read_text(encoding="utf-8")
+        if any(url in script_assistente for url in ("http://", "https://", "fetch('http", 'fetch("http')):
+            erros.append("assistente público referencia serviço externo")
+        if not all(termo in script_assistente for termo in ("menor preço", "maior desconto", "categoria")):
+            erros.append("perguntas básicas do assistente não foram encontradas")
     return erros
 
 

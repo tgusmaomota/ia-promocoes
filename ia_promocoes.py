@@ -280,6 +280,18 @@ def imprimir_status():
     ultima_publicacao = buscar_uma_coluna(
         "SELECT data_publicacao FROM postagens WHERE status = 'publicado' ORDER BY data_publicacao DESC LIMIT 1"
     )
+    try:
+        catalogo = json.loads(Path("site/ofertas.json").read_text(encoding="utf-8"))
+        ofertas_publicas = len(catalogo.get("ofertas", []))
+    except (OSError, json.JSONDecodeError):
+        ofertas_publicas = 0
+    paginas_produto = len(list(Path("site/produto").glob("*/*/index.html")))
+    ultima_validacao = buscar_uma_coluna(
+        "SELECT data_evento FROM sistema_eventos WHERE tipo_evento = 'validacao' ORDER BY id DESC LIMIT 1"
+    )
+    ultimo_deploy = buscar_uma_coluna(
+        "SELECT data_evento FROM sistema_eventos WHERE tipo_evento = 'deploy_github' AND status IN ('sucesso', 'concluido') ORDER BY id DESC LIMIT 1"
+    )
 
     mestre = obter_estado_sistema()
     indicador_estado = {"ONLINE": "🟢", "MANUTENCAO": "🟡", "OFFLINE": "🔴"}.get(mestre["estado"], "🟡")
@@ -324,6 +336,9 @@ def imprimir_status():
     print(f"Publicados hoje: {publicados_hoje or 0}")
     print(f"Última coleta: {ultima_coleta or 'sem registro'}")
     print(f"Última publicação: {ultima_publicacao or 'sem registro'}")
+    print(f"Catálogo público: {ofertas_publicas} ofertas | {paginas_produto} páginas de produto")
+    print(f"Última validação: {ultima_validacao or 'sem registro'}")
+    print(f"Último deploy: {ultimo_deploy or 'sem registro'}")
 
     erros = logs_recentes("error", 5)
     if erros:
@@ -468,6 +483,44 @@ def comando_auditar_paginas_produto():
     print(f"Slug duplicados: {len(resultado['duplicados_slug'])}")
     print("Relatório: RELATORIO_INTEGRIDADE_SITE.md")
     return 0 if not resultado["erros"] else 1
+
+
+def comando_auditar_indisponiveis():
+    from recuperacao_indisponiveis import auditar_indisponiveis
+
+    resultado = auditar_indisponiveis()
+    totais = resultado["totais"]
+    print(f"Indisponíveis: {len(resultado['itens'])}")
+    print(f"Recuperáveis com segurança: {totais['recuperar_seguro']}")
+    print(f"Item_id inválido: {totais['manter_item_id_invalido']}")
+    print(f"404/finalizados: {totais['manter_indisponivel_confirmado']}")
+    print(f"Sem motivo claro: {totais['manter_sem_evidencia']}")
+    print("Relatório: RELATORIO_RECUPERACAO_INDISPONIVEIS.md")
+    return 0
+
+
+def comando_auditar_qualidade_catalogo():
+    from qualidade_catalogo import auditar_qualidade_catalogo
+
+    resultado = auditar_qualidade_catalogo()
+    print(f"Catálogo: {resultado['indicador']}")
+    for chave, valor in resultado["metricas"].items():
+        if chave != "status":
+            print(f"- {chave}: {valor}")
+    print("Relatório: RELATORIO_QUALIDADE_CATALOGO.md")
+    return 0 if resultado["indicador"] != "REPROVADO" else 1
+
+
+def comando_recuperar_indisponiveis(dry_run=False):
+    from recuperacao_indisponiveis import recuperar_indisponiveis
+
+    resultado = recuperar_indisponiveis(dry_run=dry_run)
+    print(f"Modo: {'dry-run' if dry_run else 'execução real'}")
+    print(f"Recuperados/simulados: {resultado['recuperados']}")
+    print(f"Backup: {resultado['backup'] or 'não aplicável'}")
+    print("Relatório: RELATORIO_RECUPERACAO_INDISPONIVEIS.md")
+    print("Telegram, deploy e ONLINE não foram acionados.")
+    return 0
 
 
 def comando_corrigir_paginas_produto():
@@ -710,7 +763,7 @@ def comando_gerar_site():
     return 0
 
 
-def comando_validar():
+def comando_validar(checar_estados=True):
     from promogg_assistente import validar_assistente
     from saude_sistema import validar_saude_sistema
     from operacao_sistema import validar_operacao_sistema
@@ -733,27 +786,30 @@ def comando_validar():
             ).fetchone()[0]
         if links_inseguros:
             erros.append(f"Há {links_inseguros} postagem(ns) aprovada(s) sem link meli.la")
-        definir_estado_sistema(MANUTENCAO, "validação automática")
-        gerar_site()
-        if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
-            erros.append("Banner de manutenção não foi gerado")
-        definir_estado_sistema(OFFLINE, "validação automática")
-        gerar_site()
-        if "Promogg temporariamente offline" not in Path("site/index.html").read_text(encoding="utf-8"):
-            erros.append("Página offline não foi gerada")
-        definir_estado_sistema(ONLINE, "validação automática")
-        if obter_estado_sistema()["estado"] != ONLINE:
-            erros.append("Persistência do estado ONLINE falhou")
+        if checar_estados:
+            definir_estado_sistema(MANUTENCAO, "validação automática")
+            gerar_site()
+            if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
+                erros.append("Banner de manutenção não foi gerado")
+            definir_estado_sistema(OFFLINE, "validação automática")
+            gerar_site()
+            if "Promogg temporariamente offline" not in Path("site/index.html").read_text(encoding="utf-8"):
+                erros.append("Página offline não foi gerada")
+            definir_estado_sistema(ONLINE, "validação automática")
+            if obter_estado_sistema()["estado"] != ONLINE:
+                erros.append("Persistência do estado ONLINE falhou")
     except Exception as erro:
         erros.append(f"Validação do estado mestre falhou: {erro}")
     finally:
         definir_estado_sistema(estado_original["estado"], estado_original.get("motivo", ""))
         gerar_site()
     if erros:
+        registrar_evento_sistema("validacao", "operacao", "erro", "Validação operacional falhou", "; ".join(erros[:5]))
         print("Validação do site público falhou:")
         for erro in erros:
             print(f"- {erro}")
         return 1
+    registrar_evento_sistema("validacao", "operacao", "sucesso", "Validação operacional concluída")
     print("Validação concluída: site, SEO, analytics, assistentes, banco, saúde e backup operacionais.")
     return 0
 
@@ -922,13 +978,13 @@ def comando_publicar_site():
     return 0
 
 
-def comando_subir_site():
+def comando_subir_site(reutilizar_site=False):
     from publicar_site_git import DOMINIO, subir_site
 
     preparar_base()
 
     try:
-        resultado = subir_site()
+        resultado = subir_site(reutilizar_site=reutilizar_site)
     except RuntimeError as erro:
         print(f"Erro ao subir site: {erro}")
         print("\nAntes de rodar novamente, confira:")
@@ -954,11 +1010,11 @@ def comando_publicar():
         print("Publicação remota pausada pelo estado mestre. Use ONLINE para publicar.")
         return 1
     print("Validando sistema antes da publicação...")
-    if comando_validar() != 0:
+    if comando_validar(checar_estados=False) != 0:
         print("Publicação cancelada: a validação encontrou problemas.")
         return 1
     print("Gerando e enviando a versão estática para o GitHub Pages...")
-    resultado = comando_subir_site()
+    resultado = comando_subir_site(reutilizar_site=True)
     if resultado == 0:
         registrar_evento_sistema("deploy_github", "publicacao", "sucesso", "Publicação de produção concluída")
     return resultado
@@ -1079,6 +1135,9 @@ def main():
             "calibrar-curadoria",
             "reprocessar-pendentes-enriquecido",
             "auditar-paginas-produto",
+            "auditar-indisponiveis",
+            "auditar-qualidade-catalogo",
+            "recuperar-indisponiveis",
             "corrigir-paginas-produto",
             "gerar-site",
             "validar",
@@ -1140,6 +1199,9 @@ def main():
         "calibrar-curadoria": comando_calibrar_curadoria,
         "reprocessar-pendentes-enriquecido": lambda: comando_reprocessar_pendentes_enriquecido(args.dry_run),
         "auditar-paginas-produto": comando_auditar_paginas_produto,
+        "auditar-indisponiveis": comando_auditar_indisponiveis,
+        "auditar-qualidade-catalogo": comando_auditar_qualidade_catalogo,
+        "recuperar-indisponiveis": lambda: comando_recuperar_indisponiveis(args.dry_run),
         "corrigir-paginas-produto": comando_corrigir_paginas_produto,
         "gerar-site": comando_gerar_site,
         "validar": comando_validar,
