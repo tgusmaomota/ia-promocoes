@@ -456,6 +456,32 @@ def comando_reprocessar_pendentes_enriquecido(dry_run=False):
     return 0
 
 
+def comando_auditar_paginas_produto():
+    from integridade_paginas_produto import auditar_paginas_produto
+
+    resultado = auditar_paginas_produto()
+    print(f"Ofertas públicas: {len(resultado['ofertas'])}")
+    print(f"Páginas individuais: {len(resultado['paginas'])}")
+    print(f"Ofertas sem página: {len(resultado['sem_pagina'])}")
+    print(f"Páginas órfãs: {len(resultado['orfas'])}")
+    print(f"Item_id duplicados: {len(resultado['duplicados_item'])}")
+    print(f"Slug duplicados: {len(resultado['duplicados_slug'])}")
+    print("Relatório: RELATORIO_INTEGRIDADE_SITE.md")
+    return 0 if not resultado["erros"] else 1
+
+
+def comando_corrigir_paginas_produto():
+    from integridade_paginas_produto import corrigir_paginas_produto
+
+    preparar_base()
+    resultado = corrigir_paginas_produto()
+    auditoria = resultado["auditoria"]
+    print(f"Catálogo regenerado: {resultado['geracao']['ofertas']} ofertas e {resultado['geracao']['paginas_produto']} páginas.")
+    print(f"Ofertas sem página: {len(auditoria['sem_pagina'])} | Órfãs: {len(auditoria['orfas'])}")
+    print("Relatório: RELATORIO_INTEGRIDADE_SITE.md")
+    return 0 if not auditoria["erros"] else 1
+
+
 def comando_testar_coleta_api(comparar_playwright=False):
     """Compara fontes sem inserir, atualizar ou publicar qualquer oferta."""
     from coletor_mercadolivre_api import coletar_ofertas_api
@@ -1052,6 +1078,8 @@ def main():
             "atualizar-categorias",
             "calibrar-curadoria",
             "reprocessar-pendentes-enriquecido",
+            "auditar-paginas-produto",
+            "corrigir-paginas-produto",
             "gerar-site",
             "validar",
             "servir-site",
@@ -1111,6 +1139,8 @@ def main():
         "atualizar-categorias": comando_atualizar_categorias,
         "calibrar-curadoria": comando_calibrar_curadoria,
         "reprocessar-pendentes-enriquecido": lambda: comando_reprocessar_pendentes_enriquecido(args.dry_run),
+        "auditar-paginas-produto": comando_auditar_paginas_produto,
+        "corrigir-paginas-produto": comando_corrigir_paginas_produto,
         "gerar-site": comando_gerar_site,
         "validar": comando_validar,
         "servir-site": comando_servir_site,

@@ -3,7 +3,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from gerar_site import SITE_DIR, gerar_site
+from gerar_site import SITE_DIR, gerar_site, validar_site_publico
 from banco import registrar_evento_sistema
 
 
@@ -50,6 +50,9 @@ def branch_atual():
 
 def copiar_site_para_dist():
     gerar_site()
+    erros = validar_site_publico()
+    if erros:
+        raise RuntimeError("Deploy bloqueado: validação do site falhou: " + "; ".join(erros[:5]))
     DIST_DIR.mkdir(parents=True, exist_ok=True)
 
     for item in SITE_DIR.iterdir():

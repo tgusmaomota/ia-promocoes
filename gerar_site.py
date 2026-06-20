@@ -77,14 +77,17 @@ def slug_publico(texto, limite=90):
 
 def url_produto(item_id, titulo=""):
     item_id = item_id_publico(item_id)
-    return f"produto/{item_id}/{slug_publico(titulo)}/" if item_id else ""
+    if not item_id:
+        return ""
+    slug = slug_publico(titulo) if str(titulo or "").strip() else item_id.lower()
+    return f"produto/{item_id}/{slug or item_id.lower()}/"
 
 
 def url_categoria(categoria):
     return f"categoria/{slug_publico(categoria)}/"
 
 
-def listar_ofertas():
+def listar_ofertas(deduplicar=True):
     inicializar_banco()
     with conectar() as conn:
         rows = conn.execute(
@@ -152,7 +155,20 @@ def listar_ofertas():
             "maior_preco": preco_publico_valido(oferta.get("maior_preco")),
             "preco_medio": preco_publico_valido(oferta.get("preco_medio")),
         })
-    return ofertas
+    if not deduplicar:
+        return ofertas
+    # A identidade pública estável é o item_id. A primeira oferta respeita a
+    # ordenação da consulta (status e atualização mais recente) e vence o conflito.
+    unicas = []
+    item_ids = set()
+    for oferta in ofertas:
+        item_id = oferta["_item_id"]
+        if item_id in item_ids:
+            registrar_log("integridade_site", f"Oferta pública duplicada ignorada: item_id={item_id}", nivel="warning")
+            continue
+        item_ids.add(item_id)
+        unicas.append(oferta)
+    return unicas
 
 
 def oferta_publica(oferta):
@@ -1242,30 +1258,42 @@ def gerar_paginas_produtos(ofertas):
     if PRODUTOS_DIR.exists():
         shutil.rmtree(PRODUTOS_DIR)
     PRODUTOS_DIR.mkdir(parents=True, exist_ok=True)
-    paginas = 0
+    validas = []
+    falhas = []
     itens_gerados = set()
     for oferta in ofertas:
         item_id = oferta["_item_id"]
         if item_id in itens_gerados:
+            falhas.append({"item_id": item_id, "motivo": "item_id duplicado"})
             continue
-        historico, menor_historico = historico_publico_produto(oferta["_produto_id"])
-        destino = SITE_DIR / oferta["produto_url"]
-        destino.mkdir(parents=True, exist_ok=True)
-        (destino / "index.html").write_text(
-            montar_pagina_produto(oferta, historico, menor_historico), encoding="utf-8"
-        )
-        legado = PRODUTOS_DIR / item_id
-        legado.mkdir(parents=True, exist_ok=True)
-        (legado / "index.html").write_text(montar_redirecionamento_produto(oferta), encoding="utf-8")
-        itens_gerados.add(item_id)
-        paginas += 1
-    return paginas
+        destino_relativo = str(oferta.get("produto_url") or "").strip("/")
+        if not destino_relativo.startswith(f"produto/{item_id}/") or ".." in destino_relativo:
+            falhas.append({"item_id": item_id, "motivo": "URL de produto inválida"})
+            continue
+        try:
+            historico, menor_historico = historico_publico_produto(oferta["_produto_id"])
+            destino = SITE_DIR / destino_relativo
+            destino.mkdir(parents=True, exist_ok=True)
+            pagina = destino / "index.html"
+            pagina.write_text(montar_pagina_produto(oferta, historico, menor_historico), encoding="utf-8")
+            if not pagina.is_file() or pagina.stat().st_size == 0:
+                raise OSError("index.html não foi criado")
+            legado = PRODUTOS_DIR / item_id
+            legado.mkdir(parents=True, exist_ok=True)
+            (legado / "index.html").write_text(montar_redirecionamento_produto(oferta), encoding="utf-8")
+            itens_gerados.add(item_id)
+            validas.append(oferta)
+        except Exception as erro:
+            falhas.append({"item_id": item_id, "motivo": str(erro)})
+            registrar_log("integridade_site", f"Página de produto não gerada: item_id={item_id}", nivel="error", dados=str(erro))
+    return validas, falhas
 
 
 def gerar_site():
     SITE_DIR.mkdir(exist_ok=True)
     ofertas = listar_ofertas()
-    paginas_produto = gerar_paginas_produtos(ofertas)
+    ofertas, falhas_paginas = gerar_paginas_produtos(ofertas)
+    paginas_produto = len(ofertas)
     categorias = gerar_paginas_categorias(ofertas)
     OFERTAS_PATH.write_text(json.dumps({
         "gerado_em": datetime.now().isoformat(timespec="seconds"),
@@ -1288,9 +1316,9 @@ def gerar_site():
     registrar_log("auditoria_site", f"Catálogo público gerado: ofertas_aprovadas={len(ofertas)} paginas_produto={paginas_produto}")
     registrar_evento_sistema(
         "geracao_site", "site", "concluido", "Site público gerado",
-        f"ofertas={len(ofertas)} paginas_produto={paginas_produto} categorias={len(categorias)}",
+        f"ofertas={len(ofertas)} paginas_produto={paginas_produto} categorias={len(categorias)} falhas={len(falhas_paginas)}",
     )
-    return {"ofertas": len(ofertas), "paginas_produto": paginas_produto, "categorias": len(categorias), "pasta": str(SITE_DIR)}
+    return {"ofertas": len(ofertas), "paginas_produto": paginas_produto, "categorias": len(categorias), "falhas_paginas": falhas_paginas, "pasta": str(SITE_DIR)}
 
 
 def resumo_seo_publico():
@@ -1325,6 +1353,13 @@ def validar_site_publico():
     if not isinstance(ofertas, list):
         erros.append("ofertas.json não contém uma lista de ofertas")
         return erros
+    # A auditoria também detecta órfãs e duplicidades da fonte, além das
+    # checagens individuais abaixo.
+    from integridade_paginas_produto import auditar_paginas_produto
+    integridade = auditar_paginas_produto()
+    erros.extend(integridade.get("erros", []))
+    if len(ofertas) != len(integridade.get("paginas", [])):
+        erros.append("quantidade de ofertas públicas difere das páginas individuais válidas")
     for indice, oferta in enumerate(ofertas, start=1):
         campos = set(oferta)
         extras = campos - campos_permitidos
