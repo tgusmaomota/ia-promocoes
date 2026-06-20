@@ -1,18 +1,8 @@
-from dotenv import load_dotenv
-import os
+from meli_oauth import ErroOAuthMercadoLivre, url_autorizacao
 
-load_dotenv()
 
-client_id = os.getenv("MELI_CLIENT_ID")
-
-redirect_uri = "https://example.com/"
-
-url = (
-    "https://auth.mercadolivre.com.br/authorization"
-    f"?response_type=code"
-    f"&client_id={client_id}"
-    f"&redirect_uri={redirect_uri}"
-)
-
-print("Abra este link no navegador:")
-print(url)
+try:
+    print("Abra este link no navegador:")
+    print(url_autorizacao())
+except ErroOAuthMercadoLivre as erro:
+    raise SystemExit(str(erro))

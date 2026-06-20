@@ -1,10 +1,4 @@
-import os
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
-
-from dotenv import load_dotenv
-
-
-load_dotenv()
+from urllib.parse import urlparse
 
 
 def link_afiliado_valido(link):
@@ -12,11 +6,8 @@ def link_afiliado_valido(link):
     if not link:
         return False
 
-    if "meli.la/" in link:
-        return True
-
-    affiliate_id = os.getenv("MERCADO_LIVRE_AFFILIATE_ID", "").strip()
-    return bool(affiliate_id and "mercadolivre.com" in link)
+    partes = urlparse(link)
+    return partes.scheme == "https" and (partes.hostname or "").lower() == "meli.la" and bool(partes.path.strip("/"))
 
 
 def gerar_link_afiliado(link_original):
@@ -25,18 +16,8 @@ def gerar_link_afiliado(link_original):
     if not link_original:
         return ""
 
-    if "meli.la/" in link_original:
+    if link_afiliado_valido(link_original):
         return link_original
-
-    affiliate_id = os.getenv("MERCADO_LIVRE_AFFILIATE_ID", "").strip()
-
-    if not affiliate_id or "mercadolivre.com" not in link_original:
-        return ""
-
-    partes = urlparse(link_original)
-    query = dict(parse_qsl(partes.query, keep_blank_values=True))
-    query.setdefault("utm_source", "ia-promocoes")
-    query.setdefault("utm_medium", "affiliate")
-    query.setdefault("utm_campaign", affiliate_id)
-
-    return urlunparse(partes._replace(query=urlencode(query)))
+    # O permalink comum nunca é convertido artificialmente em afiliado.
+    # O meli.la deve ser obtido no fluxo oficial do portal Mercado Livre.
+    return ""

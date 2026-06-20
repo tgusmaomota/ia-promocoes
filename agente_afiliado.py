@@ -35,20 +35,10 @@ def abrir_pagina_com_tentativas(pagina, link, tentativas=2):
 
 
 def gerar_link_afiliado(pagina):
-    try:
-        pagina.click("text=Compartilhar", timeout=10000)
-        pagina.wait_for_timeout(3000)
+    # Mantido para compatibilidade com o script legado; usa o seletor oficial.
+    from gerador_afiliados_oficial import _gerar_em_pagina
 
-        for campo in pagina.locator("textarea").all():
-            valor = campo.input_value()
-            if "https://meli.la/" in valor:
-                for parte in valor.split():
-                    if parte.startswith("https://meli.la/"):
-                        return parte.strip()
-    except Exception as erro:
-        print("Erro ao clicar/ler Compartilhar:", erro)
-
-    return ""
+    return _gerar_em_pagina(pagina, pagina.url)
 
 
 df = ler_csv(ARQUIVO_BUSCA)

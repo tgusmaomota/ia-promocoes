@@ -5,6 +5,8 @@ from csv_utils import backup_arquivo
 
 
 ARQUIVO_POSTS = "posts_prontos.csv"
+STATUS_APROVADOS = {"aprovado_auto", "aprovado_manual"}
+STATUS_VALIDOS = STATUS_APROVADOS | {"pendente_revisao", "rejeitado", "publicado"}
 
 COLUNAS_POSTS = [
     "titulo",
@@ -19,6 +21,10 @@ COLUNAS_POSTS = [
     "data_criacao",
     "log_aprovacao",
     "status_telegram",
+    "observacao_interna",
+    "aprovado_por",
+    "aprovado_em",
+    "atualizado_em",
 ]
 
 VALORES_PADRAO = {
@@ -30,10 +36,14 @@ VALORES_PADRAO = {
     "categoria": "outros",
     "imagem": "",
     "post": "",
-    "status": "pendente",
+    "status": "pendente_revisao",
     "data_criacao": "",
     "log_aprovacao": "",
     "status_telegram": "",
+    "observacao_interna": "",
+    "aprovado_por": "",
+    "aprovado_em": "",
+    "atualizado_em": "",
 }
 
 
@@ -44,6 +54,11 @@ def normalizar_posts(df):
         if coluna not in df.columns:
             df[coluna] = VALORES_PADRAO[coluna]
 
+    df["status"] = df["status"].astype(str).str.strip().replace({
+        "pendente": "pendente_revisao",
+        "aprovado": "aprovado_manual",
+    })
+    df.loc[~df["status"].isin(STATUS_VALIDOS), "status"] = "pendente_revisao"
     df = df[COLUNAS_POSTS]
     df = df.fillna("")
 

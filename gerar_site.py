@@ -62,7 +62,11 @@ def imagem_publica_valida(url):
 
 
 def analytics_public_url():
-    return imagem_publica_valida(os.getenv("PROMOGG_ANALYTICS_URL", ""))
+    url = imagem_publica_valida(os.getenv("PROMOGG_ANALYTICS_URL", ""))
+    partes = urlparse(url)
+    if partes.scheme != "https" or partes.hostname in {"localhost", "127.0.0.1", "::1"}:
+        return ""
+    return url
 
 
 def item_id_publico(valor):
@@ -137,6 +141,7 @@ def listar_ofertas(deduplicar=True):
         ofertas.append({
             "_produto_id": oferta["produto_id"],
             "_item_id": item_id,
+            "item_id": item_id,
             "oferta_id": hashlib.sha256(link.encode("utf-8")).hexdigest()[:20],
             "titulo": titulo,
             "preco": preco,
@@ -653,6 +658,28 @@ carregarOfertas();
 
 
 def escrever_javascript():
+    (SITE_DIR / "analytics.js").write_text(r"""(() => {
+const endpoint = String(document.body?.dataset.analyticsUrl || "").trim();
+const valido = valor => { try { return new URL(valor).protocol === "https:"; } catch (_) { return false; } };
+function enviar(dados) {
+  if (!valido(endpoint)) return;
+  const evento = JSON.stringify({
+    oferta_id: String(dados.item_id || "").trim(), item_id: String(dados.item_id || "").trim(),
+    titulo: String(dados.titulo || "").trim(), categoria: String(dados.categoria || "ofertas").trim() || "ofertas",
+    origem: "site_publico", pagina_origem: window.location.pathname || "/", tipo_evento: dados.tipo_evento || "ver_oferta"
+  });
+  const blob = new Blob([evento], { type: "application/json" });
+  if (navigator.sendBeacon && navigator.sendBeacon(endpoint, blob)) return;
+  fetch(endpoint, { method: "POST", body: evento, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {});
+}
+window.PromoggAnalytics = { enviar };
+document.addEventListener("click", evento => {
+  const alvo = evento.target.closest("[data-analytics-click]");
+  if (!alvo) return;
+  enviar({ item_id: alvo.dataset.itemId, titulo: alvo.dataset.titulo, categoria: alvo.dataset.categoria, tipo_evento: alvo.dataset.analyticsClick });
+});
+})();
+""", encoding="utf-8")
     SCRIPT_PATH.write_text(r"""const POR_PAGINA = 20;
 const state = { ofertas: [], geradoEm: null, pagina: 1 };
 
@@ -745,17 +772,12 @@ function criarMidia(oferta) {
     return midia;
 }
 
-function registrarClique(oferta) {
-    if (!imagemPublica(elements.analyticsUrl)) return;
-    const evento = JSON.stringify({
-        oferta_id: textoSeguro(oferta.oferta_id),
-        titulo: textoSeguro(oferta.titulo),
-        categoria: textoSeguro(oferta.categoria) || "ofertas"
+function registrarClique(oferta, tipoEvento) {
+    if (!window.PromoggAnalytics) return;
+    window.PromoggAnalytics.enviar({
+        item_id: textoSeguro(oferta.item_id), titulo: textoSeguro(oferta.titulo),
+        categoria: textoSeguro(oferta.categoria) || "ofertas", tipo_evento: tipoEvento || "ver_oferta"
     });
-    const endpoint = elements.analyticsUrl;
-    const dados = new Blob([evento], { type: "application/json" });
-    if (navigator.sendBeacon && navigator.sendBeacon(endpoint, dados)) return;
-    fetch(endpoint, { method: "POST", body: evento, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {});
 }
 
 function criarCard(oferta) {
@@ -812,11 +834,12 @@ function criarCard(oferta) {
     link.target = "_blank";
     link.rel = "noopener sponsored";
     link.textContent = "Ver oferta";
-    link.addEventListener("click", () => registrarClique(oferta));
+    link.addEventListener("click", () => registrarClique(oferta, "ver_oferta"));
     const detalhes = document.createElement("a");
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
     detalhes.textContent = "Ver detalhes";
+    detalhes.addEventListener("click", () => registrarClique(oferta, "card_oferta"));
     card.append(criarMidia(oferta), topo, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
     return card;
 }
@@ -965,6 +988,7 @@ def montar_index():
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
+    <script src="analytics.js" defer></script>
 </head>
 <body data-telegram-url="" data-analytics-url="__ANALYTICS_URL__">
     <a class="skip-link" href="#ofertas">Ir para as ofertas</a>
@@ -1183,7 +1207,7 @@ def montar_pagina_produto(oferta, historico, menor_historico):
     <link rel="stylesheet" href="../../../style.css">
     <script type="application/ld+json">{schema_json}</script>
 </head>
-<body>
+<body data-analytics-url="{escape(analytics_public_url(), quote=True)}">
     <header class="site-header"><div class="header-inner"><a class="brand" href="../../../" aria-label="Promogg, página inicial"><span class="brand-mark" aria-hidden="true">P</span>Promogg</a></div></header>
     <main class="detail-page"><div class="container">
         <a class="breadcrumb" href="../../../">Voltar para as ofertas</a>
@@ -1196,13 +1220,14 @@ def montar_pagina_produto(oferta, historico, menor_historico):
                 {detalhes_preco}
                 <p class="detail-updated">Última atualização: {escape(formatar_data_publica(oferta.get('ultima_verificacao') or oferta.get('data_publicacao')))}</p>
                 <div class="price-summary">{resumo_html}</div>
-                <a class="button button-secondary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored">Ver oferta no Mercado Livre</a>
+                <a class="button button-secondary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored" data-analytics-click="compra_produto" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver oferta no Mercado Livre</a>
                 <p class="detail-notice">O preço e a disponibilidade podem mudar no Mercado Livre.</p>
                 <p class="detail-notice">Este link pode ser afiliado, sem custo extra para você.</p>
             </div>
         </article>{bloco_historico}
     </div></main>
     <footer class="site-footer"><div class="footer-inner"><div><div class="footer-brand">Promogg</div><p class="footer-note">Ofertas selecionadas com links seguros.</p></div></div></footer>
+    <script src="../../../analytics.js" defer></script>
 </body>
 </html>
 """
@@ -1223,10 +1248,10 @@ def montar_pagina_categoria(categoria, ofertas):
     url = f"{BASE_URL}/{caminho}"
     descricao = f"Ofertas de {categoria} selecionadas pelo Promogg, com preços e links seguros."
     cards = "".join(
-        f"""<article class="offer-card"><a class="offer-image" href="/{escape(oferta['produto_url'], quote=True)}">"""
+        f"""<article class="offer-card"><a class="offer-image" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">"""
         + (f'<img src="{escape(oferta["imagem_url"], quote=True)}" alt="{escape(oferta["titulo"])}" loading="lazy">' if oferta.get("imagem_url") else '<span class="image-fallback">Promogg</span>')
         + f"""</a><div class="offer-body"><h2><a href="/{escape(oferta['produto_url'], quote=True)}">{escape(oferta['titulo'])}</a></h2>
-        <p class="offer-price">{escape(oferta['preco_formatado'])}</p><a class="button button-secondary" href="/{escape(oferta['produto_url'], quote=True)}">Ver detalhes</a></div></article>"""
+        <p class="offer-price">{escape(oferta['preco_formatado'])}</p><a class="button button-secondary" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver detalhes</a></div></article>"""
         for oferta in ofertas
     )
     return f"""<!DOCTYPE html>
@@ -1239,9 +1264,9 @@ def montar_pagina_categoria(categoria, ofertas):
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Ofertas de {escape(categoria)} | Promogg">
 <meta name="twitter:description" content="{escape(descricao, quote=True)}"><meta name="twitter:image" content="{BASE_URL}/og-promogg.svg">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../style.css"></head>
-<body><header class="site-header"><div class="header-inner"><a class="brand" href="../../" aria-label="Promogg, página inicial"><span class="brand-mark" aria-hidden="true">P</span>Promogg</a></div></header>
+<body data-analytics-url="{escape(analytics_public_url(), quote=True)}"><header class="site-header"><div class="header-inner"><a class="brand" href="../../" aria-label="Promogg, página inicial"><span class="brand-mark" aria-hidden="true">P</span>Promogg</a></div></header>
 <main class="content"><div class="container"><a class="breadcrumb" href="../../">Todas as ofertas</a><section aria-labelledby="titulo-categoria"><h1 id="titulo-categoria">Ofertas de {escape(categoria)}</h1><p class="hero-copy">Produtos selecionados com histórico de preços e links seguros.</p><div class="offer-grid">{cards}</div></section></div></main>
-<footer class="site-footer"><div class="footer-inner"><div><div class="footer-brand">Promogg</div><p class="footer-note">Os preços podem mudar no Mercado Livre.</p></div></div></footer></body></html>"""
+<footer class="site-footer"><div class="footer-inner"><div><div class="footer-brand">Promogg</div><p class="footer-note">Os preços podem mudar no Mercado Livre.</p></div></div></footer><script src="../../analytics.js" defer></script></body></html>"""
 
 
 def gerar_paginas_categorias(ofertas):
@@ -1398,7 +1423,7 @@ def validar_site_publico():
     """Valida o contrato do catálogo estático sem consultar dados sensíveis."""
     erros = []
     campos_permitidos = {
-        "oferta_id", "titulo", "preco", "preco_formatado", "menor_preco", "menor_preco_formatado",
+        "oferta_id", "item_id", "titulo", "preco", "preco_formatado", "menor_preco", "menor_preco_formatado",
         "preco_original", "desconto_percentual", "economia_valor",
         "variacao_preco", "destaque_menor_preco", "categoria", "link", "imagem_url",
         "plataforma", "produto_url", "data_publicacao", "ultima_verificacao", "maior_preco", "preco_medio",
@@ -1457,6 +1482,9 @@ def validar_site_publico():
         erros.append("interface pública ainda referencia status interno")
     if "produto_url" not in script:
         erros.append("link para páginas individuais não encontrado na listagem")
+    analytics_script = SITE_DIR / "analytics.js"
+    if not analytics_script.exists() or "PromoggAnalytics" not in analytics_script.read_text(encoding="utf-8"):
+        erros.append("instrumentação de analytics não foi gerada")
     index = INDEX_PATH.read_text(encoding="utf-8").lower() if INDEX_PATH.exists() else ""
     for marcador in ("rel=\"canonical\"", "og:image", "twitter:card", "favicon.svg"):
         if marcador not in index:

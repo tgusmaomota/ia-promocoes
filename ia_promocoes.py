@@ -29,7 +29,11 @@ load_dotenv()
 def processo_ativo(pid):
     try:
         os.kill(pid, 0)
-        return True
+        estado = subprocess.run(
+            ["ps", "-p", str(pid), "-o", "stat="],
+            capture_output=True, text=True, check=False,
+        ).stdout.strip()
+        return bool(estado) and "Z" not in estado
     except OSError:
         return False
 
@@ -339,6 +343,10 @@ def imprimir_status():
     print(f"Catálogo público: {ofertas_publicas} ofertas | {paginas_produto} páginas de produto")
     print(f"Última validação: {ultima_validacao or 'sem registro'}")
     print(f"Último deploy: {ultimo_deploy or 'sem registro'}")
+    from saude_sistema import obter_relatorio_saude
+    saude = obter_relatorio_saude()
+    niveis_saude = [alerta["nivel"] for alerta in saude["alertas"]]
+    print(f"Saúde: {saude['status_geral']} | críticos={niveis_saude.count('critico')} alertas={niveis_saude.count('alerta')} avisos={niveis_saude.count('aviso')}")
 
     erros = logs_recentes("error", 5)
     if erros:
@@ -398,6 +406,69 @@ def comando_limpar_titulos():
         print(f"  Depois: {depois}")
     print("Relatório: RELATORIO_LIMPEZA_TITULOS.md")
     return 0
+
+
+def _executar_teste_captura(url, comparar=False):
+    from playwright.sync_api import sync_playwright
+    from agente_ofertas import extrair_item_id
+    from captura_hibrida import capturar_produto_hibrido
+    from coleta_confiavel import _detalhar_produto_legado
+    from playwright_perfil import PERFIL_PRINCIPAL, PERFIL_RESERVA
+
+    perfil = PERFIL_PRINCIPAL if PERFIL_PRINCIPAL.exists() else PERFIL_RESERVA
+    candidato = {"permalink": url, "titulo": "", "item_id": extrair_item_id(url), "desconto": 0}
+    with sync_playwright() as playwright:
+        navegador = playwright.chromium.launch_persistent_context(user_data_dir=str(perfil), headless=False)
+        try:
+            resultados = {}
+            if comparar:
+                pagina = navegador.new_page()
+                pagina.set_default_timeout(12000)
+                inicio = time.monotonic()
+                try:
+                    produto = _detalhar_produto_legado(pagina, candidato)
+                    resultados["legado"] = {"ok": True, "tempo_ms": round((time.monotonic() - inicio) * 1000), "campos": sorted(chave for chave, valor in produto.items() if valor not in (None, "", 0, False))}
+                except Exception as erro:
+                    resultados["legado"] = {"ok": False, "erro": str(erro), "tempo_ms": round((time.monotonic() - inicio) * 1000)}
+                pagina.close()
+            pagina = navegador.new_page()
+            pagina.set_default_timeout(12000)
+            resultado = capturar_produto_hibrido(pagina, candidato)
+            pagina.close()
+            resultados["hibrido"] = resultado
+            return resultados
+        finally:
+            navegador.close()
+
+
+def comando_testar_captura_produto(argumentos, comparar=False):
+    url = _validar_permalink_argumento(argumentos)
+    if not url:
+        return 1
+    try:
+        resultados = _executar_teste_captura(url, comparar=comparar)
+    except Exception as erro:
+        print(f"Teste de captura falhou: {erro}")
+        return 1
+    if comparar:
+        legado = resultados.get("legado", {})
+        print(f"Legado: {'ok' if legado.get('ok') else 'falhou'} | tempo={legado.get('tempo_ms', 0)}ms | campos={len(legado.get('campos', []))}")
+    hibrido = resultados["hibrido"]
+    print(f"Híbrido: {'completo' if hibrido['completo'] else 'incompleto'}")
+    print(f"Fontes: {', '.join(hibrido['fontes'])}")
+    print(f"Tempos (ms): {hibrido['tempos_ms']}")
+    print(f"Campos válidos: {', '.join(hibrido['campos_validos'])}")
+    print(f"Campos faltantes: {', '.join(hibrido['campos_faltantes']) or 'nenhum'}")
+    campos_capturados = [
+        nome for nome in ("titulo", "preco_atual", "preco_original", "desconto_percentual", "economia_valor",
+                           "imagem", "descricao_curta", "categoria_nome", "categoria_caminho", "avaliacao",
+                           "quantidade_vendida", "vendedor_nome", "link_afiliado")
+        if hibrido["produto"].get(nome) not in (None, "", 0, False)
+    ]
+    print(f"Campos capturados: {', '.join(campos_capturados)}")
+    print(f"meli.la gerado: {'sim' if hibrido['produto'].get('link_afiliado') else 'não'}")
+    print("Banco, status, Telegram, site e deploy não foram alterados.")
+    return 0 if hibrido["completo"] else 1
 
 
 def comando_reprocessar_pendentes(dry_run=False):
@@ -509,6 +580,39 @@ def comando_auditar_qualidade_catalogo():
             print(f"- {chave}: {valor}")
     print("Relatório: RELATORIO_QUALIDADE_CATALOGO.md")
     return 0 if resultado["indicador"] != "REPROVADO" else 1
+
+
+COMANDOS_PROMOGG = {
+    "MASTER Produção": {
+        "iniciar-producao": "Executa pré-voo e entra em ONLINE apenas se aprovado.",
+        "manutencao-producao": "Entra em manutenção preservando painel e dados.",
+        "parar-producao": "Para a produção com segurança, preservando dados.",
+    },
+    "Operação Master": {
+        "online": "Ativa serviços e automações controladas.", "manutencao": "Pausa automações e mantém painel/dados disponíveis.",
+        "offline": "Para serviços automatizados com preservação dos dados.", "status": "Mostra estado, serviços e eventos recentes.",
+        "iniciar": "Inicia o worker local de produção.", "producao": "Inicia o worker de produção.", "parar": "Solicita parada segura do worker.", "reiniciar": "Reinicia o worker preservando banco e histórico.",
+    },
+    "Site": {"gerar-site": "Gera o site estático local.", "validar": "Valida banco, site, SEO, segurança e assistentes.", "servir-site": "Abre o site local para teste.", "subir-site": "Valida e envia o site ao GitHub Pages.", "publicar-site": "Prepara dist_site sem fazer push.", "publicar": "Valida e publica quando o estado permite."},
+    "Coleta": {"coletar": "Coleta normal com modo configurado.", "coletar-confiavel": "Coleta lenta com checkpoint por produto.", "testar-coleta-api": "Compara API e Playwright sem persistir.", "testar-captura-produto": "Diagnostica a captura híbrida sem persistir.", "comparar-captura": "Compara captura legada e híbrida sem persistir."},
+    "Afiliados": {"gerar-afiliados": "Gera links oficiais meli.la pendentes.", "diagnosticar-afiliado": "Resume a saúde dos links afiliados.", "diagnosticar-compartilhar": "Inspeciona o botão oficial sem alterar dados.", "testar-afiliado": "Testa geração de meli.la sem persistir."},
+    "Curadoria": {"reprocessar-pendentes": "Reaplica a curadoria aos pendentes.", "reprocessar-pendentes-enriquecido": "Simula ou aplica curadoria com sinais públicos.", "simular-score": "Compara cenários de score sem alterar banco.", "limpar-titulos": "Saneia títulos com backup.", "calibrar-curadoria": "Aplica calibração segura com backup."},
+    "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
+    "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
+    "Analytics e Saúde": {"analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
+    "Segurança e Diagnóstico": {"meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Executa recuperação estruturada da base."},
+    "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
+}
+
+
+def comando_comandos():
+    print("Comandos Promogg")
+    for grupo, comandos in COMANDOS_PROMOGG.items():
+        print(f"\n{grupo}:")
+        for nome, descricao in comandos.items():
+            print(f"- {nome}: {descricao}")
+    print("\nUse --dry-run antes de comandos de recuperação ou reprocessamento quando disponível.")
+    return 0
 
 
 def comando_recuperar_indisponiveis(dry_run=False):
@@ -731,6 +835,23 @@ def comando_online():
     return 0
 
 
+def comando_iniciar_producao(dry_run=False):
+    from producao_promogg import executar_preflight_producao, imprimir_preflight, registrar_resultado_preflight
+
+    preparar_base()
+    resultado = executar_preflight_producao(testar_oauth_remoto=not dry_run)
+    imprimir_preflight(resultado)
+    registrar_resultado_preflight(resultado)
+    if not resultado["aprovado"]:
+        print("Produção não foi iniciada. Corrija as pendências críticas e execute novamente.")
+        return 1
+    if dry_run:
+        print("Modo seco concluído: produção não foi iniciada.")
+        return 0
+    print("Pré-voo aprovado. Iniciando operação ONLINE...")
+    return comando_online()
+
+
 def comando_manutencao():
     from estado_sistema import MANUTENCAO, definir_estado_sistema
 
@@ -741,6 +862,10 @@ def comando_manutencao():
     registrar_evento_sistema("master", "operacao", "aviso", "Sistema em manutenção", f"painel={painel}")
     print("Painel ativo | Banco ativo | IA ativa | Coleta pausada | Publicações pausadas")
     return 0
+
+
+def comando_manutencao_producao():
+    return comando_manutencao()
 
 
 def comando_offline():
@@ -754,6 +879,10 @@ def comando_offline():
     registrar_evento_sistema("master", "operacao", "sucesso", "Sistema desligado com segurança")
     print("Sistema desligado com segurança. Banco, histórico e backups foram preservados.")
     return 0
+
+
+def comando_parar_producao():
+    return comando_offline()
 
 
 def comando_gerar_site():
@@ -771,6 +900,8 @@ def comando_validar(checar_estados=True):
     from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
     from meli_oauth import validar_oauth_local
     from coletor_mercadolivre_api import validar_coleta_api
+    from captura_hibrida import validar_captura_hibrida
+    from analytics_promogg import validar_analytics
     from gerador_link_mercadolivre import link_afiliado_valido
 
     erros = []
@@ -779,7 +910,8 @@ def comando_validar(checar_estados=True):
         definir_estado_sistema(ONLINE, "validação automática")
         gerar_site()
         erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora() + validar_oauth_local()
-        erros += validar_coleta_api()
+        erros += validar_coleta_api() + validar_analytics()
+        erros += validar_captura_hibrida()
         with conectar() as conn:
             links_inseguros = conn.execute(
                 "SELECT COUNT(*) FROM postagens WHERE status IN ('aprovado_auto', 'aprovado_manual', 'publicado') AND (link_afiliado IS NULL OR link_afiliado = '' OR link_afiliado NOT LIKE 'https://meli.la/%')"
@@ -819,6 +951,62 @@ def comando_saude():
 
     preparar_base()
     imprimir_relatorio_saude()
+    return 0
+
+
+def comando_saude_detalhada():
+    from saude_sistema import imprimir_relatorio_saude_detalhada
+
+    preparar_base()
+    imprimir_relatorio_saude_detalhada()
+    return 0
+
+
+def comando_analytics_teste():
+    from analytics_promogg import gerar_relatorio_analytics, status_analytics, testar_analytics_local
+
+    preparar_base()
+    try:
+        resultado = testar_analytics_local()
+    except Exception as erro:
+        print(f"Teste de analytics falhou: {erro}")
+        return 1
+    gerar_relatorio_analytics(status_analytics(), resultado)
+    print("Teste local de analytics:")
+    print(f"- HTTP: {resultado['http']}")
+    print(f"- Item: {resultado['item_id']}")
+    print(f"- Evento salvo: {'sim' if resultado['salvo'] else 'não'}")
+    print("- Dados pessoais: não coletados")
+    print("Relatório: RELATORIO_ANALYTICS_HOMOLOGACAO.md")
+    return 0 if resultado["salvo"] else 1
+
+
+def comando_analytics_status():
+    from analytics_promogg import gerar_relatorio_analytics, status_analytics
+
+    preparar_base()
+    resultado = status_analytics(consultar_endpoint=True)
+    gerar_relatorio_analytics(resultado)
+    print("Status Analytics Promogg")
+    print(f"Total de cliques reais: {resultado['total']}")
+    print(f"Cliques reais hoje: {resultado['hoje']}")
+    print(f"Eventos de teste: {resultado['testes']}")
+    print(f"Servidor local: {'ativo' if resultado['servidor_local_ativo'] else 'parado'}")
+    print(f"Endpoint público configurado: {'sim' if resultado['endpoint_publico_configurado'] else 'não'}")
+    print(f"Site público configurado para enviar: {'sim' if resultado['site_configurado'] else 'não'}")
+    print(f"JavaScript de analytics: {'pronto' if resultado['javascript_pronto'] else 'ausente'}")
+    if resultado["endpoint_ativo"] is not None:
+        print(f"Endpoint público responde: {'sim' if resultado['endpoint_ativo'] else 'não'}")
+    print("Top produtos:")
+    for item in resultado["top_produtos"][:5]:
+        print(f"- {item['total']} | {item['titulo']} ({item['item_id']})")
+    print("Top categorias:")
+    for item in resultado["top_categorias"][:5]:
+        print(f"- {item['total']} | {item['categoria']}")
+    print("Últimos eventos:")
+    for item in resultado["ultimos"][:5]:
+        print(f"- {item['criado_em']} | {item['tipo_evento']} | {item['item_id']} | {item['categoria']}")
+    print("Relatório: RELATORIO_ANALYTICS_HOMOLOGACAO.md")
     return 0
 
 
@@ -1110,24 +1298,35 @@ def comando_monitorar_precos():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Operação final do IA-Promocoes")
+    parser = argparse.ArgumentParser(
+        description="Central operacional do Promogg.\n\nGrupos: MASTER Produção, Operação Master, Site, Coleta, Afiliados, Curadoria, Monitoramento, IA, Analytics, Segurança e Backup.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Comandos organizados: python3 ia_promocoes.py comandos\nUse --dry-run em operações que ofereçam simulação.",
+    )
     parser.add_argument(
         "comando",
+        metavar="COMANDO",
         choices=[
             "iniciar",
             "producao",
             "online",
+            "iniciar-producao",
             "manutencao",
+            "manutencao-producao",
             "offline",
+            "parar-producao",
             "_worker-producao",
             "parar",
             "reiniciar",
             "status",
+            "comandos",
             "painel",
             "simular",
             "publicar-um",
             "coletar",
             "coletar-confiavel",
+            "testar-captura-produto",
+            "comparar-captura",
             "limpar-titulos",
             "reprocessar-pendentes",
             "simular-score",
@@ -1151,6 +1350,9 @@ def main():
             "perguntar",
             "treinar-memoria",
             "saude",
+            "saude-detalhada",
+            "analytics-teste",
+            "analytics-status",
             "relatorio-operacional",
             "backup",
             "restaurar",
@@ -1181,17 +1383,23 @@ def main():
         "iniciar": comando_iniciar,
         "producao": comando_producao,
         "online": comando_online,
+        "iniciar-producao": lambda: comando_iniciar_producao(args.dry_run),
         "manutencao": comando_manutencao,
+        "manutencao-producao": comando_manutencao_producao,
         "offline": comando_offline,
+        "parar-producao": comando_parar_producao,
         "_worker-producao": _executar_worker_producao,
         "parar": comando_parar,
         "reiniciar": comando_reiniciar,
         "status": lambda: (imprimir_status() or 0),
+        "comandos": comando_comandos,
         "painel": comando_painel,
         "simular": comando_simular,
         "publicar-um": comando_publicar_um,
         "coletar": comando_coletar,
         "coletar-confiavel": lambda: comando_coletar_confiavel(args.visual),
+        "testar-captura-produto": lambda: comando_testar_captura_produto(args.argumentos),
+        "comparar-captura": lambda: comando_testar_captura_produto(args.argumentos, comparar=True),
         "limpar-titulos": comando_limpar_titulos,
         "reprocessar-pendentes": lambda: comando_reprocessar_pendentes(args.dry_run),
         "simular-score": comando_simular_score,
@@ -1215,6 +1423,9 @@ def main():
         "perguntar": lambda: comando_perguntar(" ".join(args.argumentos)),
         "treinar-memoria": comando_treinar_memoria,
         "saude": comando_saude,
+        "saude-detalhada": comando_saude_detalhada,
+        "analytics-teste": comando_analytics_teste,
+        "analytics-status": comando_analytics_status,
         "relatorio-operacional": comando_relatorio_operacional,
         "backup": comando_backup,
         "restaurar": comando_restaurar,

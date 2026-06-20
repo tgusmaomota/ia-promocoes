@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from banco import registrar_log
+from banco import registrar_evento_sistema, registrar_log
 from gerar_site import SITE_DIR, gerar_site
 
 
@@ -109,6 +109,7 @@ def publicar_no_github(dominio=None, mensagem="Atualiza site publico"):
     branch = branch_atual()
     executar_git(["push", "origin", branch])
     registrar_log("deploy_site", f"Site enviado para GitHub na branch {branch}")
+    registrar_evento_sistema("deploy_github", "github_pages", "concluido", "Deploy enviado ao GitHub Pages", f"branch={branch}")
     return destino, branch, bool(status)
 
 

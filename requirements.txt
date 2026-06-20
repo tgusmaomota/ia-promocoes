@@ -1,0 +1,6 @@
+# Dependências de execução do Promogg.
+python-dotenv
+requests
+pandas
+streamlit
+playwright

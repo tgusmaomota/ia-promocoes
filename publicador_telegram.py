@@ -12,10 +12,12 @@ from banco import (
     listar_postagens,
     proxima_postagem_pendente,
     registrar_log,
+    registrar_evento_sistema,
+    status_aprovado,
 )
 from fila_postagens import link_afiliado_valido, pode_publicar_texto, respeita_intervalo_minimo
 from gerar_site import gerar_site
-from schema_posts import ler_posts, salvar_posts
+from estado_sistema import automacao_ativa
 
 
 load_dotenv()
@@ -79,6 +81,8 @@ def link_ou_texto_ja_publicado(postagem):
 
 
 def sincronizar_posts_csv(postagem, data_publicacao):
+    from schema_posts import ler_posts, salvar_posts
+
     df = ler_posts(ARQUIVO_POSTS)
 
     if df.empty:
@@ -96,7 +100,7 @@ def sincronizar_posts_csv(postagem, data_publicacao):
         )
         return False
 
-    df.loc[mascara, "status"] = "aprovado"
+    df.loc[mascara, "status"] = "publicado"
     df.loc[mascara, "status_telegram"] = "enviado"
     salvar_posts(df, ARQUIVO_POSTS)
     registrar_log(
@@ -110,6 +114,9 @@ def sincronizar_posts_csv(postagem, data_publicacao):
 def validar_postagem(postagem, forcar_intervalo=False):
     if not postagem:
         return False, "Nenhuma postagem pendente"
+
+    if not status_aprovado(postagem.get("status")):
+        return False, "oferta não possui aprovação válida"
 
     if not link_afiliado_valido(postagem):
         return False, "link afiliado ausente ou inválido"
@@ -170,8 +177,8 @@ def gerar_site_local():
 def gerar_whatsapp_manual(postagens=None):
     if postagens is None:
         postagens = [
-            p for p in listar_postagens("pendente")
-            if link_afiliado_valido(p)
+            p for p in listar_postagens()
+            if status_aprovado(p.get("status")) and link_afiliado_valido(p)
         ]
 
     blocos = []
@@ -223,6 +230,9 @@ textarea {{ width: 100%; min-height: 70vh; padding: 16px; border: 1px solid #cbd
 
 
 def publicar_um(dry_run=False, forcar_intervalo=False):
+    if not dry_run and not automacao_ativa():
+        registrar_log("publicador", "Publicação Telegram pausada pelo estado mestre", nivel="warning")
+        return False
     postagem = proxima_postagem_pendente()
 
     if not postagem:
@@ -257,6 +267,7 @@ def publicar_um(dry_run=False, forcar_intervalo=False):
 
     if not ok:
         registrar_log("publicador", motivo, nivel="error")
+        registrar_evento_sistema("telegram", "telegram", "erro", "Falha na publicação Telegram", motivo)
         gerar_site_local()
         return False
 
@@ -266,9 +277,16 @@ def publicar_um(dry_run=False, forcar_intervalo=False):
         "publicado",
         "Publicado no Telegram",
         data_publicacao,
+        ator="telegram",
     )
     sincronizar_posts_csv(postagem, data_publicacao)
     registrar_log("publicador", f"Post publicado: {postagem['titulo']}")
+    registrar_log(
+        "auditoria_telegram",
+        f"Oferta publicada no Telegram: postagem={postagem['id']}",
+        dados=f"aprovacao={postagem.get('status', '')}",
+    )
+    registrar_evento_sistema("telegram", "telegram", "concluido", "Oferta publicada no Telegram", f"postagem={postagem['id']}")
     gerar_site_local()
     return True
 

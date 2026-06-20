@@ -1,0 +1,8 @@
+name = "promogg-analytics"
+main = "analytics_cloudflare_worker.js"
+compatibility_date = "2026-06-20"
+
+[[d1_databases]]
+binding = "ANALYTICS_DB"
+database_name = "promogg-analytics"
+database_id = "SUBSTITUA_PELO_ID_DO_D1"

@@ -68,7 +68,7 @@ def avaliar_aprovacao(link, preco, preco_confiavel, desconto, score, tipo_promoc
     if desconto:
         motivos_aprovacao.append(f"desconto {desconto:g}%")
 
-    return "pendente", "Pendente na fila: " + "; ".join(motivos_aprovacao)
+    return "aprovado_auto", "Aprovado automaticamente: " + "; ".join(motivos_aprovacao)
 
 
 def log_importacao(mensagem, nivel="info", dados=""):
@@ -201,8 +201,8 @@ if novos_posts:
 
     salvar_posts(df_final, ARQUIVO_POSTS)
 
-    aprovados = len(df_novos[df_novos["status"] == "aprovado"])
-    pendentes = len(df_novos[df_novos["status"] == "pendente"])
+    aprovados = len(df_novos[df_novos["status"] == "aprovado_auto"])
+    pendentes = len(df_novos[df_novos["status"] == "pendente_revisao"])
 
     print(f"{len(novos_posts)} produtos importados para o painel.")
     print(f"Aprovados automaticamente: {aprovados}")

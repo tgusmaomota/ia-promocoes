@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-06-20T12:51:31",
+  "gerado_em": "2026-06-20T14:01:21",
   "produtos": [
     {
       "item_id": "MLB51163340",
@@ -1770,21 +1770,6 @@
       "produto_url": "produto/MLB68497702/caixa-de-som-amplificada-bluetooth-600w-rms-tcs400-cor-preto-the-black-tools-com-radio-fm/",
       "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_681403-MLA111290565229_052026-O.webp",
       "ultima_atualizacao": "2026-06-20 11:09:37"
-    },
-    {
-      "item_id": "MLB85461139997",
-      "titulo": "Tênis Reserva Roma Masculino Casual Cano Baixo Elegante",
-      "preco_atual": 293.99,
-      "menor_preco": 255.99,
-      "maior_preco": 255.99,
-      "preco_medio": 255.99,
-      "categoria": "ofertas",
-      "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
-      "economia_valor": null,
-      "produto_url": "produto/MLB85461139997/tenis-reserva-roma-masculino-casual-cano-baixo-elegante/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_876206-MLB85157928606_052025-AB-tnis-reserva-roma-masculino-casual-cano-baixo-elegante.webp",
-      "ultima_atualizacao": "2026-06-20 11:09:12"
     },
     {
       "item_id": "MLB50179038",
@@ -8882,34 +8867,19 @@
       "ultima_atualizacao": "2026-06-20 11:09:31"
     },
     {
-      "item_id": "MLB86088934078",
-      "titulo": "Cortina Blackout Blecaute 2,20x130 Sala Cozinha Quarto Voil",
-      "preco_atual": 59.21,
-      "menor_preco": 59.21,
-      "maior_preco": 59.21,
-      "preco_medio": 59.21,
+      "item_id": "MLB85461139997",
+      "titulo": "Tênis Reserva Roma Masculino Casual Cano Baixo Elegante",
+      "preco_atual": 293.99,
+      "menor_preco": 255.99,
+      "maior_preco": 255.99,
+      "preco_medio": 255.99,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
       "desconto_percentual": null,
       "economia_valor": null,
-      "produto_url": "produto/MLB86088934078/cortina-blackout-blecaute-2-20x130-sala-cozinha-quarto-voil/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_739803-MLB85922828873_062025-AB-cortina-blackout-blecaute-220x130-sala-cozinha-quarto-voil.webp",
-      "ultima_atualizacao": "2026-06-20 11:09:19"
-    },
-    {
-      "item_id": "MLB83623356128",
-      "titulo": "4 Conjunto Catraca Amarração Cinta Preta 4,6 Metros 800kg",
-      "preco_atual": 65.76,
-      "menor_preco": 65.76,
-      "maior_preco": 65.76,
-      "preco_medio": 65.76,
-      "categoria": "ofertas",
-      "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
-      "economia_valor": null,
-      "produto_url": "produto/MLB83623356128/4-conjunto-catraca-amarracao-cinta-preta-4-6-metros-800kg/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_993915-MLB100361444451_122025-AB-4-conjunto-catraca-amarraco-cinta-preta-46-metros-800kg.webp",
-      "ultima_atualizacao": "2026-06-20 11:09:21"
+      "produto_url": "produto/MLB85461139997/tenis-reserva-roma-masculino-casual-cano-baixo-elegante/",
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_876206-MLB85157928606_052025-AB-tnis-reserva-roma-masculino-casual-cano-baixo-elegante.webp",
+      "ultima_atualizacao": "2026-06-20 11:09:12"
     },
     {
       "item_id": "MLB93955563541",
@@ -9227,6 +9197,21 @@
       "ultima_atualizacao": "2026-06-20 11:09:19"
     },
     {
+      "item_id": "MLB86088934078",
+      "titulo": "Cortina Blackout Blecaute 2,20x130 Sala Cozinha Quarto Voil",
+      "preco_atual": 59.21,
+      "menor_preco": 59.21,
+      "maior_preco": 59.21,
+      "preco_medio": 59.21,
+      "categoria": "ofertas",
+      "categoria_caminho": "ofertas",
+      "desconto_percentual": null,
+      "economia_valor": null,
+      "produto_url": "produto/MLB86088934078/cortina-blackout-blecaute-2-20x130-sala-cozinha-quarto-voil/",
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_739803-MLB85922828873_062025-AB-cortina-blackout-blecaute-220x130-sala-cozinha-quarto-voil.webp",
+      "ultima_atualizacao": "2026-06-20 11:09:19"
+    },
+    {
       "item_id": "MLB93205744763",
       "titulo": "Tênis Lacoste T-base Lancamento",
       "preco_atual": 219.99,
@@ -9314,6 +9299,21 @@
       "economia_valor": null,
       "produto_url": "produto/MLB63550920/riscadeira-pisos-profissional-cortador-manual-porcelanato-azulejo-120-cm-guia-laser-18-rol/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_857163-MLA102502546834_122025-AB.webp",
+      "ultima_atualizacao": "2026-06-20 11:09:21"
+    },
+    {
+      "item_id": "MLB83623356128",
+      "titulo": "4 Conjunto Catraca Amarração Cinta Preta 4,6 Metros 800kg",
+      "preco_atual": 65.76,
+      "menor_preco": 65.76,
+      "maior_preco": 65.76,
+      "preco_medio": 65.76,
+      "categoria": "ofertas",
+      "categoria_caminho": "ofertas",
+      "desconto_percentual": null,
+      "economia_valor": null,
+      "produto_url": "produto/MLB83623356128/4-conjunto-catraca-amarracao-cinta-preta-4-6-metros-800kg/",
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_993915-MLB100361444451_122025-AB-4-conjunto-catraca-amarraco-cinta-preta-46-metros-800kg.webp",
       "ultima_atualizacao": "2026-06-20 11:09:21"
     },
     {

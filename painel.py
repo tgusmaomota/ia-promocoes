@@ -1,412 +1,411 @@
-import streamlit as st
-import pandas as pd
 import subprocess
-import os
 import sys
-from datetime import datetime
-from gerador_texto import gerar_post
-from schema_posts import garantir_arquivo_posts, ler_posts, salvar_posts
-from banco import inicializar_banco, listar_postagens, resumo
+from pathlib import Path
 
-ARQUIVO_POSTS = "posts_prontos.csv"
-ARQUIVO_PRODUTOS = "produtos.csv"
+import pandas as pd
+import streamlit as st
 
-st.title("Painel de Promoções")
+from banco import STATUS_CONTROLE, inicializar_banco, listar_postagens, resumo, resumo_cliques
+from controle_ofertas import aprovar_manual, editar_oferta, rejeitar_oferta
+from promogg_assistente import responder_pergunta, salvar_feedback, ultimas_perguntas
+from saude_sistema import obter_relatorio_saude
+from gerar_site import resumo_seo_publico
+from ia_revisora import listar_revisoes_pendentes, registrar_feedback as registrar_feedback_revisora
+from estado_sistema import obter_estado_sistema
+from gerador_afiliados_oficial import produtos_sem_afiliado
 
-garantir_arquivo_posts(ARQUIVO_POSTS)
+
+st.set_page_config(page_title="Promogg | Controle de ofertas", layout="wide")
+if Path("site/logo.png").exists():
+    st.image("site/logo.png", width=150)
+st.title("Controle de ofertas")
+st.caption("Aprovação, edição e publicação usam o SQLite como fonte de verdade.")
+
 inicializar_banco()
+estado_mestre = obter_estado_sistema()
+if estado_mestre["estado"] == "MANUTENCAO":
+    st.warning("Sistema em manutenção: automações estão pausadas; edição, banco e consultas locais permanecem disponíveis.")
+elif estado_mestre["estado"] == "OFFLINE":
+    st.error("Sistema offline: serviços automatizados estão parados. Dados locais permanecem preservados.")
+else:
+    st.success("Sistema online: automações habilitadas.")
+ofertas = pd.DataFrame(listar_postagens())
+if ofertas.empty:
+    ofertas = pd.DataFrame(columns=[
+        "id", "titulo", "preco", "link_afiliado", "imagem_url", "categoria", "texto_post",
+        "preco_original", "desconto_percentual", "economia_valor",
+        "status", "observacao_interna", "aprovado_por", "aprovado_em",
+        "data_criacao", "data_publicacao",
+    ])
 
-if not os.path.exists(ARQUIVO_PRODUTOS):
-    pd.DataFrame(
-        columns=["titulo", "preco", "link", "categoria"]
-    ).to_csv(ARQUIVO_PRODUTOS, index=False)
 
-st.subheader("Adicionar novo produto")
-
-novo_titulo = st.text_input("Título do produto")
-novo_preco = st.number_input("Preço", min_value=0.0, step=1.0)
-novo_link = st.text_input("Link afiliado meli.la")
-
-nova_categoria = st.selectbox(
-    "Categoria",
-    ["casa", "eletrônicos", "moda", "beleza", "mercado", "colecionáveis", "outros"]
-)
-
-if st.button("Adicionar produto"):
-
-    if not novo_titulo or not novo_link or novo_preco <= 0:
-        st.error("Preencha título, preço e link antes de adicionar.")
-
+def executar(comando):
+    resultado = subprocess.run([sys.executable, *comando], capture_output=True, text=True)
+    if resultado.stdout:
+        st.code(resultado.stdout)
+    if resultado.returncode != 0 or resultado.stderr:
+        st.error(resultado.stderr or "Comando encerrou com erro.")
     else:
-        df_existente = ler_posts(ARQUIVO_POSTS)
+        st.success("Operação concluída.")
 
-        if novo_link in df_existente["link"].values:
-            st.error("Este produto já foi cadastrado.")
 
+def quantidade(status):
+    return int((ofertas["status"] == status).sum()) if "status" in ofertas else 0
+
+
+dados = resumo()
+metricas = st.columns(5)
+for coluna, titulo, valor in zip(metricas, [
+    "Pendentes", "Aprovadas auto", "Aprovadas manual", "Rejeitadas", "Publicadas",
+], [
+    quantidade("pendente_revisao"), quantidade("aprovado_auto"), quantidade("aprovado_manual"),
+    quantidade("rejeitado"), quantidade("publicado"),
+]):
+    coluna.metric(titulo, valor)
+
+analytics = resumo_cliques()
+st.subheader("Analytics de cliques")
+analytics_colunas = st.columns(2)
+with analytics_colunas[0]:
+    st.caption("Top 20 produtos mais clicados")
+    st.dataframe(pd.DataFrame(analytics["produtos"]), use_container_width=True, hide_index=True)
+with analytics_colunas[1]:
+    st.caption("Top categorias")
+    categorias_cliques = pd.DataFrame(analytics["categorias"])
+    if categorias_cliques.empty:
+        st.info("Ainda não há cliques registrados.")
+    else:
+        st.bar_chart(categorias_cliques.set_index("categoria"))
+
+tempo_cliques = st.columns(2)
+with tempo_cliques[0]:
+    st.caption("Cliques por dia")
+    dias_cliques = pd.DataFrame(analytics["dias"])
+    if not dias_cliques.empty:
+        st.line_chart(dias_cliques.set_index("periodo"))
+with tempo_cliques[1]:
+    st.caption("Cliques por mês")
+    meses_cliques = pd.DataFrame(analytics["meses"])
+    if not meses_cliques.empty:
+        st.bar_chart(meses_cliques.set_index("periodo"))
+
+st.divider()
+acoes = st.columns(4)
+with acoes[0]:
+    if st.button("Atualizar site agora", use_container_width=True):
+        executar(["ia_promocoes.py", "gerar-site"])
+with acoes[1]:
+    if st.button("Publicar 1 no Telegram", use_container_width=True):
+        executar(["ia_promocoes.py", "publicar-um"])
+with acoes[2]:
+    if st.button("Simular próxima publicação", use_container_width=True):
+        executar(["ia_promocoes.py", "simular"])
+with acoes[3]:
+    if st.button("Rodar coleta", use_container_width=True):
+        executar(["ia_promocoes.py", "coletar"])
+
+reprocessamento = st.columns(2)
+with reprocessamento[0]:
+    if st.button("Simular reprocessamento", use_container_width=True):
+        executar(["ia_promocoes.py", "reprocessar-pendentes", "--dry-run"])
+with reprocessamento[1]:
+    if st.button("Reprocessar pendentes", use_container_width=True):
+        executar(["ia_promocoes.py", "reprocessar-pendentes"])
+
+st.subheader("Filas de aprovação")
+with st.expander("Produtos sem afiliado", expanded=False):
+    pendentes_afiliado = pd.DataFrame(produtos_sem_afiliado())
+    if pendentes_afiliado.empty:
+        st.success("Não há produtos pendentes de link afiliado.")
+    else:
+        st.dataframe(
+            pendentes_afiliado[[coluna for coluna in ("item_id", "titulo", "link_original") if coluna in pendentes_afiliado]],
+            use_container_width=True,
+            hide_index=True,
+        )
+        if st.button("Gerar links afiliados", use_container_width=True):
+            executar(["ia_promocoes.py", "gerar-afiliados"])
+abas = st.tabs([
+    "Pendentes de revisão",
+    "Aprovadas automaticamente",
+    "Aprovadas manualmente",
+    "Rejeitadas",
+    "Publicadas",
+    "Assistente de Preços",
+    "Saúde do Sistema",
+    "SEO",
+    "IA Revisora",
+])
+for aba, status_aba in zip(abas[:5], [
+    "pendente_revisao", "aprovado_auto", "aprovado_manual", "rejeitado", "publicado",
+]):
+    with aba:
+        itens = ofertas[ofertas["status"] == status_aba]
+        if status_aba == "pendente_revisao" and "score_curadoria" in itens:
+            itens = itens.sort_values("score_curadoria", ascending=False, na_position="last")
+        if itens.empty:
+            st.info("Nenhuma oferta nesta fila.")
         else:
-            produto = {
-                "titulo": novo_titulo,
-                "preco": novo_preco,
-                "link": novo_link,
-                "categoria": nova_categoria
-            }
+            st.dataframe(itens[[coluna for coluna in [
+                "id", "titulo", "preco", "categoria", "aprovado_por",
+                "score_curadoria", "categoria_caminho", "desconto_percentual", "economia_valor",
+                "selo_mais_vendido", "selo_loja_oficial", "avaliacao", "quantidade_vendida",
+                "aprovado_em", "data_criacao", "data_publicacao",
+            ] if coluna in itens]], use_container_width=True)
 
-            novo = pd.DataFrame([produto])
-            novo.to_csv(
-                ARQUIVO_PRODUTOS,
-                mode="a",
-                header=False,
-                index=False
-            )
-
-            post = gerar_post(produto)
-
-            novo_post = pd.DataFrame([{
-                "titulo": novo_titulo,
-                "item_id": "",
-                "preco": novo_preco,
-                "link": novo_link,
-                "categoria": nova_categoria,
-                "imagem": "",
-                "post": post,
-                "status": "pendente",
-                "data_criacao": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "log_aprovacao": (
-                    "Pendente: item sem confiança suficiente: "
-                    "produto manual sem score, desconto e validação de preço"
-                ),
-                "status_telegram": ""
-            }])
-
-            df_atualizado = pd.concat([df_existente, novo_post], ignore_index=True)
-            salvar_posts(df_atualizado, ARQUIVO_POSTS)
-
-            st.success("Produto adicionado e post gerado.")
-            st.rerun()
-
-df = ler_posts(ARQUIVO_POSTS)
-resumo_banco = resumo()
-df_fila = pd.DataFrame(listar_postagens())
-
-if df_fila.empty:
-    df_fila = pd.DataFrame(
-        columns=[
-            "id",
-            "titulo",
-            "preco",
-            "link_afiliado",
-            "plataforma",
-            "categoria",
-            "status",
-            "data_criacao",
-            "data_publicacao",
-        ]
+with abas[5]:
+    st.caption("Consulta somente leitura baseada no SQLite local. Ollama é opcional e tem fallback por regras.")
+    pergunta_assistente = st.text_input(
+        "Pergunte sobre preços",
+        placeholder="Qual foi o menor preço do PS5?",
+        key="pergunta_assistente",
     )
+    if st.button("Perguntar", key="perguntar_assistente"):
+        try:
+            st.session_state["resposta_assistente"] = responder_pergunta(pergunta_assistente)
+        except Exception:
+            st.warning("Não foi possível consultar os dados locais agora. Tente novamente mais tarde.")
 
-st.subheader("Resumo")
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("Produtos coletados", resumo_banco["produtos"])
-
-with col2:
-    st.metric("Promoções aprovadas", resumo_banco["promocoes_aprovadas"])
-
-with col3:
-    st.metric("Posts publicados", resumo_banco["posts_publicados"])
-
-with col4:
-    st.metric("Fila pendente", resumo_banco["fila_pendente"])
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("CSV pendentes", len(df[df["status"] == "pendente"]))
-
-with col2:
-    st.metric("CSV aprovados", len(df[df["status"] == "aprovado"]))
-
-with col3:
-    st.metric("CSV rejeitados", len(df[df["status"] == "rejeitado"]))
-
-st.subheader("Dashboard")
-
-if not df.empty:
-    resumo_categoria = (
-        df.groupby("categoria")
-        .size()
-        .reset_index(name="quantidade")
-    )
-
-    st.write("Posts por categoria")
-    st.bar_chart(resumo_categoria.set_index("categoria"))
-
-    resumo_status = (
-        df.groupby("status")
-        .size()
-        .reset_index(name="quantidade")
-    )
-
-    st.write("Posts por status")
-    st.bar_chart(resumo_status.set_index("status"))
-
-    st.subheader("Ranking de Categorias")
-
-    st.dataframe(
-        resumo_categoria.sort_values("quantidade", ascending=False),
-        use_container_width=True
-    )
-else:
-    st.info("Ainda não existem posts cadastrados.")
-
-st.subheader("Filtros")
-
-plataformas = ["Todas", "mercado_livre"]
-
-if not df_fila.empty and "plataforma" in df_fila.columns:
-    for plataforma in sorted([p for p in df_fila["plataforma"].dropna().unique() if p]):
-        if plataforma not in plataformas:
-            plataformas.append(plataforma)
-
-plataforma_filtro = st.selectbox(
-    "Filtrar plataforma",
-    plataformas,
-)
-
-categoria_filtro = st.selectbox(
-    "Filtrar categoria",
-    ["Todas", "casa", "eletrônicos", "moda", "beleza", "mercado", "colecionáveis", "outros"]
-)
-
-df_filtrado = df.copy()
-df_fila_filtrada = df_fila.copy()
-
-if plataforma_filtro != "Todas":
-    df_fila_filtrada = df_fila_filtrada[
-        df_fila_filtrada["plataforma"] == plataforma_filtro
-    ]
-
-if categoria_filtro != "Todas":
-    df_filtrado = df_filtrado[df_filtrado["categoria"] == categoria_filtro]
-    df_fila_filtrada = df_fila_filtrada[
-        df_fila_filtrada["categoria"] == categoria_filtro
-    ]
-
-status_filtro = st.selectbox(
-    "Filtrar status",
-    ["Todos", "pendente", "aprovado", "rejeitado"]
-)
-
-if status_filtro != "Todos":
-    df_filtrado = df_filtrado[df_filtrado["status"] == status_filtro]
-
-busca = st.text_input("Buscar produto")
-
-if busca:
-    df_filtrado = df_filtrado[
-        df_filtrado["titulo"].str.contains(busca, case=False, na=False)
-    ]
-    df_fila_filtrada = df_fila_filtrada[
-        df_fila_filtrada["titulo"].str.contains(busca, case=False, na=False)
-    ]
-
-st.subheader("Ações")
-
-if st.button("Rodar coleta manual"):
-    resultado = subprocess.run(
-        [sys.executable, "scheduler.py", "--once"],
-        capture_output=True,
-        text=True
-    )
-
-    st.code(resultado.stdout)
-
-    if resultado.stderr:
-        st.error(resultado.stderr)
-
-    st.rerun()
-
-if st.button("Simular próxima publicação"):
-    resultado = subprocess.run(
-        [sys.executable, "scheduler.py", "--publicar-um", "--dry-run"],
-        capture_output=True,
-        text=True
-    )
-
-    st.code(resultado.stdout)
-
-    if resultado.stderr:
-        st.error(resultado.stderr)
-
-    st.rerun()
-
-if st.button("Publicar 1 oferta agora"):
-    resultado = subprocess.run(
-        [sys.executable, "scheduler.py", "--publicar-um"],
-        capture_output=True,
-        text=True
-    )
-
-    st.code(resultado.stdout)
-
-    if resultado.stderr:
-        st.error(resultado.stderr)
-
-    st.rerun()
-
-if st.button("Gerar posts agora"):
-    resultado = subprocess.run(
-        [sys.executable, "app.py"],
-        capture_output=True,
-        text=True
-    )
-
-    st.code(resultado.stdout)
-
-    if resultado.stderr:
-        st.error(resultado.stderr)
-
-if st.button("Exportar aprovados"):
-    resultado = subprocess.run(
-        [sys.executable, "agente_publicador.py"],
-        capture_output=True,
-        text=True
-    )
-
-    st.code(resultado.stdout)
-
-    if resultado.stderr:
-        st.error(resultado.stderr)
-
-    st.success("Arquivos criados: whatsapp.txt, promobit.txt e instagram.txt")
-
-st.subheader("Status da fila SQLite")
-
-if df_fila_filtrada.empty:
-    st.info("Fila vazia.")
-else:
-    st.dataframe(
-        df_fila_filtrada[
-            [
-                "id",
-                "titulo",
-                "plataforma",
-                "categoria",
-                "preco",
-                "status",
-                "data_criacao",
-                "data_publicacao",
+    resposta_assistente = st.session_state.get("resposta_assistente")
+    if resposta_assistente:
+        st.text(resposta_assistente["texto"])
+        relacionados = pd.DataFrame(resposta_assistente.get("produtos", []))
+        if not relacionados.empty:
+            colunas_relacionadas = [
+                coluna for coluna in ("item_id", "titulo", "preco_atual", "menor_preco", "categoria", "categoria_nome")
+                if coluna in relacionados
             ]
-        ],
-        use_container_width=True
-    )
+            if colunas_relacionadas:
+                st.dataframe(relacionados[colunas_relacionadas], use_container_width=True, hide_index=True)
 
-if st.button("Limpar rejeitados"):
-    df_limpeza = ler_posts(ARQUIVO_POSTS)
-    df_limpeza = df_limpeza[df_limpeza["status"] != "rejeitado"]
-    salvar_posts(df_limpeza, ARQUIVO_POSTS)
+        observacao_feedback = st.text_input("Observação sobre a resposta", key="observacao_feedback_assistente")
+        feedback_colunas = st.columns(2)
+        for coluna, rotulo, valor in (
+            (feedback_colunas[0], "Resposta útil", "util"),
+            (feedback_colunas[1], "Resposta não útil", "nao_util"),
+        ):
+            with coluna:
+                if st.button(rotulo, key=f"feedback_assistente_{valor}"):
+                    try:
+                        salvar_feedback(resposta_assistente.get("pergunta_id"), valor, observacao_feedback)
+                        st.success("Feedback salvo localmente.")
+                    except (TypeError, ValueError):
+                        st.warning("Faça uma nova pergunta antes de enviar feedback.")
 
-    st.success("Posts rejeitados removidos.")
-    st.rerun()
+    st.caption("Sugestões: menor preço do PS5, preço atual do Xbox, produtos no menor preço histórico, categorias com mais ofertas.")
+    st.caption("Últimas perguntas locais")
+    historico_assistente = pd.DataFrame(ultimas_perguntas(10))
+    if historico_assistente.empty:
+        st.info("Ainda não há perguntas registradas.")
+    else:
+        st.dataframe(
+            historico_assistente[[coluna for coluna in ("criado_em", "pergunta", "modo_resposta", "modelo") if coluna in historico_assistente]],
+            use_container_width=True,
+            hide_index=True,
+        )
 
-if st.button("Limpar aprovados"):
-    df_limpeza = ler_posts(ARQUIVO_POSTS)
-    df_limpeza = df_limpeza[df_limpeza["status"] != "aprovado"]
-    salvar_posts(df_limpeza, ARQUIVO_POSTS)
+with abas[6]:
+    try:
+        saude = obter_relatorio_saude()
+        status_geral = saude["status_geral"]
+        if status_geral == "OK":
+            st.success("Sistema geral: OK")
+        elif status_geral == "Atenção":
+            st.warning("Sistema geral: Atenção")
+        else:
+            st.error("Sistema geral: Erro")
 
-    st.success("Posts aprovados removidos.")
-    st.rerun()
-
-st.subheader("Produtos cadastrados")
-
-st.dataframe(
-    df_filtrado[
-        [
-            "item_id",
-            "titulo",
-            "categoria",
-            "preco",
-            "status",
-            "data_criacao",
-            "log_aprovacao",
+        cards_saude = [
+            ("Sistema geral", status_geral),
+            ("Última coleta", saude["ultima_coleta"]),
+            ("Última atualização de preços", saude["ultima_atualizacao_precos"]),
+            ("Último monitoramento", saude["ultimo_monitoramento"]),
+            ("Último site gerado", saude["ultimo_site_gerado"]),
+            ("Último deploy", saude["ultimo_deploy"]),
+            ("Último Telegram", saude["ultimo_telegram"]),
+            ("Analytics", saude.get("analytics_situacao", saude["ultimo_analytics"])),
+            ("Última IA consultiva", saude["ultima_ia_consultiva"]),
+            ("Banco SQLite", saude["integridade_banco"]),
+            ("Erros 24h", len(saude["erros_24h"])),
+            ("Ofertas monitoradas", saude["ofertas_monitoradas"]),
+            ("Pendentes de revisão", saude["ofertas_pendentes"]),
         ]
-    ],
-    use_container_width=True
+        for inicio in range(0, len(cards_saude), 3):
+            colunas_saude = st.columns(3)
+            for coluna, (titulo, valor) in zip(colunas_saude, cards_saude[inicio:inicio + 3]):
+                coluna.metric(titulo, valor)
+
+        st.subheader("Situações que exigem atenção")
+        if not saude["alertas"]:
+            st.success("Nenhum alerta operacional.")
+        for alerta in saude["alertas"]:
+            if alerta["nivel"] == "critico":
+                st.error(alerta["mensagem"])
+            elif alerta["nivel"] == "alerta":
+                st.warning(alerta["mensagem"])
+            else:
+                st.info(alerta["mensagem"])
+
+        secoes_saude = (
+            ("Erros críticos", "critico"),
+            ("Erros operacionais", "erro"),
+            ("Alertas", "alerta"),
+            ("Avisos", "aviso"),
+            ("Eventos informativos", "info"),
+        )
+        for titulo, nivel in secoes_saude:
+            st.subheader(titulo)
+            eventos_nivel = pd.DataFrame(saude.get("eventos_classificados", {}).get(nivel, []))
+            if eventos_nivel.empty:
+                st.caption("Nenhum registro recente.")
+            else:
+                st.dataframe(eventos_nivel, use_container_width=True, hide_index=True)
+
+        st.subheader("Eventos recentes")
+        eventos_saude = pd.DataFrame(saude["eventos_recentes"])
+        if eventos_saude.empty:
+            st.info("Sem eventos registrados ainda.")
+        else:
+            st.dataframe(eventos_saude, use_container_width=True, hide_index=True)
+    except Exception:
+        st.warning("Não foi possível carregar a saúde agora. Os demais controles continuam disponíveis.")
+
+with abas[7]:
+    try:
+        seo = resumo_seo_publico()
+        colunas_seo = st.columns(3)
+        colunas_seo[0].metric("Páginas indexáveis", seo["paginas_indexaveis"])
+        colunas_seo[1].metric("Produtos indexáveis", seo["produtos_indexaveis"])
+        colunas_seo[2].metric("Categorias indexáveis", seo["categorias_indexaveis"])
+        if seo["sitemap_gerado"]:
+            st.success("Sitemap gerado e pronto para envio ao Search Console.")
+        else:
+            st.warning("Sitemap ainda não foi gerado. Rode Atualizar site agora.")
+        if seo["robots_valido"]:
+            st.success("robots.txt permite indexação pública e informa o sitemap.")
+        else:
+            st.warning("robots.txt ainda não está válido.")
+    except Exception:
+        st.warning("Não foi possível carregar o resumo de SEO agora.")
+
+with abas[8]:
+    st.caption("A IA revisora sugere ações com base em dados locais. Ela não altera aprovações sozinha.")
+    if st.button("Analisar ofertas pendentes", use_container_width=True, key="revisar_ofertas"):
+        executar(["ia_promocoes.py", "revisar-ofertas"])
+        st.rerun()
+    try:
+        revisoes = listar_revisoes_pendentes()
+        if not revisoes:
+            st.info("Não há ofertas pendentes analisadas. Use o botão para analisar a fila atual.")
+        for revisao in revisoes:
+            with st.expander(f"{revisao['titulo']} | {revisao['score_revisora']:.1f}/100 | {revisao['sugestao']}"):
+                st.caption(f"Curadoria: {revisao.get('score_curadoria', 0)} | Modo: {revisao['modo_resposta']} | Atualizada: {revisao['atualizado_em']}")
+                st.text(revisao["parecer"])
+                acoes_revisora = st.columns(3)
+                with acoes_revisora[0]:
+                    if st.button("Aprovar", key=f"revisora_aprovar_{revisao['postagem_id']}"):
+                        aprovar_manual(revisao["postagem_id"], "Decisão após parecer da IA revisora", ator="painel_revisora")
+                        registrar_feedback_revisora(revisao["item_id"], revisao["sugestao"], "Aprovar")
+                        st.success("Oferta aprovada manualmente e feedback salvo.")
+                        st.rerun()
+                with acoes_revisora[1]:
+                    if st.button("Rejeitar", key=f"revisora_rejeitar_{revisao['postagem_id']}"):
+                        rejeitar_oferta(revisao["postagem_id"], "Decisão após parecer da IA revisora", ator="painel_revisora")
+                        registrar_feedback_revisora(revisao["item_id"], revisao["sugestao"], "Rejeitar")
+                        st.success("Oferta rejeitada manualmente e feedback salvo.")
+                        st.rerun()
+                with acoes_revisora[2]:
+                    if st.button("Revisar", key=f"revisora_revisar_{revisao['postagem_id']}"):
+                        registrar_feedback_revisora(revisao["item_id"], revisao["sugestao"], "Revisar manualmente")
+                        st.info("Feedback salvo; a oferta continua pendente de revisão.")
+    except Exception:
+        st.warning("Não foi possível carregar a IA revisora agora. As decisões manuais continuam disponíveis.")
+
+st.subheader("Buscar e editar")
+status_filtro = st.multiselect(
+    "Status", list(STATUS_CONTROLE), default=list(STATUS_CONTROLE),
 )
+busca = st.text_input("Buscar por título")
+filtradas = ofertas[ofertas["status"].isin(status_filtro)].copy()
+if busca:
+    filtradas = filtradas[filtradas["titulo"].str.contains(busca, case=False, na=False)]
 
-st.subheader("Posts pendentes")
+colunas_tabela = [
+    "id", "titulo", "preco", "categoria", "status", "aprovado_por",
+    "aprovado_em", "data_criacao", "data_publicacao",
+]
+st.dataframe(filtradas[[coluna for coluna in colunas_tabela if coluna in filtradas]], use_container_width=True)
 
-pendentes = df_filtrado[df_filtrado["status"] == "pendente"]
+if filtradas.empty:
+    st.info("Nenhuma oferta para os filtros selecionados.")
+    st.stop()
 
-for idx, linha in pendentes.iterrows():
-    st.markdown("---")
-    st.write(f"### {linha['titulo']}")
-    st.write(f"ID: {linha['item_id']}")
-    st.write(f"Score: {linha['score']}")
-    st.write(f"Categoria: {linha['categoria']}")
-    st.write(f"Preço: R$ {linha['preco']}")
-    st.write(f"Log: {linha['log_aprovacao']}")
+opcoes = {
+    int(linha["id"]): f"#{linha['id']} | {linha['status']} | {linha['titulo'][:72]}"
+    for _, linha in filtradas.iterrows()
+}
+postagem_id = st.selectbox("Selecionar oferta", list(opcoes), format_func=opcoes.get)
+postagem = ofertas[ofertas["id"] == postagem_id].iloc[0].to_dict()
 
-    if pd.notna(linha["imagem"]) and str(linha["imagem"]).strip() != "":
-        st.image(linha["imagem"], width=200)
-
-    st.write(linha["link"])
-
-    st.text_area("Post", linha["post"], height=120, key=f"post_{idx}")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if st.button("✅ Aprovar", key=f"aprovar_{idx}"):
-            df_original = ler_posts(ARQUIVO_POSTS)
-            df_original.loc[idx, "status"] = "aprovado"
-            salvar_posts(df_original, ARQUIVO_POSTS)
-            st.rerun()
-
-    with col2:
-        if st.button("❌ Rejeitar", key=f"rejeitar_{idx}"):
-            df_original = ler_posts(ARQUIVO_POSTS)
-            df_original.loc[idx, "status"] = "rejeitado"
-            salvar_posts(df_original, ARQUIVO_POSTS)
-            st.rerun()
-
-    with col3:
-        if st.button("🗑 Excluir", key=f"excluir_{idx}"):
-            df_original = ler_posts(ARQUIVO_POSTS)
-            df_original = df_original.drop(idx)
-            salvar_posts(df_original, ARQUIVO_POSTS)
-
-            st.success("Post removido.")
-            st.rerun()
-
-st.subheader("Posts aprovados")
-
-aprovados = df_filtrado[df_filtrado["status"] == "aprovado"]
-
-for idx, linha in aprovados.iterrows():
-    st.markdown("---")
-    st.write(f"### {linha['titulo']}")
-    st.write(f"ID: {linha['item_id']}")
-    st.write(f"Categoria: {linha['categoria']}")
-    st.write(f"Log: {linha['log_aprovacao']}")
-
-    if pd.notna(linha["imagem"]) and str(linha["imagem"]).strip() != "":
-        st.image(linha["imagem"], width=200)
-
-    st.text_area(
-        "Post aprovado para copiar",
-        linha["post"],
-        height=120,
-        key=f"aprovado_{idx}"
+if postagem.get("item_id") and postagem.get("status") in {"aprovado_auto", "aprovado_manual", "publicado"}:
+    st.link_button(
+        "Abrir página do produto",
+        f"https://promogg.com.br/produto/{postagem['item_id']}/",
     )
 
-    st.code(linha["post"])
+st.subheader("Editar oferta")
+with st.form(f"editar_{postagem_id}"):
+    titulo = st.text_input("Título", value=str(postagem.get("titulo", "")))
+    preco = st.number_input("Preço", min_value=0.01, value=float(postagem.get("preco") or 0.01), step=0.01)
+    preco_original = postagem.get("preco_original")
+    desconto = postagem.get("desconto_percentual")
+    if preco_original:
+        st.caption(f"Preço original: R$ {float(preco_original):.2f}")
+    if desconto:
+        st.caption(f"Desconto: {float(desconto):.1f}%")
+    categoria = st.text_input("Categoria", value=str(postagem.get("categoria", "ofertas")))
+    link = st.text_input("Link afiliado", value=str(postagem.get("link_afiliado", "")))
+    imagem_url = st.text_input("URL pública da imagem", value=str(postagem.get("imagem_url", "")))
+    if imagem_url:
+        st.image(imagem_url, width=180)
+    status = st.selectbox("Status", list(STATUS_CONTROLE), index=list(STATUS_CONTROLE).index(postagem["status"]))
+    texto = st.text_area("Texto do post", value=str(postagem.get("texto_post", "")), height=180)
+    observacao = st.text_area("Observação interna", value=str(postagem.get("observacao_interna", "")), height=100)
+    salvar = st.form_submit_button("Salvar edição", use_container_width=True)
 
-    st.download_button(
-        "📋 Baixar Post",
-        data=linha["post"],
-        file_name=f"{linha['titulo']}.txt",
-        mime="text/plain",
-        key=f"download_{idx}"
-    )
+if salvar:
+    try:
+        editar_oferta(postagem_id, {
+            "titulo": titulo,
+            "preco": preco,
+            "categoria": categoria,
+            "link_afiliado": link,
+            "imagem_url": imagem_url,
+            "texto_post": texto,
+            "status": status,
+            "observacao_interna": observacao,
+        })
+        st.success("Oferta salva no SQLite e sincronizada no CSV.")
+        st.rerun()
+    except ValueError as erro:
+        st.error(str(erro))
+
+decisao = st.columns(2)
+with decisao[0]:
+    if st.button("Aprovar manualmente", use_container_width=True):
+        try:
+            aprovar_manual(postagem_id, observacao)
+            st.success("Oferta aprovada manualmente.")
+            st.rerun()
+        except ValueError as erro:
+            st.error(str(erro))
+with decisao[1]:
+    if st.button("Rejeitar", use_container_width=True):
+        try:
+            rejeitar_oferta(postagem_id, observacao)
+            st.success("Oferta rejeitada.")
+            st.rerun()
+        except ValueError as erro:
+            st.error(str(erro))
+
+st.caption(f"Produtos coletados no banco: {dados['produtos']} | Fila aprovada: {dados['fila_pendente']}")

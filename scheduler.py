@@ -5,8 +5,10 @@ import time
 from dotenv import load_dotenv
 
 from banco import inicializar_banco, migrar_csvs, registrar_log
+from estado_sistema import automacao_ativa
 from coletor_mercadolivre import coletar as coletar_mercadolivre
 from fila_postagens import gerar_fila_de_produtos
+from monitor_precos import monitorar_precos_diariamente
 from publicador_telegram import publicar_proximo, publicar_um
 
 
@@ -21,6 +23,9 @@ def inteiro_env(nome, padrao):
 
 
 def ciclo_completo(publicar=False):
+    if not automacao_ativa():
+        registrar_log("scheduler", "Ciclo automático pausado pelo estado mestre", nivel="warning")
+        return {"pausado": True}
     inicializar_banco()
     migrar_csvs()
 
@@ -29,6 +34,7 @@ def ciclo_completo(publicar=False):
     produtos_ml = coletar_mercadolivre()
 
     resultado_fila = gerar_fila_de_produtos()
+    resultado_monitoramento = monitorar_precos_diariamente()
 
     publicado = False
     if publicar:
@@ -40,6 +46,7 @@ def ciclo_completo(publicar=False):
             "Ciclo finalizado. "
             f"mercado_livre={len(produtos_ml)} "
             f"fila_aprovados={resultado_fila['aprovados']} "
+            f"monitorados={resultado_monitoramento.get('verificados', 0)} "
             f"fila_rejeitados={resultado_fila['rejeitados']} publicado={publicado}"
         ),
     )

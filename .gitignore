@@ -24,11 +24,14 @@ banco.db
 *.sqlite3
 *.db-journal
 backups/
+quarentena_remocao/
 logs/
 *.log
 
 # Perfis de navegador e automacao
 perfil_mercadolivre/
+perfil_mercadolivre_backup/
+.coleta_confiavel_checkpoint.json
 perfil_shopee/
 playwright-report/
 test-results/
@@ -42,6 +45,10 @@ test-results/
 *.swo
 .ia_promocoes.pid
 .ia_promocoes.stop
+.ia_promocoes.producao.json
+.promogg_analytics.pid
+.promogg_painel.pid
+*.pid
 
 # IDE/editor
 .vscode/

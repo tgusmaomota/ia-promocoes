@@ -107,6 +107,7 @@ def extrair_item_id_pagina(pagina_produto):
 
 def extrair_preco_pagina(navegador, link):
     pagina_produto = navegador.new_page()
+    pagina_produto.set_default_timeout(12000)
 
     try:
         pagina_produto.goto(link, wait_until="domcontentloaded", timeout=30000)
@@ -159,7 +160,7 @@ def extrair_preco_pagina(navegador, link):
             except:
                 pass
 
-        texto_body = pagina_produto.inner_text("body")
+        texto_body = pagina_produto.inner_text("body", timeout=12000)
         preco = extrair_preco(texto_body)
 
         return preco, item_id_pagina
@@ -232,7 +233,7 @@ def montar_urls_ofertas():
     return urls
 
 
-def coletar_ofertas():
+def coletar_ofertas(perfil="perfil_mercadolivre"):
     resultados = []
     item_ids_vistos = set()
 
@@ -246,11 +247,12 @@ def coletar_ofertas():
 
     try:
         navegador = playwright.chromium.launch_persistent_context(
-            user_data_dir="perfil_mercadolivre",
+            user_data_dir=perfil,
             headless=False
         )
 
         pagina = navegador.new_page()
+        pagina.set_default_timeout(12000)
         urls = montar_urls_ofertas()
 
         for numero, url in enumerate(urls, start=1):
@@ -260,7 +262,9 @@ def coletar_ofertas():
             print("=" * 60)
 
             try:
-                pagina.goto(url, wait_until="domcontentloaded")
+                # A página de ofertas pode manter conexões abertas; limite a navegação
+                # para que uma coleta não permaneça presa indefinidamente.
+                pagina.goto(url, wait_until="domcontentloaded", timeout=45000)
                 pagina.wait_for_timeout(7000)
 
                 for _ in range(4):
@@ -290,14 +294,23 @@ def coletar_ofertas():
                         link = ""
                         titulo = ""
 
+                        link_comum = ""
+                        titulo_comum = ""
                         for elemento in links:
                             href = elemento.get_attribute("href")
                             texto_link = elemento.inner_text().strip()
 
-                            if href and "mercadolivre.com.br" in href:
+                            if href and "meli.la/" in href:
                                 link = href
                                 titulo = texto_link
                                 break
+                            if href and "mercadolivre.com.br" in href and not link_comum:
+                                link_comum = href
+                                titulo_comum = texto_link
+
+                        if not link and link_comum:
+                            link = link_comum
+                            titulo = titulo_comum
 
                         if not link:
                             continue

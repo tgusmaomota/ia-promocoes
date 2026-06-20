@@ -122,7 +122,7 @@ def gerar_fila_de_produtos(produtos=None):
 
     for produto in produtos:
         analise = analisar_produto(produto)
-        status_promocao = "aprovado" if analise["aprovado"] else "rejeitado"
+        status_promocao = "aprovado_auto" if analise["aprovado"] else "pendente_revisao"
         promocao_id = salvar_promocao(
             produto["id"],
             analise["desconto"],
@@ -131,20 +131,33 @@ def gerar_fila_de_produtos(produtos=None):
             analise["motivo"],
         )
 
+        texto = gerar_texto_post(produto, analise)
+
         if not analise["aprovado"]:
+            criar_postagem(
+                produto["id"], promocao_id, produto, texto,
+                status="pendente_revisao", motivo=analise["motivo"],
+            )
             rejeitados += 1
-            registrar_log("fila", f"Rejeitado score={analise['score']}: {produto['titulo']}", dados=analise["motivo"])
+            registrar_log("fila", f"Pendente para revisão score={analise['score']}: {produto['titulo']}", dados=analise["motivo"])
             continue
 
         if not link_afiliado_valido(produto):
+            criar_postagem(
+                produto["id"], promocao_id, produto, texto,
+                status="rejeitado", motivo="link afiliado ausente ou inválido",
+            )
             rejeitados += 1
             registrar_log("fila", f"Rejeitado sem link afiliado válido: {produto['titulo']}")
             continue
 
-        texto = gerar_texto_post(produto, analise)
         ok_texto, motivo_texto = pode_publicar_texto(texto)
 
         if not ok_texto:
+            criar_postagem(
+                produto["id"], promocao_id, produto, texto,
+                status="rejeitado", motivo=f"anti-spam: {motivo_texto}",
+            )
             rejeitados += 1
             registrar_log("fila", f"Rejeitado anti-spam: {produto['titulo']} ({motivo_texto})")
             continue
@@ -154,7 +167,15 @@ def gerar_fila_de_produtos(produtos=None):
             registrar_log("fila", f"Rejeitado por post/link repetido: {produto['titulo']}")
             continue
 
-        criar_postagem(produto["id"], promocao_id, produto, texto)
+        criar_postagem(
+            produto["id"], promocao_id, produto, texto,
+            status="aprovado_auto", motivo=analise["motivo"],
+        )
+        registrar_log(
+            "auditoria_aprovacao",
+            f"Aprovação automática: produto={produto['id']}",
+            dados=f"score={analise['score']} motivo={analise['motivo']}",
+        )
         aprovados += 1
         if analise["score"] >= LIMITE_PROMOCAO_FORTE:
             registrar_log("fila", f"Postagem pendente criada como promoção forte: {produto['titulo']}")
