@@ -90,17 +90,12 @@ function criarMidia(oferta) {
     return midia;
 }
 
-function registrarClique(oferta) {
-    if (!imagemPublica(elements.analyticsUrl)) return;
-    const evento = JSON.stringify({
-        oferta_id: textoSeguro(oferta.oferta_id),
-        titulo: textoSeguro(oferta.titulo),
-        categoria: textoSeguro(oferta.categoria) || "ofertas"
+function registrarClique(oferta, tipoEvento) {
+    if (!window.PromoggAnalytics) return;
+    window.PromoggAnalytics.enviar({
+        item_id: textoSeguro(oferta.item_id), titulo: textoSeguro(oferta.titulo),
+        categoria: textoSeguro(oferta.categoria) || "ofertas", tipo_evento: tipoEvento || "ver_oferta"
     });
-    const endpoint = elements.analyticsUrl;
-    const dados = new Blob([evento], { type: "application/json" });
-    if (navigator.sendBeacon && navigator.sendBeacon(endpoint, dados)) return;
-    fetch(endpoint, { method: "POST", body: evento, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {});
 }
 
 function criarCard(oferta) {
@@ -157,11 +152,12 @@ function criarCard(oferta) {
     link.target = "_blank";
     link.rel = "noopener sponsored";
     link.textContent = "Ver oferta";
-    link.addEventListener("click", () => registrarClique(oferta));
+    link.addEventListener("click", () => registrarClique(oferta, "ver_oferta"));
     const detalhes = document.createElement("a");
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
     detalhes.textContent = "Ver detalhes";
+    detalhes.addEventListener("click", () => registrarClique(oferta, "card_oferta"));
     card.append(criarMidia(oferta), topo, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
     return card;
 }

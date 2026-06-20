@@ -1,9 +1,10 @@
 {
-  "gerado_em": "2026-06-20T18:17:21",
+  "gerado_em": "2026-06-20T18:31:34",
   "plataforma": "mercado_livre",
   "total": 622,
   "ofertas": [
     {
+      "item_id": "MLB51163340",
       "oferta_id": "5c3c8a98026e90ca8596",
       "titulo": "Monitor Portatil Touch Screen Gamer15.6 Full Hd 100% Rgb Ips",
       "preco": 599.0,
@@ -29,6 +30,7 @@
       "preco_medio": 599.0
     },
     {
+      "item_id": "MLB51857000",
       "oferta_id": "dbd08d3b25cea497ddc7",
       "titulo": "Guarda-roupa Casal 3 Portas Preto com Espelho Milão Yescasa MDF",
       "preco": 900.99,
@@ -54,6 +56,7 @@
       "preco_medio": 900.99
     },
     {
+      "item_id": "MLB68466988",
       "oferta_id": "e9938628139338b03906",
       "titulo": "Fechadura Digital Biometria Eletronica Wifi Tuya Vie Idéale Preto",
       "preco": 290.03,
@@ -79,6 +82,7 @@
       "preco_medio": 290.03
     },
     {
+      "item_id": "MLB54233931",
       "oferta_id": "1715986188dd4543f64d",
       "titulo": "Projetor Magcubic L018 LED Full HD 1080p, com Android 14 e Wi-Fi 6",
       "preco": 672.44,
@@ -104,6 +108,7 @@
       "preco_medio": 672.44
     },
     {
+      "item_id": "MLB19651600",
       "oferta_id": "3e330ea3693bac691efe",
       "titulo": "Sofá Mobly Beny 180 de 3 cuerpos tela linho color cru",
       "preco": 659.0,
@@ -129,6 +134,7 @@
       "preco_medio": 659.0
     },
     {
+      "item_id": "MLB53610161",
       "oferta_id": "b6e1b784ba55c4fae891",
       "titulo": "Smart TV LG UHD AI UA75 50 polegadas HDR10 Pro Processador α7 AI Ger8 webOS 25",
       "preco": 2699.1,
@@ -154,6 +160,7 @@
       "preco_medio": 3927.2940000000003
     },
     {
+      "item_id": "MLB64222644",
       "oferta_id": "576ef37c3f227b0aa9cf",
       "titulo": "Impressora Brother Inkbenefit DCP-T530DW cor preto",
       "preco": 980.75,
@@ -179,6 +186,7 @@
       "preco_medio": 980.75
     },
     {
+      "item_id": "MLB39766120",
       "oferta_id": "1e597cf4e1d8d23b6831",
       "titulo": "Unidade de estado sólido Kingston M.2 NVMe PCIe 4.0 NV3 de 1 TB, azul escuro",
       "preco": 937.18,
@@ -204,6 +212,7 @@
       "preco_medio": 937.18
     },
     {
+      "item_id": "MLB37314383",
       "oferta_id": "256f6cd87957cfe080ef",
       "titulo": "Impressora Epson Multifuncional L3250 Wifi Econtank Color Cor Preto 110 240V (Bivolt)",
       "preco": 1099.0,
@@ -229,6 +238,7 @@
       "preco_medio": 1195.97
     },
     {
+      "item_id": "MLB51896124",
       "oferta_id": "af39e19116cb2624b8f3",
       "titulo": "Kit 4 Refil Tintas Corante EPS T544 Amarelo Ciano Magenta Preto Epson L3110 L3250",
       "preco": 179.01,
@@ -254,6 +264,7 @@
       "preco_medio": 179.01
     },
     {
+      "item_id": "MLB34016199",
       "oferta_id": "19b94368097ed2bd126c",
       "titulo": "Microfone Hollyland Lark M2 Duo Combo Duplo Para 2 Pessoas USB-C, Lightning e Camera preto",
       "preco": 706.88,
@@ -279,6 +290,7 @@
       "preco_medio": 706.88
     },
     {
+      "item_id": "MLB67084809",
       "oferta_id": "b94687cfe45e80c9e7fc",
       "titulo": "NOTEBOOK ACER ASPIRE GO 15 I5-13420H, RAM 8GB, SSD 256GB, 15,6&quot; FULL HD, LINUX – AG15-71P-54J6",
       "preco": 3374.1,
@@ -304,6 +316,7 @@
       "preco_medio": 3374.1
     },
     {
+      "item_id": "MLB52907398",
       "oferta_id": "75775ad06d7a568b7ba7",
       "titulo": "Notebook Lenovo Ideapad Slim 3 15irh10 Intel Core i5-13420h 8gb 512gb Ssd Linux 15.3 - 83nss00000 Luna Grey",
       "preco": 3349.0,
@@ -329,6 +342,7 @@
       "preco_medio": 3349.0
     },
     {
+      "item_id": "MLB50507430",
       "oferta_id": "d6b4faa2966c135f8d69",
       "titulo": "Multigroom Philips Mg3921/15 inclui 12 acessórios",
       "preco": 159.0,
@@ -354,6 +368,7 @@
       "preco_medio": 159.0
     },
     {
+      "item_id": "MLB38947984",
       "oferta_id": "68a5453f729d27d075d4",
       "titulo": "Monitor Gamer LG UltraGear 24” 24GS60F-B IPS Full HD 180Hz 1ms (GtG) NVIDIA® G-SYNC® AMD FreeSync™ HDR10 sRGB 99% HDMI DisplayPort",
       "preco": 779.0,
@@ -379,6 +394,7 @@
       "preco_medio": 779.0
     },
     {
+      "item_id": "MLB50525094",
       "oferta_id": "31933e2339576b3f12af",
       "titulo": "Guarda Roupa Casal Branco Paris 8 Portas 4 Gavetas Espresso Móveis",
       "preco": 989.99,
@@ -404,6 +420,7 @@
       "preco_medio": 989.99
     },
     {
+      "item_id": "MLB41107786",
       "oferta_id": "1dc058bae84ac96e805f",
       "titulo": "Lava louças portátil Praxis cor preto",
       "preco": 1086.51,
@@ -429,6 +446,7 @@
       "preco_medio": 1086.51
     },
     {
+      "item_id": "MLB50200257",
       "oferta_id": "174ddc3671ab1a027603",
       "titulo": "Monitor Gamer Aoc 21.5&amp;quot&amp;quot Full Hd Gaming 120hz 1ms 22b30hm23 Cor Preto",
       "preco": 433.0,
@@ -454,6 +472,7 @@
       "preco_medio": 433.0
     },
     {
+      "item_id": "MLB28470264",
       "oferta_id": "5d1943496e05b256d018",
       "titulo": "Baba Eletronica Visão Noturna Vb603 Video Voz Camera S/ Fio Cor Branco 127/220V",
       "preco": 196.0,
@@ -479,6 +498,7 @@
       "preco_medio": 196.0
     },
     {
+      "item_id": "MLB60959586",
       "oferta_id": "241ba469e5df3d89cbe7",
       "titulo": "Máquina De Solda Inversora Mig 130a Sem Gás 220v Im130a Black Mig Cor Preto/amarelo Frequência 50hz/60hz The Black Tools",
       "preco": 389.0,
@@ -504,6 +524,7 @@
       "preco_medio": 389.0
     },
     {
+      "item_id": "MLB30660677",
       "oferta_id": "2897f9c14724e3c2227d",
       "titulo": "Cabo De Rede Furukawa Soho Plus Cat6 Cmx Cx 305m Cinza",
       "preco": 1093.0,
@@ -529,6 +550,7 @@
       "preco_medio": 1093.0
     },
     {
+      "item_id": "MLB43419989",
       "oferta_id": "30403a894344d1d07d9f",
       "titulo": "Fritadeira Air Fryer Philco PAF16A 4 Em 1 Painel Digital 16l",
       "preco": 575.16,
@@ -554,6 +576,7 @@
       "preco_medio": 575.16
     },
     {
+      "item_id": "MLB29525405",
       "oferta_id": "e7b8cf9f2030d6fffd87",
       "titulo": "Amazon Fire TV Stick 4K MAX 16GB Wi-Fi 6E Alexa Controle por Voz",
       "preco": 387.03,
@@ -579,6 +602,7 @@
       "preco_medio": 387.03
     },
     {
+      "item_id": "MLB68718296",
       "oferta_id": "13de707935e0331534c7",
       "titulo": "Fritadeira Airfryer Digital Série 2000 Xl Na239 Preto",
       "preco": 450.0,
@@ -604,6 +628,7 @@
       "preco_medio": 450.0
     },
     {
+      "item_id": "MLB30476305",
       "oferta_id": "6fa0d1bcbe9d3c20be35",
       "titulo": "Aquecedor de Água Versátil Elétrico Pia Lavatório Lorenzetti 5500w 220v",
       "preco": 281.06,
@@ -629,6 +654,7 @@
       "preco_medio": 281.06
     },
     {
+      "item_id": "MLB60724063",
       "oferta_id": "82149512ac6e27f39241",
       "titulo": "Ar Condicionado Split Hq Hw Inv 9k Frio Viht9kco3s2s13",
       "preco": 1429.0,
@@ -654,6 +680,7 @@
       "preco_medio": 1429.0
     },
     {
+      "item_id": "MLB23181844",
       "oferta_id": "6d20427eda8107acc330",
       "titulo": "Creatina Monohidratada Pura 120 cápsulas Dark Lab",
       "preco": 32.9,
@@ -679,6 +706,7 @@
       "preco_medio": 32.9
     },
     {
+      "item_id": "MLB63708330",
       "oferta_id": "7bdb155c426fc0547dcd",
       "titulo": "Monitor LG LED Home &amp; Office 20U401A-B Tela 20” HD+, LG Switch, Modo leitura e Flicker Safe, HDMI, VGA, 2ms (GtG), 75Hz, Black Stabilizer, Dynamic Action Sync, Crosshair, saída fone de ouvido",
       "preco": 455.0,
@@ -704,6 +732,7 @@
       "preco_medio": 455.0
     },
     {
+      "item_id": "MLB54961556",
       "oferta_id": "f6f9750db22058e44981",
       "titulo": "Celular Samsung Galaxy A07 256gb, 8gb, Câmera 50mp, Tela 6.7 , Proteção Ip54, Processador 6nm - Preto",
       "preco": 887.78,
@@ -729,6 +758,7 @@
       "preco_medio": 887.78
     },
     {
+      "item_id": "MLB55027309",
       "oferta_id": "630753df355ac01407d3",
       "titulo": "Celular Samsung Galaxy A17 5g Com Ia, 128gb, 4gb Ram, Câm De 50mp, Tela De 6.7 , Nfc, Ip54 - Cinza",
       "preco": 1577.35,
@@ -754,6 +784,7 @@
       "preco_medio": 995.8228571428572
     },
     {
+      "item_id": "MLB37987022",
       "oferta_id": "589101454cfa3b7a9476",
       "titulo": "Monitor 19 Polegada Led Hd 60hz Vx190x Pc Jogo",
       "preco": 193.98,
@@ -779,6 +810,7 @@
       "preco_medio": 193.98
     },
     {
+      "item_id": "MLB68606428",
       "oferta_id": "184d9c0c95b940a8b453",
       "titulo": "Notebook ASUS Zenbook S14 Copilot+ PC UX5406SA Intel Core Ultra 7 258 V 32GB RAM 1TB SSD Windows 11 Home 14&quot; OLED Zumaia Gray QL512W",
       "preco": 8549.0,
@@ -804,6 +836,7 @@
       "preco_medio": 8549.0
     },
     {
+      "item_id": "MLB69311713",
       "oferta_id": "63c5f7e9e45ff3b357d4",
       "titulo": "Caixa De Som Jbl Boombox 4 Bluetooth Som 210w Jbl Pro Ai Sound Boost Graves Personalizáveis Bateria De Até 34h Ip68 Áudio Lossless Azul",
       "preco": 2564.05,
@@ -829,6 +862,7 @@
       "preco_medio": 2564.05
     },
     {
+      "item_id": "MLB61517857",
       "oferta_id": "38e434d038d6869a06d5",
       "titulo": "Smart TV Profissional 4K 50&quot; LG UHD 50AU801 Processador α7 AI Ger8 Super Upscaling Google Cast Alexa Integrado Controle AI Smart Magic WebOS 25",
       "preco": 3699.0,
@@ -854,6 +888,7 @@
       "preco_medio": 3385.693333333333
     },
     {
+      "item_id": "MLB56327005",
       "oferta_id": "cb0e3dfd45d7d28fd296",
       "titulo": "Smartphone Infinix Smart 10 4GB RAM 256GB SSD Câmera 8MP + IA, Tela 6.67 HD+ 120Hz, Bateria 5000mAh, Processador T7250, Android 15 Go, Dual Chip - Preto",
       "preco": 639.9,
@@ -879,6 +914,7 @@
       "preco_medio": 639.9
     },
     {
+      "item_id": "MLB44389497",
       "oferta_id": "c340e4541628706ec53a",
       "titulo": "Nescafé Dolce Gusto Arno Genio S Basic Branca Dgs1 Cor Branco",
       "preco": 385.09,
@@ -904,6 +940,7 @@
       "preco_medio": 385.09
     },
     {
+      "item_id": "MLB59090080",
       "oferta_id": "9f2f0fce30e5eb3f45ab",
       "titulo": "Smart Tv 43 Aoc Led Roku Full Hd Wi-fi 60hz Hdmi Usb 43s5155/78g",
       "preco": 2199.0,
@@ -929,6 +966,7 @@
       "preco_medio": 2059.0
     },
     {
+      "item_id": "MLB42440842",
       "oferta_id": "34b1fb9fce2ad96071fa",
       "titulo": "Ar-condicionado Split Samsung Inverter Windfree Ai 12.000 Btus Frio Sem Vento Ar12dyfaawknaz",
       "preco": 1869.0,
@@ -954,6 +992,7 @@
       "preco_medio": 1869.0
     },
     {
+      "item_id": "MLB65319819",
       "oferta_id": "51d6deeb7ef024995405",
       "titulo": "Smartphone Motorola Moto G67 5g - 256gb 12gb (4gb Ram + 8gb Ram Boost) Camera 50mp Sony Lytia 600, Tela 1.5k Extreme Amoled 120hz, Ultrarresistente - Chumbo",
       "preco": 1286.0,
@@ -979,6 +1018,7 @@
       "preco_medio": 1286.0
     },
     {
+      "item_id": "MLB66364935",
       "oferta_id": "418bfbf8f8dabf091f26",
       "titulo": "Smart Tv Toshiba 43 Polegadas 43v35rs Full Hd",
       "preco": 2199.0,
@@ -1004,6 +1044,7 @@
       "preco_medio": 2199.0
     },
     {
+      "item_id": "MLB41540844",
       "oferta_id": "036d8c219e4281208f04",
       "titulo": "Smartphone Motorola Moto G35 5G 128GB Grafite",
       "preco": 864.61,
@@ -1029,6 +1070,7 @@
       "preco_medio": 864.61
     },
     {
+      "item_id": "MLB54963150",
       "oferta_id": "1f7d440e6e9840b97e68",
       "titulo": "Console Playstation 5 Slim Edição Digital 825 Gb",
       "preco": 3554.1,
@@ -1054,6 +1096,7 @@
       "preco_medio": 3554.1
     },
     {
+      "item_id": "MLB24060776",
       "oferta_id": "0ebe3faba29ee11d9c85",
       "titulo": "Furadeira Parafusadeira Sem Fio A Bateria Tb-12e 12v 3/8 10mm Com Maleta E Acessórios The Black Tools",
       "preco": 98.0,
@@ -1079,6 +1122,7 @@
       "preco_medio": 98.0
     },
     {
+      "item_id": "MLB34219371",
       "oferta_id": "81b929833e98b6e005e7",
       "titulo": "Bicicleta Spinning Com Roda De Inércia De 13kg Wct Fitness Cor Preto",
       "preco": 1399.0,
@@ -1104,6 +1148,7 @@
       "preco_medio": 1399.0
     },
     {
+      "item_id": "MLB26797988",
       "oferta_id": "7fbab5bce259478c5548",
       "titulo": "Extratora de Sujeira Portátil WAP Spot Cleaner W3 Borrifa Esfrega e Extrai 1450W de Potência e Bico de Autolimpeza",
       "preco": 488.88,
@@ -1129,6 +1174,7 @@
       "preco_medio": 482.5533333333333
     },
     {
+      "item_id": "MLB31541424",
       "oferta_id": "199c9f617f9b233ebeec",
       "titulo": "Positivo Vision TAB10 T3010 4GB RAM 128GB SSD com Capa Teclado Octa-Core 5 13MP Bateria 6000mAh Tela 10.1“ HD Wifi AC e 4G Full Lamination -​ Preto",
       "preco": 784.41,
@@ -1154,6 +1200,7 @@
       "preco_medio": 784.41
     },
     {
+      "item_id": "MLB48946861",
       "oferta_id": "6d42864c33388a2d0be8",
       "titulo": "Samsung Galaxy A06 5g Dual Sim 128gb preto",
       "preco": 638.91,
@@ -1179,6 +1226,7 @@
       "preco_medio": 631.015
     },
     {
+      "item_id": "MLB23537280",
       "oferta_id": "1a4375cac0bed64e1a30",
       "titulo": "Smart TV Weyon 32WDSNMX 32&amp;quot&amp;quot HD LED",
       "preco": 721.65,
@@ -1204,6 +1252,7 @@
       "preco_medio": 721.65
     },
     {
+      "item_id": "MLB54014512",
       "oferta_id": "a8a0b3eb921898c8be76",
       "titulo": "Roku Streaming Stick 2025 Para Tv Hd/fhd Controle Por Voz Preto De Voz",
       "preco": 219.54,
@@ -1229,6 +1278,7 @@
       "preco_medio": 219.54
     },
     {
+      "item_id": "MLB47115842",
       "oferta_id": "3164d4c4b6f5e3ce6317",
       "titulo": "Smartphone Samsung Galaxy A36 5G 128GB 6GB RAM Câmera Tripla de até 50MP Selfie de 12MP IP67 Super AMOLED 6.7&amp;quot&amp;quot NFC Recursos AI Android e Segurança Snapdragon - Branco",
       "preco": 1274.15,
@@ -1254,6 +1304,7 @@
       "preco_medio": 1673.056
     },
     {
+      "item_id": "MLB48946085",
       "oferta_id": "a839dd1071ba889ceae0",
       "titulo": "Smart TV TCL 55 Polegadas QLED 4K P8K WiFi Bluetooth Google TV 144Hz HDR10+ Dolby Atmos Vision 55P8K",
       "preco": 4749.0,
@@ -1279,6 +1330,7 @@
       "preco_medio": 4749.0
     },
     {
+      "item_id": "MLB63950169",
       "oferta_id": "46d2592dbd3f72b0268d",
       "titulo": "Projetor 4k Ultra Hd Hy320 Smart Wi-fi 6 Bluetooth Android Cor Preto",
       "preco": 200.82,
@@ -1304,6 +1356,7 @@
       "preco_medio": 200.82
     },
     {
+      "item_id": "MLB46836439",
       "oferta_id": "e6d5176e7bd1209aa0c2",
       "titulo": "Kit 2 Câmera Segurança Ip Interna Externa Wifi iCSee Infravermelho Prova D’Água - HW",
       "preco": 339.0,
@@ -1329,6 +1382,7 @@
       "preco_medio": 339.0
     },
     {
+      "item_id": "MLB58684601",
       "oferta_id": "0857ae949792a2690f94",
       "titulo": "Smartphone Motorola Edge 60 Neo 5G - 256GB 24GB (12GB RAM + 12GB Ram Boost) 50MP Sony Camera Moto AI e tela 1.5K Super HD - Cinza",
       "preco": 1799.1,
@@ -1354,6 +1408,7 @@
       "preco_medio": 1799.1
     },
     {
+      "item_id": "MLB17449992",
       "oferta_id": "8b704c4edc0aeea7bfc0",
       "titulo": "Aquecedor de água elétrico Lorenzetti versátil 3 temperaturas cor branco 220V 5500W",
       "preco": 229.44,
@@ -1379,6 +1434,7 @@
       "preco_medio": 229.44
     },
     {
+      "item_id": "MLB61414071",
       "oferta_id": "451f7760e02543a96a99",
       "titulo": "Notebook Acer Aspire 5 A515-45-R043 - AMD Ryzen 5 5500U • 16 GB DDR4 • 512 GB SSD • Tela 15,6&quot; FHD IPS • Windows 11 Home • Wi-Fi 6",
       "preco": 3879.03,
@@ -1404,6 +1460,7 @@
       "preco_medio": 3879.03
     },
     {
+      "item_id": "MLB67841910",
       "oferta_id": "8606f6d0c825bfdc5a62",
       "titulo": "Máquina de Lavar Consul 10 kg Dosagem Econômica - CWB10BB Branca",
       "preco": 1538.9,
@@ -1429,6 +1486,7 @@
       "preco_medio": 1538.9
     },
     {
+      "item_id": "MLB24273671",
       "oferta_id": "a01c05c1bbd5d46231b9",
       "titulo": "Vaso Sanitário Monobloco Caixa Acoplada Completo - Privada Cor Branco - VAB0002",
       "preco": 499.9,
@@ -1454,6 +1512,7 @@
       "preco_medio": 499.9
     },
     {
+      "item_id": "MLB65407224",
       "oferta_id": "3ff7982a503bfce64a64",
       "titulo": "Placa De Vídeo Nvidia Geforce Palit Rtx5060 8gb Infinity2 Oc",
       "preco": 2279.05,
@@ -1479,6 +1538,7 @@
       "preco_medio": 2279.05
     },
     {
+      "item_id": "MLB52936702",
       "oferta_id": "26e04afea6ebd2b4adc8",
       "titulo": "Notebook Acer Aspire Go AG15-51P-39MU Intel Core i3-1305U 8GB 256ssd Windows 11 Home 15,3&amp;quot&amp;quot",
       "preco": 3199.0,
@@ -1504,6 +1564,7 @@
       "preco_medio": 3199.0
     },
     {
+      "item_id": "MLB46220740",
       "oferta_id": "6697b63f9acb046e3937",
       "titulo": "Cadeira Escritório Ergonômica Genebra B500 Luvinco Cor Preto Com Suporte Lombar Estofado Mesh",
       "preco": 518.84,
@@ -1529,6 +1590,7 @@
       "preco_medio": 509.37
     },
     {
+      "item_id": "MLB24027627",
       "oferta_id": "dfb4d0c65058ea489dd8",
       "titulo": "Prancha Lizze Chapinha Profissional 480 Extreme",
       "preco": 380.37,
@@ -1554,6 +1616,7 @@
       "preco_medio": 380.37
     },
     {
+      "item_id": "MLB47424244",
       "oferta_id": "9618d8e3ff08ed9cc3fb",
       "titulo": "Celular Samsung Galaxy A26 5g 256gb, 8gb Ram, Câmera De 50mp, Ip67, Tela Super Amoled 6.7 , Nfc - Preto",
       "preco": 1564.9,
@@ -1579,6 +1642,7 @@
       "preco_medio": 1515.245
     },
     {
+      "item_id": "MLB39205913",
       "oferta_id": "89a416cb6dd9157f3d18",
       "titulo": "Smart TV LG 43&quot;Full HD, Processador A5 Ger6, AI, Alexa e webOS 23 - 43LR6700PSA",
       "preco": 1466.59,
@@ -1604,6 +1668,7 @@
       "preco_medio": 1740.895
     },
     {
+      "item_id": "MLB41541009",
       "oferta_id": "d4bc341b056161e7876f",
       "titulo": "Cooktop De Indução 1 Boca Preto Com Trava De Segurança Painel Touch Screen",
       "preco": 119.99,
@@ -1629,6 +1694,7 @@
       "preco_medio": 194.95499999999998
     },
     {
+      "item_id": "MLB40347107",
       "oferta_id": "e06dbbaee0232bda4f95",
       "titulo": "Notebook Samsung Galaxy Book4 Intel® U300 (1.20 Ghz, até 4.4GHz, 8 MB L3 Cache), Windows 11 Home, 8GB, 256GB SSD, UHD Graphics, 15.6&amp;quot&amp;quot Full HD LED, 1.55kg",
       "preco": 2949.99,
@@ -1654,6 +1720,7 @@
       "preco_medio": 2949.99
     },
     {
+      "item_id": "MLB63036814",
       "oferta_id": "ee3314ac08121609aaea",
       "titulo": "Smart Tv 32 Philco P32vik Roku Led Dolby Audio Hdr Wi-fi 110/220v",
       "preco": 1379.08,
@@ -1679,6 +1746,7 @@
       "preco_medio": 1379.08
     },
     {
+      "item_id": "MLB18725310",
       "oferta_id": "11ec66065d0951a19671",
       "titulo": "Creatina 1kg Suplemento Monohidratada em pó 100% Pura - Soldiers Nutrition",
       "preco": 39.9,
@@ -1704,6 +1772,7 @@
       "preco_medio": 46.56666666666666
     },
     {
+      "item_id": "MLB68104527",
       "oferta_id": "80fbbbb905ec9c9eef35",
       "titulo": "Kit Body Splash Masculino Barbarius + Enigma + Midtown 200ml",
       "preco": 79.13,
@@ -1729,6 +1798,7 @@
       "preco_medio": 79.13
     },
     {
+      "item_id": "MLB67275824",
       "oferta_id": "6ec1b70a3a69a4ffbae2",
       "titulo": "Smart Tv Philco 50 P50vik 4k Uhd Led Roku Dolby Audio Wi-fi Hdr10 110/220v",
       "preco": 3324.05,
@@ -1754,6 +1824,7 @@
       "preco_medio": 3501.565
     },
     {
+      "item_id": "MLB49089309",
       "oferta_id": "26470b764256e710dc4a",
       "titulo": "Notebook ASUS Vivobook 15 M1502, AMD Ryzen 7, 8 GB RAM, 512 GB SSD, KeepOS Linux, Cool Silver - M1502YA-NJ611",
       "preco": 2900.51,
@@ -1779,6 +1850,7 @@
       "preco_medio": 2900.51
     },
     {
+      "item_id": "MLB58353028",
       "oferta_id": "17a9b9a0272ab5a66f7b",
       "titulo": "Smartphone Motorola Moto G06 - 128gb 12gb (4gb Ram + 8gb Ram Boost) E Camera 50mp Com Ai Bateria De 5200 Mah Tela 6.9 - Azul Marinho",
       "preco": 686.0,
@@ -1804,6 +1876,7 @@
       "preco_medio": 682.5466666666666
     },
     {
+      "item_id": "MLB29001054",
       "oferta_id": "8a207eca69aa31e8e07d",
       "titulo": "Console PlayStation® 5 Slim Edição Digital 825 GB Branco - Sony",
       "preco": 3825.8,
@@ -1829,6 +1902,7 @@
       "preco_medio": 3825.8
     },
     {
+      "item_id": "MLB19603205",
       "oferta_id": "3cad8ea7859a81ea307c",
       "titulo": "Creatina Monohidratada 250g Growth Supplements - Sem sabor em Pó",
       "preco": 39.9,
@@ -1854,6 +1928,7 @@
       "preco_medio": 39.9
     },
     {
+      "item_id": "MLB54963045",
       "oferta_id": "ea072f04b3b977e8f7f2",
       "titulo": "Celular Samsung Galaxy A07 256gb 8gb Câmera 50mp Verde",
       "preco": 1619.1,
@@ -1879,6 +1954,7 @@
       "preco_medio": 1177.6
     },
     {
+      "item_id": "MLB63040715",
       "oferta_id": "ddf856627edfa6c47392",
       "titulo": "Smart Tv 43 Philco P43vik Roku Led Dolby Audio Wi-fi Hdmi Hdr Full Hd 110/220v",
       "preco": 2499.0,
@@ -1904,6 +1980,7 @@
       "preco_medio": 2499.0
     },
     {
+      "item_id": "MLB50181290",
       "oferta_id": "b657ad1cea7ed1ecfc17",
       "titulo": "Parafusadeira Furadeira C/ 2 Baterias Maleta Kit Completo Led Eixo Flexível Vários Níveis Torque Simake",
       "preco": 94.97,
@@ -1929,6 +2006,7 @@
       "preco_medio": 94.97
     },
     {
+      "item_id": "MLB39201871",
       "oferta_id": "7a67f09f97e6c79c8888",
       "titulo": "Tablet Positivo Vision TAB 7 - Processador Octa-Core 3GB RAM 64GB Armazenamento Tela 7” IPS Bateria 3100mAh, Android 14 Go, Wi-fi - Preto",
       "preco": 351.91,
@@ -1954,6 +2032,7 @@
       "preco_medio": 351.91
     },
     {
+      "item_id": "MLB25929487",
       "oferta_id": "db147b0eac2b2492e40f",
       "titulo": "Creatina Monohidratada Pura 1kg Dark Lab Unidade Sem sabor",
       "preco": 69.9,
@@ -1979,6 +2058,7 @@
       "preco_medio": 69.9
     },
     {
+      "item_id": "MLB57723340",
       "oferta_id": "982625c211f722403125",
       "titulo": "Smart Tv Philips 50 4k 50pug7300 Comando De Voz Bluetooth",
       "preco": 1886.72,
@@ -2004,6 +2084,7 @@
       "preco_medio": 1886.72
     },
     {
+      "item_id": "MLB71555133978",
       "oferta_id": "6e4268f79e3c88168e5f",
       "titulo": "Manta Para Sofá Gigante Decorativa Protetora 2,40x1,80",
       "preco": 31.99,
@@ -2029,6 +2110,7 @@
       "preco_medio": 31.99
     },
     {
+      "item_id": "MLB17974763",
       "oferta_id": "362a5b12cb4e96a25a58",
       "titulo": "Nintendo Switch Lite 32gb Standard Azul",
       "preco": 1357.55,
@@ -2054,6 +2136,7 @@
       "preco_medio": 1357.55
     },
     {
+      "item_id": "MLB40692702",
       "oferta_id": "989b4103d264a39961e7",
       "titulo": "Furadeira De Impacto Bosch 450w 10mm Gsb 450 Re Com Jogo De Brocas Bits 300 Peças Azul 127v 50/60hz",
       "preco": 308.0,
@@ -2079,6 +2162,7 @@
       "preco_medio": 307.45
     },
     {
+      "item_id": "MLB19481866",
       "oferta_id": "8d522480918624a8e3d6",
       "titulo": "Whey Isolate Protein Fuse Refil 900g - Dark Lab Sabor Creme De Avelã",
       "preco": 74.9,
@@ -2104,6 +2188,7 @@
       "preco_medio": 74.9
     },
     {
+      "item_id": "MLB62020846",
       "oferta_id": "70fad11bfa514445c162",
       "titulo": "Smartwatch Aurafit G12 Gps Amoled 1.43 Bluetooth Resistente Água 3atm Laranja-escuro Mesh Preto Verde Exército Preto",
       "preco": 326.82,
@@ -2129,6 +2214,7 @@
       "preco_medio": 326.82
     },
     {
+      "item_id": "MLB30054433",
       "oferta_id": "a1d4073a767c918767f7",
       "titulo": "Carrinho Tipo Esteira Para Mecânico Profissional Com Encosto BTE2000 The Black Tools",
       "preco": 179.9,
@@ -2154,6 +2240,7 @@
       "preco_medio": 179.9
     },
     {
+      "item_id": "MLB68717302",
       "oferta_id": "134b131b674401532f08",
       "titulo": "Fritadeira Airfryer Digital Série 2000 Xl Na239/00 Preto 127v",
       "preco": 450.0,
@@ -2179,6 +2266,7 @@
       "preco_medio": 450.0
     },
     {
+      "item_id": "MLB97891991844",
       "oferta_id": "2bb1f246d8a6a3a202fd",
       "titulo": "Short Saia Jeans Feminino Cintura Alta Com Lycra Stillger",
       "preco": 41.81,
@@ -2204,6 +2292,7 @@
       "preco_medio": 41.81
     },
     {
+      "item_id": "MLB99759469168",
       "oferta_id": "fdfa448ab8e4b55a37fa",
       "titulo": "Jogo Toalhas Banho E Rosto Grossas Macias 100% Algodão 4pçs",
       "preco": 107.9,
@@ -2229,6 +2318,7 @@
       "preco_medio": 107.9
     },
     {
+      "item_id": "MLB26978772",
       "oferta_id": "fd1751860cf2d7bbe489",
       "titulo": "Sofá Retrátil Reclinável 3,00m Nivus Cinza Molas Ensacadas - King House",
       "preco": 2799.0,
@@ -2254,6 +2344,7 @@
       "preco_medio": 2412.75
     },
     {
+      "item_id": "MLB25927374",
       "oferta_id": "4577005dbd3a6a3b095e",
       "titulo": "Som rádio automotivo bluetooth usb card sd aux fm mp3 H-tech",
       "preco": 46.07,
@@ -2279,6 +2370,7 @@
       "preco_medio": 46.07
     },
     {
+      "item_id": "MLB26021472",
       "oferta_id": "4daa2372a1e6741a764f",
       "titulo": "Sofá Retrátil/reclinável King House Verona 1,50m Velut Cinza C/ Molas",
       "preco": 979.21,
@@ -2304,6 +2396,7 @@
       "preco_medio": 979.21
     },
     {
+      "item_id": "MLB38425893",
       "oferta_id": "df878e14a20dbd1193d4",
       "titulo": "Bomba Centrífuga Eurobombas EB2000M 2CV 220V Monofásica 36m 8100 L/h",
       "preco": 736.0,
@@ -2329,6 +2422,7 @@
       "preco_medio": 736.0
     },
     {
+      "item_id": "MLB40366976",
       "oferta_id": "c43e9efe88255a742e09",
       "titulo": "Whey Protein Concentrado 1kg Dark Lab Sabor Doce De Leite",
       "preco": 169.9,
@@ -2354,6 +2448,7 @@
       "preco_medio": 169.9
     },
     {
+      "item_id": "MLB24063642",
       "oferta_id": "abf3882c77ec12678066",
       "titulo": "Refletor Led 200w Avant Slim 200 Branco Frio 6500k",
       "preco": 86.33,
@@ -2379,6 +2474,7 @@
       "preco_medio": 86.33
     },
     {
+      "item_id": "MLB44334357",
       "oferta_id": "2fc56e989c87c83c49d8",
       "titulo": "EMEET C960 4K Webcam 1080P 60Fps Camera Para PC Streaming Com Microfone Automático Kit Videoconferencia",
       "preco": 289.92,
@@ -2404,6 +2500,7 @@
       "preco_medio": 289.92
     },
     {
+      "item_id": "MLB50540257",
       "oferta_id": "647d0f2f3aabc867f849",
       "titulo": "Caixa De Som Bluetooth Joog One Hifi Jof01 200w C/ Microfone Preto 127/220v",
       "preco": 1499.9,
@@ -2429,6 +2526,7 @@
       "preco_medio": 1499.9
     },
     {
+      "item_id": "MLB45350688",
       "oferta_id": "2d7c8632035e439b2e2b",
       "titulo": "Impressora Cupom Epson Usb Serial Tm-t20x Ii 250 Mm (eps01) Preto",
       "preco": 578.68,
@@ -2454,6 +2552,7 @@
       "preco_medio": 578.68
     },
     {
+      "item_id": "MLB58752624",
       "oferta_id": "4b13485a61e5ba4247ee",
       "titulo": "Kit Relógio Condor Masculino Speed Prata - Co2117aw/k4v Prata Verde",
       "preco": 187.42,
@@ -2479,6 +2578,7 @@
       "preco_medio": 163.82999999999998
     },
     {
+      "item_id": "MLB92616770641",
       "oferta_id": "21b5c2db85943e253723",
       "titulo": "Kit2 Tapetes Para Banheiro Tapete Mágico Ultra Para Absorçã",
       "preco": 27.89,
@@ -2504,6 +2604,7 @@
       "preco_medio": 27.89
     },
     {
+      "item_id": "MLB111168846555",
       "oferta_id": "b422ddf72d1ccddcfeb7",
       "titulo": "Kit C/12 Utensílios De Cozinha Silicone Cabo Madeira",
       "preco": 34.26,
@@ -2529,6 +2630,7 @@
       "preco_medio": 34.26
     },
     {
+      "item_id": "MLB19506691",
       "oferta_id": "a6dca8bb6da19369ea9a",
       "titulo": "Creatina Monohidratada em Pote 300g 100% Pura Dark Lab",
       "preco": 39.9,
@@ -2554,6 +2656,7 @@
       "preco_medio": 39.9
     },
     {
+      "item_id": "MLB51165965",
       "oferta_id": "6bb7be8a10fd042630d2",
       "titulo": "TP-Link Deco X10(3-pack) Roteador Mesh Wifi6 AX1500 Cobre até 520m²",
       "preco": 679.5,
@@ -2579,6 +2682,7 @@
       "preco_medio": 679.5
     },
     {
+      "item_id": "MLB109669643208",
       "oferta_id": "cb9f72b6ccf58a73bfd2",
       "titulo": "Jogo De Toalhas Karsten 100% Algodão Floral Grossa 4 Peças",
       "preco": 126.7,
@@ -2604,6 +2708,7 @@
       "preco_medio": 126.7
     },
     {
+      "item_id": "MLB19762752",
       "oferta_id": "e992c2fb5906a4da9117",
       "titulo": "TP-Link Tapo C320WS Câmera de Segurança Wifi 2K QHD Colorida IP66",
       "preco": 239.92,
@@ -2629,6 +2734,7 @@
       "preco_medio": 239.92
     },
     {
+      "item_id": "MLB47137238",
       "oferta_id": "0820a7c83809b1739ceb",
       "titulo": "Monitor LG UltraWide™️ - Tela IPS de 29&quot;, 21:9, HDR10, sRGB 99%, 100Hz - 29WQ500",
       "preco": 1101.24,
@@ -2654,6 +2760,7 @@
       "preco_medio": 1101.24
     },
     {
+      "item_id": "MLB27389460",
       "oferta_id": "f1e547d6a9549593d7b1",
       "titulo": "Refil Filtro Acqua Pure Electrolux Pe12b e Pe12a",
       "preco": 69.39,
@@ -2679,6 +2786,7 @@
       "preco_medio": 66.17
     },
     {
+      "item_id": "MLB2016192710",
       "oferta_id": "da9c03f7466cea879701",
       "titulo": "Apple iPhone 12 (128 GB) - Branco (Novo com caixa aberta)",
       "preco": 1818.75,
@@ -2704,6 +2812,7 @@
       "preco_medio": 1818.75
     },
     {
+      "item_id": "MLB19530922",
       "oferta_id": "0f01155807ff7768ec9f",
       "titulo": "Tênis Esportivo Masculino Delta Olympikus Liso",
       "preco": 110.69,
@@ -2729,6 +2838,7 @@
       "preco_medio": 110.69
     },
     {
+      "item_id": "MLB19763973",
       "oferta_id": "6d88dc2ea0f5c7c1b0a3",
       "titulo": "Impressora função única monocromática Zebra ZD 220",
       "preco": 1729.0,
@@ -2754,6 +2864,7 @@
       "preco_medio": 1729.0
     },
     {
+      "item_id": "MLB38661148",
       "oferta_id": "9ba2e45d16224fb9ea52",
       "titulo": "Lavadora de Alta Pressão Bosch GHP 200 2000PSI 1700W",
       "preco": 799.9,
@@ -2779,6 +2890,7 @@
       "preco_medio": 799.9
     },
     {
+      "item_id": "MLB52545096",
       "oferta_id": "e205ba2a5060b7a8f980",
       "titulo": "Ar Condicionado Split Hi Wall Inverter Hisense Wi-fi 12000 B Cor Branco 220v",
       "preco": 1559.0,
@@ -2804,6 +2916,7 @@
       "preco_medio": 1559.0
     },
     {
+      "item_id": "MLB52057267",
       "oferta_id": "87369f3e58fbf9798485",
       "titulo": "Compressor De Ar Elétrico Portátil 120w Encher Pneu Carro Moto Bicicleta Tcm100 The Black Tools",
       "preco": 259.9,
@@ -2829,6 +2942,7 @@
       "preco_medio": 259.9
     },
     {
+      "item_id": "MLB110525071043",
       "oferta_id": "2ddf439e64ef7e80be6b",
       "titulo": "Camisas Térmica Feminina Voker Proteção Uv Bike Academia",
       "preco": 35.05,
@@ -2854,6 +2968,7 @@
       "preco_medio": 35.05
     },
     {
+      "item_id": "MLB16105944",
       "oferta_id": "4c637a30ddc16e3562c7",
       "titulo": "Pneu 185/65R15 Continental PowerContact 2 88H Aro 15",
       "preco": 463.88,
@@ -2879,6 +2994,7 @@
       "preco_medio": 463.88
     },
     {
+      "item_id": "MLB111358826402",
       "oferta_id": "12cf9f5d0fc74ecda3fe",
       "titulo": "2 Coberta Manta Soft Casal Microfibra Veludo 2,00x1,80 Mts",
       "preco": 49.0,
@@ -2904,6 +3020,7 @@
       "preco_medio": 49.0
     },
     {
+      "item_id": "MLB22954936",
       "oferta_id": "ccbd6b2215fd64bab887",
       "titulo": "Secadora de roupa Fischer 8kg suspensa silver cinza",
       "preco": 547.0,
@@ -2929,6 +3046,7 @@
       "preco_medio": 511.445
     },
     {
+      "item_id": "MLB68497702",
       "oferta_id": "d98e0109acbfc384479e",
       "titulo": "Caixa De Som Amplificada Bluetooth 600w Rms Tcs400 Cor Preto The Black Tools Com Rádio Fm Usb Pendrive Led Rgb Bivolt",
       "preco": 469.9,
@@ -2954,6 +3072,7 @@
       "preco_medio": 469.9
     },
     {
+      "item_id": "MLB50179038",
       "oferta_id": "07704981dd0141a5b12f",
       "titulo": "Jogo De Toalhas Banho Village Com 4 Peças Lilás E Roxo Buddemeyer",
       "preco": 159.92,
@@ -2979,6 +3098,7 @@
       "preco_medio": 159.92
     },
     {
+      "item_id": "MLB61428050",
       "oferta_id": "46718dbece1c27ed4df9",
       "titulo": "Kit Nível A Laser Verde 12 Linhas Esquadro + Suporte + Tripé PROFISSIONAL NÃO BALANÇA DE ATE 1 METRO COM MANIVELA DE REGULAGEM E BOLHA NIVELAMENTO - MESTRI",
       "preco": 227.97,
@@ -3004,6 +3124,7 @@
       "preco_medio": 227.97
     },
     {
+      "item_id": "MLB60169211",
       "oferta_id": "f6e7d1273b6b834f9b98",
       "titulo": "Projetor Magcubic HY310 Smart, Full HD 1080p, com Android 11, Wi-Fi 6 e Foco Automático",
       "preco": 679.0,
@@ -3029,6 +3150,7 @@
       "preco_medio": 679.0
     },
     {
+      "item_id": "MLB49782891",
       "oferta_id": "0f4f300a766cb5d2c052",
       "titulo": "Projetor Android 11 Hy320 4k Bluetooth Smart Cinema Em Casa Cor Preto",
       "preco": 202.62,
@@ -3054,6 +3176,7 @@
       "preco_medio": 202.62
     },
     {
+      "item_id": "MLB16079803",
       "oferta_id": "df215bb93dc8be712fc8",
       "titulo": "Depurador de Cozinha Suggar Delgado con manta Slim com Manta DI801PT aço inoxidável de parede 80cm x 8.5cm x 48cm",
       "preco": 393.34,
@@ -3079,6 +3202,7 @@
       "preco_medio": 393.34
     },
     {
+      "item_id": "MLB19884311",
       "oferta_id": "2fce36403fc6aecb481a",
       "titulo": "Smart TV AOC 50U6125 50&amp;quot&amp;quot 4K LED",
       "preco": 3254.07,
@@ -3104,6 +3228,7 @@
       "preco_medio": 3254.07
     },
     {
+      "item_id": "MLB65892959",
       "oferta_id": "9f3c690490c60775b386",
       "titulo": "Kit Desintoxique Da Alwaysfit Pro3magnésio + Nac E Fits36 Sem Sabor",
       "preco": 96.6,
@@ -3129,6 +3254,7 @@
       "preco_medio": 96.6
     },
     {
+      "item_id": "MLB68588490",
       "oferta_id": "0393d164b9209ac36058",
       "titulo": "Smartwatch Samsung Galaxy Fit3 Display 1.6 Grafite",
       "preco": 229.0,
@@ -3154,6 +3280,7 @@
       "preco_medio": 229.0
     },
     {
+      "item_id": "MLB24512037",
       "oferta_id": "1f3b3abdbdba9e9367c1",
       "titulo": "Amaciante Ypê Tradicional Aconchego Ultra 5L",
       "preco": 21.69,
@@ -3179,6 +3306,7 @@
       "preco_medio": 21.69
     },
     {
+      "item_id": "MLB15263835",
       "oferta_id": "2122fb25a408cf059220",
       "titulo": "Waterpulse Flosser Irrigador Oral Dental WP62- Elétrico Bocal Jato Limpador De Língua Água Dentes Boca Gengiva Mangueira 10 Modos Pressão Potente Silencioso 145 PSI 600ml 8 Bicos",
       "preco": 203.89,
@@ -3204,6 +3332,7 @@
       "preco_medio": 203.89
     },
     {
+      "item_id": "MLB19049052",
       "oferta_id": "9dbedfa55cb29ff7c7ca",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Doce De Leite",
       "preco": 182.9,
@@ -3229,6 +3358,7 @@
       "preco_medio": 182.9
     },
     {
+      "item_id": "MLB64904437",
       "oferta_id": "7d372efd99cbaa607a24",
       "titulo": "Kit C/2 Travesseiros Luxo Matelado Fibra Antialérgica 50x70 Branco",
       "preco": 63.99,
@@ -3254,6 +3384,7 @@
       "preco_medio": 63.99
     },
     {
+      "item_id": "MLB47126979",
       "oferta_id": "f49470eda4eab5ded06b",
       "titulo": "Cooktop 4 Bocas De Indução Even Pro Midea Cor Preto",
       "preco": 1302.63,
@@ -3279,6 +3410,7 @@
       "preco_medio": 1302.63
     },
     {
+      "item_id": "MLB16077576",
       "oferta_id": "d879af15710b0fc39cbf",
       "titulo": "Depurador Slim De Embutir 60cm De62ix Inox Suggar Inox",
       "preco": 739.41,
@@ -3304,6 +3436,7 @@
       "preco_medio": 739.41
     },
     {
+      "item_id": "MLB27499036",
       "oferta_id": "ab85ab7bb0c18fd68152",
       "titulo": "Macaco Hidráulico Jacaré 3 Toneladas Stels",
       "preco": 872.0,
@@ -3329,6 +3462,7 @@
       "preco_medio": 872.0
     },
     {
+      "item_id": "MLB69782796",
       "oferta_id": "6da172f805b93d3e55dd",
       "titulo": "Bicicleta Ergométrica Magnética Spinning Odin Fit Roda de Inércia 13kg Sprint Mag",
       "preco": 1699.0,
@@ -3354,6 +3488,7 @@
       "preco_medio": 1699.0
     },
     {
+      "item_id": "MLB67496919",
       "oferta_id": "0e70ff1a5af9ecc9aca2",
       "titulo": "Ferofire 100ml Perfume Masculino Sedutor",
       "preco": 87.0,
@@ -3379,6 +3514,7 @@
       "preco_medio": 87.0
     },
     {
+      "item_id": "MLB16162795",
       "oferta_id": "a47f7a1f14ee464dab95",
       "titulo": "Panela De Pressão Philco Ppp02pi Inox Multifuncional 5l Cor Preto",
       "preco": 361.85,
@@ -3404,6 +3540,7 @@
       "preco_medio": 361.85
     },
     {
+      "item_id": "MLB22575714",
       "oferta_id": "f163518fd55021c0cbe7",
       "titulo": "Soprador Térmico Pistola Vonder Ar Quente 3 Estágios 2000w Profissional Acessórios Voltagem",
       "preco": 170.05,
@@ -3429,6 +3566,7 @@
       "preco_medio": 170.05
     },
     {
+      "item_id": "MLB66819722",
       "oferta_id": "b638af1188fd86731408",
       "titulo": "Kit 4 Litros Oleo Maxi Performace 5w40 508/88 Vw",
       "preco": 185.73,
@@ -3454,6 +3592,7 @@
       "preco_medio": 185.73
     },
     {
+      "item_id": "MLB19049041",
       "oferta_id": "5ac3eaa3c34ea1d9742b",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Capuccino",
       "preco": 183.9,
@@ -3479,6 +3618,7 @@
       "preco_medio": 183.9
     },
     {
+      "item_id": "MLB46403237",
       "oferta_id": "4fba4da8261e36632c62",
       "titulo": "Mini Compressor Digital Portátil Rezzet para Carro Moto e Bicicleta com Calibrador Digital Inflador Elétrico de Pneus 12V Display LCD Lanterna LED Compacto e Recarregável Preto",
       "preco": 71.55,
@@ -3504,6 +3644,7 @@
       "preco_medio": 71.55
     },
     {
+      "item_id": "MLB69319824",
       "oferta_id": "b3328ffe278810e72fe3",
       "titulo": "Kit Maleta Jogo Ferramentas 27 Peças Residencial Completa Conserto Oficina Manutenção Chave Inglesa, Estilete, Chaves Allen, Fenda E Phillips, Lanterna, Martelo, Serra, Tesoura, Trena, Fita Isolante",
       "preco": 78.9,
@@ -3529,6 +3670,7 @@
       "preco_medio": 78.9
     },
     {
+      "item_id": "MLB59189428",
       "oferta_id": "fbb6a390db483f6ba54b",
       "titulo": "Carabina De Pressão Rossi Dione Sport Mh 5,5mm Mola COM chumbinho e alvos",
       "preco": 546.0,
@@ -3554,6 +3696,7 @@
       "preco_medio": 546.0
     },
     {
+      "item_id": "MLB65352463",
       "oferta_id": "c36c220af595c9921e19",
       "titulo": "Carregador Turbo 55w USB-C Com Cabo Tipo C 1 Metro Fonte Bivolt 110v/220v, Carregamento Rápido Fast Charge, Ideal Para Celular Android, Compatível Com iPhone Samsung Motorola Xiaomi LG",
       "preco": 23.99,
@@ -3579,6 +3722,7 @@
       "preco_medio": 23.99
     },
     {
+      "item_id": "MLB69328303",
       "oferta_id": "3635fa15ae4ef5a095a9",
       "titulo": "Soprador De Folhas Elétrico Profissional Turbo Super Potente 60000rpm RPM Bateria Bivolt Sem Fio - Mestri M136",
       "preco": 239.99,
@@ -3604,6 +3748,7 @@
       "preco_medio": 239.99
     },
     {
+      "item_id": "MLB62943811",
       "oferta_id": "ce7fd3bbb643a7eed307",
       "titulo": "Buffet Aparador Ripado Com 4 Portas Monaco 180cm White E Cedro",
       "preco": 949.0,
@@ -3629,6 +3774,7 @@
       "preco_medio": 949.0
     },
     {
+      "item_id": "MLB65304751",
       "oferta_id": "e17b7507d2575b77e3e4",
       "titulo": "Kit com 3 Câmeras Lâmpada WiFi E27 360° Full HD, Visão Noturna, Áudio, Sensor Movimento, App Yoosee Monitoramento 24h Fácil Instalação Segurança Residencial Imagem Nítida e Acesso Remoto - HW",
       "preco": 163.99,
@@ -3654,6 +3800,7 @@
       "preco_medio": 163.99
     },
     {
+      "item_id": "MLB35478666",
       "oferta_id": "0d36078d7e2fa37f0220",
       "titulo": "Placa de Vídeo Revenger Radeon RX 500 Séries G-RX580-8G 8GB GDDR5 2048 Núcleos",
       "preco": 1399.0,
@@ -3679,6 +3826,7 @@
       "preco_medio": 1399.0
     },
     {
+      "item_id": "MLB15238956",
       "oferta_id": "c87d695b9522c7630de1",
       "titulo": "Chapinha De Cabelo Mq Professional Titanium Pro 480 Cor Chumbo",
       "preco": 399.51,
@@ -3704,6 +3852,7 @@
       "preco_medio": 399.51
     },
     {
+      "item_id": "MLB26814317",
       "oferta_id": "b620c91e3a5a7a263676",
       "titulo": "Aspirador Automotivo Portátil WAP CAR com Filtro HEPA e Cabo de 3,7m",
       "preco": 94.35,
@@ -3729,6 +3878,7 @@
       "preco_medio": 94.35
     },
     {
+      "item_id": "MLB53807993",
       "oferta_id": "72230d1722db94309c22",
       "titulo": "Placa Mãe Asus Prime A520m-r Am4 Ddr4 M.2 Chipset A520 Hdmi Preto",
       "preco": 369.0,
@@ -3754,6 +3904,7 @@
       "preco_medio": 369.0
     },
     {
+      "item_id": "MLB44132473",
       "oferta_id": "2217cb0f7f250a39ca2d",
       "titulo": "6 Unid Banqueta Tolix Altas 76cm Iron C/ Encosto Masterchair Acabamento da estrutura Pintura eletrostática Cor Preto",
       "preco": 999.9,
@@ -3779,6 +3930,7 @@
       "preco_medio": 999.9
     },
     {
+      "item_id": "MLB37926284",
       "oferta_id": "ee32384c1b9a867c1f93",
       "titulo": "Aquecedor portátil Wap Air Heat Ceramic elétrico 3 em 1 cor preto",
       "preco": 419.99,
@@ -3804,6 +3956,7 @@
       "preco_medio": 419.99
     },
     {
+      "item_id": "MLB62560727",
       "oferta_id": "8d22a4747a67ba5dd233",
       "titulo": "Esmerilhadeira Elétrica Angular Lixadeira 48v XUMTOM Potente Sem Fio Fácil Corte 2 Baterias 10 Lâminas",
       "preco": 245.78,
@@ -3829,6 +3982,7 @@
       "preco_medio": 245.78
     },
     {
+      "item_id": "MLB34066241",
       "oferta_id": "91f697158d9df9d8e80e",
       "titulo": "Kit 05 Mantas Microfibra Lisa Cobertor Casal - Corttex",
       "preco": 113.0,
@@ -3854,6 +4008,7 @@
       "preco_medio": 113.0
     },
     {
+      "item_id": "MLB52969912",
       "oferta_id": "c72a28ed0bead5636ab1",
       "titulo": "Martelete Furadeira Sds Gbh 2-24d 820w + Maleta Bosch Cor Azul",
       "preco": 898.2,
@@ -3879,6 +4034,7 @@
       "preco_medio": 898.2
     },
     {
+      "item_id": "MLB33326165",
       "oferta_id": "49b3f19a2dbea1030ad8",
       "titulo": "Monitor De Pressão Arterial De Braço Comfort Hem-7122 Omron Cor Branco",
       "preco": 130.5,
@@ -3904,6 +4060,7 @@
       "preco_medio": 134.66666666666666
     },
     {
+      "item_id": "MLB51013655",
       "oferta_id": "d81e17b083d023e72fff",
       "titulo": "Bebê Reborn Boneca Silicone Girafinha Menina Pode Dar Banho",
       "preco": 127.27,
@@ -3929,6 +4086,7 @@
       "preco_medio": 127.27
     },
     {
+      "item_id": "MLB65162885",
       "oferta_id": "0f8eac71a053c541a4a0",
       "titulo": "Serra De Corte Policorte 2000w 3800 Rpm Pró Euro Cinza-escuro",
       "preco": 485.0,
@@ -3954,6 +4112,7 @@
       "preco_medio": 485.0
     },
     {
+      "item_id": "MLB64349214",
       "oferta_id": "41e19784c1e4c06c6fd0",
       "titulo": "Colchão Inflável Casal King MODOFO 200x180x40cm com Bomba Elétrica Integrada , Inflagem e Esvaziamento Rápidos, Superfície Aveludada, Cama Extra para Hóspedes, Casa, Viagens e Camping",
       "preco": 481.9,
@@ -3979,6 +4138,7 @@
       "preco_medio": 481.9
     },
     {
+      "item_id": "MLB62789299",
       "oferta_id": "bea11cef5980de5b7199",
       "titulo": "Pneu Onyx Aro 13 Ny-805 175/70r13 82h H",
       "preco": 323.91,
@@ -4004,6 +4164,7 @@
       "preco_medio": 323.91
     },
     {
+      "item_id": "MLB36239753",
       "oferta_id": "3d30dff37e6aa3c4adc5",
       "titulo": "Colchão Solteiro 78cm Espuma D20 Supreme Gazin Cor Marrom",
       "preco": 194.86,
@@ -4029,6 +4190,7 @@
       "preco_medio": 194.86
     },
     {
+      "item_id": "MLB47112527",
       "oferta_id": "aaa81fafe6e6f121c6e7",
       "titulo": "Panificadora 19 Programas Gallant 600w Preta",
       "preco": 425.43,
@@ -4054,6 +4216,7 @@
       "preco_medio": 412.38
     },
     {
+      "item_id": "MLB53219260",
       "oferta_id": "a945e4be124c734d8932",
       "titulo": "Power Bank Turbo Carregador Portátil 50.000mah Turbo 22.5w Premium Universal Rápida Carga Para Celular iPhone Xiaomi Motorola LG Smartwatch Tablet Display Digital Viagens Festa Ios Nixzen Preto",
       "preco": 129.0,
@@ -4079,6 +4242,7 @@
       "preco_medio": 129.0
     },
     {
+      "item_id": "MLB19141467",
       "oferta_id": "011f65e711f8859d995e",
       "titulo": "Parafusadeira Furadeira Sem Fio 12V WAP BPF 12K3 Kit Maleta",
       "preco": 136.17,
@@ -4104,6 +4268,7 @@
       "preco_medio": 136.17
     },
     {
+      "item_id": "MLB69238649",
       "oferta_id": "009a299676de92f256a9",
       "titulo": "Ar Condicionado Janela Consul 10k Frio Eletrônico Ccn10gb 110v",
       "preco": 1781.1,
@@ -4129,6 +4294,7 @@
       "preco_medio": 1781.1
     },
     {
+      "item_id": "MLB66675799",
       "oferta_id": "dadeeed91fd4525fffac",
       "titulo": "Roçadeira Nakasaki 75cc 3hp 2t Gasolina Potente Nk750pro",
       "preco": 451.0,
@@ -4154,6 +4320,7 @@
       "preco_medio": 451.0
     },
     {
+      "item_id": "MLB41822297",
       "oferta_id": "48d7a133973ddc5a2672",
       "titulo": "Sala De Jantar Madesa Talita Mesa Tampo Madeira 4 Cadeiras Cor Rustic/Preto/Oxford Desenho do tecido das cadeiras Liso",
       "preco": 499.99,
@@ -4179,6 +4346,7 @@
       "preco_medio": 499.99
     },
     {
+      "item_id": "MLB48778915",
       "oferta_id": "c392265ab92270bfafc0",
       "titulo": "Monitor LG UltraFine™ - Tela IPS UHD 4K 27&quot;, HDR10, DCI-P3 90%, Dynamic Action Sync – 27US500-W",
       "preco": 1299.0,
@@ -4204,6 +4372,7 @@
       "preco_medio": 1299.0
     },
     {
+      "item_id": "MLB24726255",
       "oferta_id": "44c758d56f163b1c9af9",
       "titulo": "Seringa Insulina Medix 1ml Ag. Fixa 12,7x0,33mm 29g 100 Un.",
       "preco": 109.9,
@@ -4229,6 +4398,7 @@
       "preco_medio": 109.9
     },
     {
+      "item_id": "MLB40552106",
       "oferta_id": "8d1af074765586eb4b79",
       "titulo": "Soprador De Folhas E Resíduos Elétrico 2000w Para Jardim Bsf2000 The Black Tools",
       "preco": 179.9,
@@ -4254,6 +4424,7 @@
       "preco_medio": 179.9
     },
     {
+      "item_id": "MLB65304748",
       "oferta_id": "ffff86878fd0920a1993",
       "titulo": "Kit com 4 Câmeras de Segurança HW Lâmpada Wi-Fi Full HD PTZ 360°",
       "preco": 209.0,
@@ -4279,6 +4450,7 @@
       "preco_medio": 209.0
     },
     {
+      "item_id": "MLB67136266",
       "oferta_id": "95e98d138cf4814101fa",
       "titulo": "Cartas Pokémon Equilíbrio Perfeito Chikorita 25 Cards Copag",
       "preco": 33.21,
@@ -4304,6 +4476,7 @@
       "preco_medio": 33.21
     },
     {
+      "item_id": "MLB41705866",
       "oferta_id": "8b392213bf18c4af87c3",
       "titulo": "Vittak Kit 50 Cabides Adulto Veludo Slim Antideslizante Organizador Roupas Cor Bege",
       "preco": 58.0,
@@ -4329,6 +4502,7 @@
       "preco_medio": 58.0
     },
     {
+      "item_id": "MLB61672306",
       "oferta_id": "92e8e96b642a6625c072",
       "titulo": "Repetidor WiFi Titanis 2.4GHz 6 Antenas Alta Estabilidade e Alcance",
       "preco": 99.9,
@@ -4354,6 +4528,7 @@
       "preco_medio": 99.9
     },
     {
+      "item_id": "MLB69042742",
       "oferta_id": "db858d0bf8b2260a093a",
       "titulo": "Jogo De Panelas Antiaderentes 10 Peças Baunilha Nacional",
       "preco": 269.9,
@@ -4379,6 +4554,7 @@
       "preco_medio": 269.9
     },
     {
+      "item_id": "MLB26058883",
       "oferta_id": "b18cab812acf5d71afcf",
       "titulo": "Sofá Retrátil Reclinável Verona 1,50m Suede Velut Bege Molas Ensacadas - King House",
       "preco": 1178.1,
@@ -4404,6 +4580,7 @@
       "preco_medio": 1178.1
     },
     {
+      "item_id": "MLB25848425",
       "oferta_id": "9f4fb6502b4de63e8675",
       "titulo": "Kit Cabides Veludo De Roupa Antideslizante Slim Adulto 50 Un",
       "preco": 62.95,
@@ -4429,6 +4606,7 @@
       "preco_medio": 62.95
     },
     {
+      "item_id": "MLB68725307",
       "oferta_id": "dfb266fa6913a99e6169",
       "titulo": "Kit Chave de Impacto e Parafusadeira Kilian Ethan Brushless Com 3 Baterias e Acessórios Profissionais",
       "preco": 292.0,
@@ -4454,6 +4632,7 @@
       "preco_medio": 292.0
     },
     {
+      "item_id": "MLB45406615",
       "oferta_id": "e13c6fe6146687e5ca76",
       "titulo": "Multimídia 7 Android Carplay Rs-718br Pro Line Roadstar Gps Cor Preto",
       "preco": 524.1,
@@ -4479,6 +4658,7 @@
       "preco_medio": 524.1
     },
     {
+      "item_id": "MLB60939559",
       "oferta_id": "6abc0962793f6feb78ab",
       "titulo": "Kit Lavagem Automotiva Vonixx V-Floc Cera Intense Pretinho 500ml",
       "preco": 103.0,
@@ -4504,6 +4684,7 @@
       "preco_medio": 103.0
     },
     {
+      "item_id": "MLB16079799",
       "oferta_id": "14adda4e4cb9902e2778",
       "titulo": "Depurador de Cozinha Suggar Slim com Manta de parede 60cm x 8.5cm x 48cm preto",
       "preco": 370.1,
@@ -4529,6 +4710,7 @@
       "preco_medio": 370.1
     },
     {
+      "item_id": "MLB22325322",
       "oferta_id": "f0ea5981215d460cd7ee",
       "titulo": "Relógio Casio G-shock Carbon Core Guard Ga-b2100-1a1dr",
       "preco": 153.87,
@@ -4554,6 +4736,7 @@
       "preco_medio": 153.87
     },
     {
+      "item_id": "MLB29561684",
       "oferta_id": "4bc9d5abb1853e6dbb78",
       "titulo": "Kit C/ 4 Toalha De Banho Gigante 80 X 1,50 Atacado + Softmax",
       "preco": 78.99,
@@ -4579,6 +4762,7 @@
       "preco_medio": 78.99
     },
     {
+      "item_id": "MLB27905206",
       "oferta_id": "f3126e1eed9d818877e7",
       "titulo": "Pro3Magnésio da Always Fit L-Treonina, Quelato e Dimalato - 60 Cápsulas",
       "preco": 43.37,
@@ -4604,6 +4788,7 @@
       "preco_medio": 43.37
     },
     {
+      "item_id": "MLB46476929",
       "oferta_id": "ee3f022f4ca8c02e1fd8",
       "titulo": "Notebook Vaio Fe16 Amd Ryzen 7 5825u Linux 8gb RAM 512gb Ssd Wi-Fi 6 Tela 16&quot; Ips Wuxga Antirreflexo - Cinza Grafite Vjfe69f11xb0321h - Permite upgrade de memória RAM e SSD",
       "preco": 5099.0,
@@ -4629,6 +4814,7 @@
       "preco_medio": 5099.0
     },
     {
+      "item_id": "MLB18910381",
       "oferta_id": "197d54cc263fcb1cda72",
       "titulo": "Controle DualSense Sem Fio PlayStation 5 Joystick Starlight Blue Sony CFI-ZCT1W",
       "preco": 387.92,
@@ -4654,6 +4840,7 @@
       "preco_medio": 387.92
     },
     {
+      "item_id": "MLB65822470",
       "oferta_id": "c37b8eab0c66bf150680",
       "titulo": "Aspirador De Pó E Água Inox Turbo 12 Litros 1200w Com Soprador E Bico Extratora Multiuso Tbac120 The Black Tools",
       "preco": 329.0,
@@ -4679,6 +4866,7 @@
       "preco_medio": 329.45
     },
     {
+      "item_id": "MLB20667486",
       "oferta_id": "e2218aee8311313b3243",
       "titulo": "Panela De Pressão 7l Tefal Opti&amp;quotspace Inox Com Fundo Triplo",
       "preco": 387.0,
@@ -4704,6 +4892,7 @@
       "preco_medio": 387.0
     },
     {
+      "item_id": "MLB50113898",
       "oferta_id": "0d6f2af2f74a6dc0c894",
       "titulo": "Colchão Sleepcalm Elemental Solteiro 88x188 | Na Caixa",
       "preco": 799.0,
@@ -4729,6 +4918,7 @@
       "preco_medio": 799.0
     },
     {
+      "item_id": "MLB21720839",
       "oferta_id": "2d0b1060877d900fd5c9",
       "titulo": "Depurador Exaustor Slim 60cm Preto Dps161pt Suggar",
       "preco": 403.11,
@@ -4754,6 +4944,7 @@
       "preco_medio": 403.11
     },
     {
+      "item_id": "MLB38618868",
       "oferta_id": "fc6228713a7ed4173a3b",
       "titulo": "Kit 2 Cobertor Mantinha Microfibra Casal Manta Macia Diversas Cores Lisa Sortida",
       "preco": 43.9,
@@ -4779,6 +4970,7 @@
       "preco_medio": 43.9
     },
     {
+      "item_id": "MLB49495989",
       "oferta_id": "a58ebef68bf95bb417a4",
       "titulo": "Ração GranNature Super Premium para Filhote de Porte Médio e Grande com 32% Proteína e Whey Protein Sabor Frango 15 kg",
       "preco": 197.0,
@@ -4804,6 +4996,7 @@
       "preco_medio": 197.0
     },
     {
+      "item_id": "MLB54155518",
       "oferta_id": "36ab94cc264e42861c71",
       "titulo": "Escrivaninha Gamer Tokyo Mdf Mesa Para Computador Home Office E Estudos Com Suporte Para Cpu E Prateleira Lateral Estrutura Em Aço Estilo Industrial Design Moderno Amplo Cor Canela Preto",
       "preco": 183.35,
@@ -4829,6 +5022,7 @@
       "preco_medio": 183.35
     },
     {
+      "item_id": "MLB52945718",
       "oferta_id": "a123170f27ca6dc2ca46",
       "titulo": "Par Luva Motoqueiro Térmica E Impermeável Com Touch Screen Cor Preto Tamanho Único",
       "preco": 25.07,
@@ -4854,6 +5048,7 @@
       "preco_medio": 25.07
     },
     {
+      "item_id": "MLB63816534",
       "oferta_id": "410b117a22d8b7e18272",
       "titulo": "Delux M900pro Mouse Gamer Sem Fio 8000hz Paw3395 Com Dock Preto",
       "preco": 278.24,
@@ -4879,6 +5074,7 @@
       "preco_medio": 278.24
     },
     {
+      "item_id": "MLB65942687",
       "oferta_id": "e64041fffcd90597a7bd",
       "titulo": "Kit 4 Em 1 Ferramentas 48v Íon Lítio Sem Fio Furadeira Parafusadeira Chave Impacto Martelete Esmerilhadeira 125mm Acessórios 2 Baterias Carregador Bivolt Maleta Profissional - Motor Brushless",
       "preco": 699.9,
@@ -4904,6 +5100,7 @@
       "preco_medio": 699.9
     },
     {
+      "item_id": "MLB61690215",
       "oferta_id": "85f959e97dbf568f3d17",
       "titulo": "Escova De Limpeza MOP Elétrica 9 Em 1 Multifuncional Giratória Recarregável Cozinha Banheiro Esfregão Multiuso Rotatória Magica 360° Sem Fio Marca POP Imports",
       "preco": 62.9,
@@ -4929,6 +5126,7 @@
       "preco_medio": 62.9
     },
     {
+      "item_id": "MLB19592781",
       "oferta_id": "665c958e11d9970b4fe0",
       "titulo": "Suplemento Tasty Whey 3w Gourmet Whey Protein Adaptogen Science Pote 900g Sabor Chocolate Suiço",
       "preco": 219.0,
@@ -4954,6 +5152,7 @@
       "preco_medio": 219.0
     },
     {
+      "item_id": "MLB22658831",
       "oferta_id": "7bedc48e2e3047c2c4b8",
       "titulo": "Detergente Ypê Clear 500ml Com 6 Unidades",
       "preco": 14.99,
@@ -4979,6 +5178,7 @@
       "preco_medio": 14.99
     },
     {
+      "item_id": "MLB64857258",
       "oferta_id": "0a55a0f2dcfdce790282",
       "titulo": "Esteira Ergométrica Academia Caminhada Elétrica Dobrável Preto",
       "preco": 629.14,
@@ -5004,6 +5204,7 @@
       "preco_medio": 629.14
     },
     {
+      "item_id": "MLB22827166",
       "oferta_id": "797f707ee89b61f90e81",
       "titulo": "Extratora e Higienizadora Portátil WAP Spot Cleaner 1600W de Potência - Pulveriza, Esfrega e Extrai",
       "preco": 513.0,
@@ -5029,6 +5230,7 @@
       "preco_medio": 513.0
     },
     {
+      "item_id": "MLB69395011",
       "oferta_id": "ea10d575010b75d8eaec",
       "titulo": "Inalador Nebulizador Portátil Sem Fio Usb Pilha Silencioso Aparelho Inalação Compacto Bivolt Nebulizador",
       "preco": 24.46,
@@ -5054,6 +5256,7 @@
       "preco_medio": 24.46
     },
     {
+      "item_id": "MLB18920578",
       "oferta_id": "dab59062109635fd2164",
       "titulo": "Secador Taiff Style 2000w Motor Ac Preto 127 v",
       "preco": 189.52,
@@ -5079,6 +5282,7 @@
       "preco_medio": 189.52
     },
     {
+      "item_id": "MLB47314852",
       "oferta_id": "a0d9bce26bff413b0b64",
       "titulo": "Xiaomi Poco X7 Pro 5g 12gb Ram 512gb Global Nfc Dual Sim",
       "preco": 2564.05,
@@ -5104,6 +5308,7 @@
       "preco_medio": 2564.05
     },
     {
+      "item_id": "MLB53559964",
       "oferta_id": "bb56886bd4e39c790186",
       "titulo": "Desumidificador De Ar Compressor Desumidificadores Eletrico Desumidificador Industrial - 20 Litros Por Dia - Ambientes Grandes 0m2-150m2 Função De Purificação De Pr Incluída Yesop",
       "preco": 1399.3,
@@ -5129,6 +5334,7 @@
       "preco_medio": 1399.3
     },
     {
+      "item_id": "MLB46646860",
       "oferta_id": "60594b95355bd8ae301c",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Cookies and Cream",
       "preco": 184.9,
@@ -5154,6 +5360,7 @@
       "preco_medio": 184.9
     },
     {
+      "item_id": "MLB53987709",
       "oferta_id": "50fe17f0ff08e4c18ea8",
       "titulo": "SSD NVMe M.2 2280 Interno 1TB PCIe Gen3 Leitura 3000MB/s Armazenamento Para Desktop Notebook Alta Velocidade Disco Sólido Upgrade Sistema Boot Rápido Compatível Windows Linux - UP Gamer",
       "preco": 846.0,
@@ -5179,6 +5386,7 @@
       "preco_medio": 846.0
     },
     {
+      "item_id": "MLB34847250",
       "oferta_id": "6fafab1b4e57fc271bfc",
       "titulo": "Impressora multifuncional cor Epson EcoTank L3250",
       "preco": 1022.0,
@@ -5204,6 +5412,7 @@
       "preco_medio": 991.3333333333334
     },
     {
+      "item_id": "MLB35099710",
       "oferta_id": "6ce2c070a165e90bf5e1",
       "titulo": "Jogo Kit Ferramentas 172 Peças Soquetes Chaves Profissional Maleta Completo",
       "preco": 872.92,
@@ -5229,6 +5438,7 @@
       "preco_medio": 872.92
     },
     {
+      "item_id": "MLB40983838",
       "oferta_id": "406c5ee38dea38581250",
       "titulo": "Fone QCY HT10 AilyBuds Pro ANC Bluetooth 5.3 Multiponto IPX5 Cor Preto",
       "preco": 201.0,
@@ -5254,6 +5464,7 @@
       "preco_medio": 201.0
     },
     {
+      "item_id": "MLB62782082",
       "oferta_id": "0d09a12c194d594405dd",
       "titulo": "Coador De Café Inox 103 Com Filtro Permanente Reutilizável Aço Inox Premium Durável Fácil De Lavar",
       "preco": 24.1,
@@ -5279,6 +5490,7 @@
       "preco_medio": 24.1
     },
     {
+      "item_id": "MLB26879185",
       "oferta_id": "b9ada77eaa321412acef",
       "titulo": "Whey Protein Isolado 1kg Growth Supplements - Natural",
       "preco": 304.9,
@@ -5304,6 +5516,7 @@
       "preco_medio": 304.9
     },
     {
+      "item_id": "MLB44587024",
       "oferta_id": "8bae6df353b5cfea97fb",
       "titulo": "Kit 5 Refletor SMD Led Koales 200w Prova Dágua Carcaça Preto Luz Branco-frio",
       "preco": 67.0,
@@ -5329,6 +5542,7 @@
       "preco_medio": 67.0
     },
     {
+      "item_id": "MLB45893433",
       "oferta_id": "e1a5cbe97db06dace947",
       "titulo": "Multifatiador Oz FA4615 Fatiador Elétrico Cortador De Frios Embutidos 150W",
       "preco": 378.0,
@@ -5354,6 +5568,7 @@
       "preco_medio": 378.0
     },
     {
+      "item_id": "MLB39362231",
       "oferta_id": "da6bdd1422a164ca8cb2",
       "titulo": "Adaptador De Realidade Virtual Para Sony Playstation Vr2 Preto",
       "preco": 599.0,
@@ -5379,6 +5594,7 @@
       "preco_medio": 599.0
     },
     {
+      "item_id": "MLB64174316",
       "oferta_id": "40c4295023331c1af5f7",
       "titulo": "L&amp;quotoréal Paris Elseve Collagen Lifter Leave-in Sérum Capilar Para Cabelos Finos Injeção de Massa com Peptídeos de Colágeno Aumenta o Volume em 61% e Encorpa os Fios por 72h 100ml",
       "preco": 34.37,
@@ -5404,6 +5620,7 @@
       "preco_medio": 34.37
     },
     {
+      "item_id": "MLB50722875",
       "oferta_id": "8278f24c85687c1f1483",
       "titulo": "Suporte Articulado Para Monitor 13 a 32 Pistão a Gás Ajustável Zinnia Nimbo 110 Preto",
       "preco": 92.69,
@@ -5429,6 +5646,7 @@
       "preco_medio": 92.69
     },
     {
+      "item_id": "MLB50853162",
       "oferta_id": "83d3cfbc633d7ec7701f",
       "titulo": "Carregador Portátil 20000 Turbo 22.5w Power Bank Premium Universal Rápido Para Samsung iPhone Xiaomi Motorola Celular Smartwatch Tablet Casenn Preto",
       "preco": 96.55,
@@ -5454,6 +5672,7 @@
       "preco_medio": 96.55
     },
     {
+      "item_id": "MLB61791920",
       "oferta_id": "96d440b17a944109b880",
       "titulo": "Soprador 48v Turbo Portátil Com 2 Baterias Potente Preto",
       "preco": 99.99,
@@ -5479,6 +5698,7 @@
       "preco_medio": 99.99
     },
     {
+      "item_id": "MLB67468569",
       "oferta_id": "3b1f13f4945aad885a27",
       "titulo": "Tablet VAIO TL10 4GB RAM 128GB SSD Octa-Core, Tela 10.4” 2K, 4G WiFi Dual Band, Câmera 8MP + Selfie 5MP, 7000mAh, Android 16, com Teclado Magnético de Conexão Inteligente – Preto",
       "preco": 1231.12,
@@ -5504,6 +5724,7 @@
       "preco_medio": 1231.12
     },
     {
+      "item_id": "MLB21861581",
       "oferta_id": "add544d4e53169b3b144",
       "titulo": "Relógio Casio G-shock G-squad Masculino Gbd-200-9dr",
       "preco": 151.1,
@@ -5529,6 +5750,7 @@
       "preco_medio": 151.1
     },
     {
+      "item_id": "MLB36522645",
       "oferta_id": "b3daede931251d705af0",
       "titulo": "Lavadora De Alta Pressão 1700w 2000psi Bosch GHP 200",
       "preco": 799.9,
@@ -5554,6 +5776,7 @@
       "preco_medio": 799.9
     },
     {
+      "item_id": "MLB62585392",
       "oferta_id": "0ee7c16d51809c03501e",
       "titulo": "Kit 2 câmeras Ip Yoosee Prova D&amp;quotágua Infravermelho Externa Wifi",
       "preco": 165.36,
@@ -5579,6 +5802,7 @@
       "preco_medio": 165.36
     },
     {
+      "item_id": "MLB24154100",
       "oferta_id": "85c67e4bcd160a7813c0",
       "titulo": "Filamento Pla Branco Velvet 1kg - Premium Voolt3d High Speed.",
       "preco": 117.7,
@@ -5604,6 +5828,7 @@
       "preco_medio": 117.7
     },
     {
+      "item_id": "MLB69272807",
       "oferta_id": "7f1770192ace861e96f5",
       "titulo": "Baú Bauleto 57 Litros Aluminio Base Universal Todas As Motos",
       "preco": 574.08,
@@ -5629,6 +5854,7 @@
       "preco_medio": 574.08
     },
     {
+      "item_id": "MLB67820977",
       "oferta_id": "2fa614d304edc58ed1ba",
       "titulo": "Máquina de Lavar Consul 16Kg Titanium com Modo Eco - CWN16A9",
       "preco": 1899.0,
@@ -5654,6 +5880,7 @@
       "preco_medio": 1899.0
     },
     {
+      "item_id": "MLB2068174899",
       "oferta_id": "d858d846af05bae2df20",
       "titulo": "Lona Plastica Preta Rolo 4 X 100m Plastica Rf 100micras",
       "preco": 113.47,
@@ -5679,6 +5906,7 @@
       "preco_medio": 113.47
     },
     {
+      "item_id": "MLB28812908",
       "oferta_id": "f4a8f7eaf9caab328ea8",
       "titulo": "Jr Plasticos Kit Mesa Plástico Quadrada Preta com 4 Cadeiras Bistrô 70cm",
       "preco": 279.0,
@@ -5704,6 +5932,7 @@
       "preco_medio": 279.0
     },
     {
+      "item_id": "MLB27472599",
       "oferta_id": "c607a80f3d244e51caf5",
       "titulo": "Maxnova Projetor Hy300 4k Portátil Branco",
       "preco": 219.0,
@@ -5729,6 +5958,7 @@
       "preco_medio": 219.0
     },
     {
+      "item_id": "MLB62592665",
       "oferta_id": "38cc4212a719d75bb164",
       "titulo": "Panela De Arroz Elétrica 10 Xícaras 1.8 Litros Prateado",
       "preco": 145.0,
@@ -5754,6 +5984,7 @@
       "preco_medio": 145.0
     },
     {
+      "item_id": "MLB65588451",
       "oferta_id": "f35cf8355493a2fd1bc2",
       "titulo": "Carregador Portátil Power Bank Turbo 20000mah 22.5w Universal Para iPhone Samsung Motorlola Xiaomi Com Display Digital Preto ou Branco- Hardline",
       "preco": 66.92,
@@ -5779,6 +6010,7 @@
       "preco_medio": 66.92
     },
     {
+      "item_id": "MLB50912942",
       "oferta_id": "afa8f8dc909cfdee1219",
       "titulo": "Escova Secadora Alisadora Volumizadora Rotativa Philco PER03 1300w Cor Dourado-escuro",
       "preco": 207.1,
@@ -5804,6 +6036,7 @@
       "preco_medio": 207.1
     },
     {
+      "item_id": "MLB24550933",
       "oferta_id": "2f9f0c76bb4bdacf5eb9",
       "titulo": "Antena Digital Alta Captação Sinal Hdtv Com Cabo 16 Metros Aquário",
       "preco": 108.9,
@@ -5829,6 +6062,7 @@
       "preco_medio": 108.9
     },
     {
+      "item_id": "MLB65995516",
       "oferta_id": "6b21fad497033193a633",
       "titulo": "Body Splash Bold Homme Masculino - Barbour&amp;quots Beauty - Desodorante Colônia 200 Ml Spray",
       "preco": 42.14,
@@ -5854,6 +6088,7 @@
       "preco_medio": 42.14
     },
     {
+      "item_id": "MLB63921527",
       "oferta_id": "ad83d1f788f17bf340b4",
       "titulo": "Umidificador Ultrassônico G-tech Allergy Free Hm Bivolt Branco",
       "preco": 119.08,
@@ -5879,6 +6114,7 @@
       "preco_medio": 119.08
     },
     {
+      "item_id": "MLB28587376",
       "oferta_id": "43d7a7b6466fc20ee6ef",
       "titulo": "Soprador De Folhas Costal Fak520sc 52cc Carbon Fak",
       "preco": 606.7,
@@ -5904,6 +6140,7 @@
       "preco_medio": 606.7
     },
     {
+      "item_id": "MLB56330062",
       "oferta_id": "ad38fefd5ac73fdebaa1",
       "titulo": "3 Câmera Automotiva Veicular Carro Hd Noturna 1080p Icarbonx",
       "preco": 92.8,
@@ -5929,6 +6166,7 @@
       "preco_medio": 92.8
     },
     {
+      "item_id": "MLB57479710",
       "oferta_id": "018507456c73551d443e",
       "titulo": "Cama Box Baú Casal + Colchão Toronto Mola Ensacada D33 32cm Cor Preto",
       "preco": 1199.2,
@@ -5954,6 +6192,7 @@
       "preco_medio": 1199.2
     },
     {
+      "item_id": "MLB15141564",
       "oferta_id": "3a99691420c56278a428",
       "titulo": "Máquina de costura reta Singer Facilita Pro 4423 portátil - cinza",
       "preco": 1214.99,
@@ -5979,6 +6218,7 @@
       "preco_medio": 1241.99
     },
     {
+      "item_id": "MLB63946611",
       "oferta_id": "da15ed36919be2731a31",
       "titulo": "Sofá 3 Lugares Beny 180cm Retratil Moderno Sala Estar Luxo Puff Poltrona Pufe",
       "preco": 840.0,
@@ -6004,6 +6244,7 @@
       "preco_medio": 840.0
     },
     {
+      "item_id": "MLB59009614",
       "oferta_id": "6f705d9977bf09363a6e",
       "titulo": "Carabina Pressão Jade Pro Nitro 5.5mm + Kit Completo + Bipé Preto 5.5 Mm",
       "preco": 901.99,
@@ -6029,6 +6270,7 @@
       "preco_medio": 901.99
     },
     {
+      "item_id": "MLB61071725",
       "oferta_id": "c9b47c50043e1e731639",
       "titulo": "Projetor Portátil Magcubic HY300PRO Smart, com Android 11, Wi-Fi 6 e Bluetooth 5.0",
       "preco": 237.06,
@@ -6054,6 +6296,7 @@
       "preco_medio": 237.06
     },
     {
+      "item_id": "MLB50359112",
       "oferta_id": "4887bfbb3b8e00be701b",
       "titulo": "Robô Aspirador de Pó Velds 3 em 1 – Varre Aspira e Passa Pano com Mapeamento via App e Sensor Antiqueda, Preto",
       "preco": 1299.0,
@@ -6079,6 +6322,7 @@
       "preco_medio": 1299.0
     },
     {
+      "item_id": "MLB47280060",
       "oferta_id": "4cbab9161d6f9ff4efc9",
       "titulo": "Placa de Vídeo Gainward RTX 5070 Phoenix 12GB GDDR7 192 Bits Nvidia",
       "preco": 4799.0,
@@ -6104,6 +6348,7 @@
       "preco_medio": 4799.0
     },
     {
+      "item_id": "MLB60074213",
       "oferta_id": "3b38bbc429edb4ade8c5",
       "titulo": "Câmera de Segurança Wi-Fi iCSee/Yoosee A28B 4K Dupla Lente Visão Noturna Colorida Full Hd Externa Prova D&amp;quotágua Ip66 Sensor Movimento Woosh",
       "preco": 124.71,
@@ -6129,6 +6374,7 @@
       "preco_medio": 124.71
     },
     {
+      "item_id": "MLB41767852",
       "oferta_id": "b9b7fb0f1189f192b4db",
       "titulo": "Kit Completo Batedeira Planetária Digital E Acessórios Oster",
       "preco": 1699.15,
@@ -6154,6 +6400,7 @@
       "preco_medio": 1699.15
     },
     {
+      "item_id": "MLB26879184",
       "oferta_id": "a73db3795b9441fe7a68",
       "titulo": "Whey Protein Isolado 1kg Growth Supplements - Chocolate",
       "preco": 304.9,
@@ -6179,6 +6426,7 @@
       "preco_medio": 304.9
     },
     {
+      "item_id": "MLB66123686",
       "oferta_id": "0aaf411f797b5bbf8d71",
       "titulo": "Perfume Asad Elixir 100ml Eau De Parfum Original Edp Lançamento 2026 Original C/ Nf",
       "preco": 189.6,
@@ -6204,6 +6452,7 @@
       "preco_medio": 189.6
     },
     {
+      "item_id": "MLB54176209",
       "oferta_id": "f61e9c35d496c5c9bfcb",
       "titulo": "Notebook Gamer Acer Nitro V15 ANV15-52-737P Intel® Core™ i7-13620H 13ªG 16GB RAM 512GB SSD RTX4050 FHD 15.6”",
       "preco": 6499.0,
@@ -6229,6 +6478,7 @@
       "preco_medio": 6499.0
     },
     {
+      "item_id": "MLB52363992",
       "oferta_id": "05d97219be01a639dbd7",
       "titulo": "Caixa De Som Bluetooth Amplificada Grande Potencia Hz-2000 + 2 Microfones Sem Fio Limpo",
       "preco": 669.0,
@@ -6254,6 +6504,7 @@
       "preco_medio": 669.0
     },
     {
+      "item_id": "MLB46827631",
       "oferta_id": "d1f42b845b2dc9c6c985",
       "titulo": "Pulverizador Costal Brudden SS20B 20L Elétrico e Manual Bateria Autonomia 10h",
       "preco": 352.26,
@@ -6279,6 +6530,7 @@
       "preco_medio": 352.26
     },
     {
+      "item_id": "MLB53190169",
       "oferta_id": "5bcf26531754723f7a90",
       "titulo": "Torquímetro De Estalo Click Para Soquete 1/2 Pol 28-210 Nm 2.8 A 21kg Reversível Ajustável Com Estojo The Black Tools",
       "preco": 149.9,
@@ -6304,6 +6556,7 @@
       "preco_medio": 149.9
     },
     {
+      "item_id": "MLB21049287",
       "oferta_id": "190459400906dbdf0194",
       "titulo": "Nobreak Interativo Bivolt Intelbras Xnb 720va Cor Preto",
       "preco": 413.15,
@@ -6329,6 +6582,7 @@
       "preco_medio": 413.15
     },
     {
+      "item_id": "MLB38781038",
       "oferta_id": "6268396c14d22a931281",
       "titulo": "Antena Digital Interna Externa HDTV UHF Cabo Com Cabo Longo De 4 Metros Com Base Magnética Parosprotect",
       "preco": 29.89,
@@ -6354,6 +6608,7 @@
       "preco_medio": 29.89
     },
     {
+      "item_id": "MLB66274919",
       "oferta_id": "d069a1add7d32723cd04",
       "titulo": "Caixa Amplificada Mondial 300W Bivolt CM-300-N",
       "preco": 303.05,
@@ -6379,6 +6634,7 @@
       "preco_medio": 303.05
     },
     {
+      "item_id": "MLB66497052",
       "oferta_id": "ec34391df870fcc0cbe4",
       "titulo": "Power Bank 20000mah Carregador Portátil Turbo Rápido 22.5w Display Digital Preto",
       "preco": 69.74,
@@ -6404,6 +6660,7 @@
       "preco_medio": 69.74
     },
     {
+      "item_id": "MLB68395577",
       "oferta_id": "d0c79dc1b46a6a10175d",
       "titulo": "Bicicleta Spinning Ergométrica 13kg Mecânica com Monitor de Velocidade, Suporta até 120kg, Calorias, Tempo e Distância, Sensor de Pulso, Assento Macio, Pedal Metálico, Ideal para 1,40m a 1,90m",
       "preco": 1259.0,
@@ -6429,6 +6686,7 @@
       "preco_medio": 1259.0
     },
     {
+      "item_id": "MLB15561585",
       "oferta_id": "706c7ac6e74af5061951",
       "titulo": "Aquecedor A Óleo Mondial A-06 Cor Preto/Cinza",
       "preco": 513.32,
@@ -6454,6 +6712,7 @@
       "preco_medio": 513.32
     },
     {
+      "item_id": "MLB29018262",
       "oferta_id": "e44e6cf85bdd4db7e1ba",
       "titulo": "Máquina de Solda Multiprocesso MIG Flex 150a Pró Euro Bivolt MIG sem gás MMA TIG",
       "preco": 575.91,
@@ -6479,6 +6738,7 @@
       "preco_medio": 575.91
     },
     {
+      "item_id": "MLB23346569",
       "oferta_id": "3aadc530b4c834636ced",
       "titulo": "Ventilador de Torre WAP Air Silence com Ajuste de 4 Velocidades",
       "preco": 374.9,
@@ -6504,6 +6764,7 @@
       "preco_medio": 374.9
     },
     {
+      "item_id": "MLB62870034",
       "oferta_id": "c5bbb38cc548483394d0",
       "titulo": "Monitor Gamer LG UltraGear Curvo 34G600A-B 34&quot; QuadHD 2K, UltraWide 1800R, 160Hz, 1ms (MBR), AMD FreeSync Premium, HDR10, MaxxAudio",
       "preco": 2149.0,
@@ -6529,6 +6790,7 @@
       "preco_medio": 2149.0
     },
     {
+      "item_id": "MLB2075188778",
       "oferta_id": "1241123d5b8c1a2886ac",
       "titulo": "Kit 20 Sache Selante Pu40 Cinza Cola Construção Adesivo 800g",
       "preco": 372.4,
@@ -6554,6 +6816,7 @@
       "preco_medio": 372.4
     },
     {
+      "item_id": "MLB28995434",
       "oferta_id": "db866a361cd8dbfb8893",
       "titulo": "Pro3Magnésio Always Fit Kit 3 Magnésio Treonato Quelato Dimalato 60 Cápsulas",
       "preco": 84.9,
@@ -6579,6 +6842,7 @@
       "preco_medio": 84.9
     },
     {
+      "item_id": "MLB35830249",
       "oferta_id": "9a4b14a164c5aa30f918",
       "titulo": "Fritadeira Air Fryer Forno Oven 12L, Mondial, 2000W - AFON-12L-BI",
       "preco": 584.59,
@@ -6604,6 +6868,7 @@
       "preco_medio": 584.59
     },
     {
+      "item_id": "MLB19752625",
       "oferta_id": "1db9302f826f5e9eefb8",
       "titulo": "Impressora Monocromática Bematech Mp-4200 Hs Serial Usb Ethernet",
       "preco": 559.0,
@@ -6629,6 +6894,7 @@
       "preco_medio": 559.0
     },
     {
+      "item_id": "MLB47163373",
       "oferta_id": "e7b4b86b428475092437",
       "titulo": "Cadeira De Escritório Ergonômica Mônaco Bt07 Luvinco Malha Respirável Com Suporte Lombar Adaptável Apoio Para Pés Retrátil Encosto Ajustável Seis Posições Cor Cinza Suporta 200kg",
       "preco": 1067.0,
@@ -6654,6 +6920,7 @@
       "preco_medio": 1083.45
     },
     {
+      "item_id": "MLB37844559",
       "oferta_id": "b8f622a569101ae9c205",
       "titulo": "Taiff Prancha Cerâmica Profissional Classic 180°",
       "preco": 99.0,
@@ -6679,6 +6946,7 @@
       "preco_medio": 99.0
     },
     {
+      "item_id": "MLB21524545",
       "oferta_id": "4eb31e5230a59eff71b3",
       "titulo": "Power Bank Pro 20000mAH ELG PB200BK, Bateria Portátil Universal, Carga Rápida, Display Indicador, Entradas Micro USB e USB-C, 2 Portas USB-A, PD+QC3.0, Preto",
       "preco": 116.0,
@@ -6704,6 +6972,7 @@
       "preco_medio": 116.0
     },
     {
+      "item_id": "MLB51202548",
       "oferta_id": "f76dc8de56ba2b143bf0",
       "titulo": "Smart Tv Roku Tv 50 7045 4k Uhd Aoc Bivolt",
       "preco": 2089.05,
@@ -6729,6 +6998,7 @@
       "preco_medio": 2089.05
     },
     {
+      "item_id": "MLB21077584",
       "oferta_id": "3e40d02c4b3e8bf9e1fa",
       "titulo": "Suporte Tv Tri Articulado Braço Longo Distância Até 65cm Sufort Lcd-65",
       "preco": 126.16,
@@ -6754,6 +7024,7 @@
       "preco_medio": 126.16
     },
     {
+      "item_id": "MLB21814751",
       "oferta_id": "22192a0a230fe0de6e71",
       "titulo": "Balança Digital Corporal Bioimpedância Aplicativo Bluetooth Relaxmedic",
       "preco": 119.17,
@@ -6779,6 +7050,7 @@
       "preco_medio": 119.17
     },
     {
+      "item_id": "MLB38053317",
       "oferta_id": "19b36a8aa59a6c89d0a4",
       "titulo": "Parafusadeira E Furadeira Impacto The Black Tools Tb-21pw 3/8 Cor Amarelo Frequência 50/60 Hz",
       "preco": 148.9,
@@ -6804,6 +7076,7 @@
       "preco_medio": 148.9
     },
     {
+      "item_id": "MLB34222263",
       "oferta_id": "f8e4765927ae4131a07f",
       "titulo": "Colchão Solteiro Ortobom Poli D28 88x188 cm Firme Espuma EPS Marrom",
       "preco": 373.9,
@@ -6829,6 +7102,7 @@
       "preco_medio": 373.9
     },
     {
+      "item_id": "MLB62531947",
       "oferta_id": "df74dc129ee479d5a4be",
       "titulo": "Tablet Lenovo Tab Com Capa Octa-core 4gb Ram 64gb Wi-fi Lte 4g Android 14 10.1&amp;quot&amp;quot Fhd + Zaej0158br",
       "preco": 1084.68,
@@ -6854,6 +7128,7 @@
       "preco_medio": 1084.68
     },
     {
+      "item_id": "MLB45873105",
       "oferta_id": "ea8084c86ac594bdd5dc",
       "titulo": "Robô Aspirador eufy Omni C20 3 em 1 Estação Tudo em Um Sucção 7000Pa Corpo Ultrafino 8,5cm Esvaziamento Limpeza e Secagem Automática Mapeamento Laser Multinível Escova Antiembaraço WiFi App Voz 220V",
       "preco": 3561.0,
@@ -6879,6 +7154,7 @@
       "preco_medio": 3561.0
     },
     {
+      "item_id": "MLB51873735",
       "oferta_id": "a0b0b4fc718723e2e05c",
       "titulo": "Monitor Viewpro MWV21 LED de 21.5&quot; Full HD Com HDMI e VGA",
       "preco": 265.98,
@@ -6904,6 +7180,7 @@
       "preco_medio": 265.98
     },
     {
+      "item_id": "MLB24236258",
       "oferta_id": "e19fb3443089dbd69ed0",
       "titulo": "Vaso Sanitário Monobloco Caixa Acoplada Privada Completo Cor Branco - VAB0004",
       "preco": 473.9,
@@ -6929,6 +7206,7 @@
       "preco_medio": 473.9
     },
     {
+      "item_id": "MLB36520510",
       "oferta_id": "551f81a2632c85f2a0ae",
       "titulo": "Lavadora de alta pressão Vonder Leve LAV1300 220V amarela de 1.3kW com 90bar de pressão máxima - 60Hz",
       "preco": 287.2,
@@ -6954,6 +7232,7 @@
       "preco_medio": 287.2
     },
     {
+      "item_id": "MLB65519878",
       "oferta_id": "13363dacbfc28e5cc405",
       "titulo": "Bold Barra De Proteína Caixa Mista 40 Com 14g De Proteína",
       "preco": 96.03,
@@ -6979,6 +7258,7 @@
       "preco_medio": 96.03
     },
     {
+      "item_id": "MLB59323651",
       "oferta_id": "243f2db8fe2cb94d83c1",
       "titulo": "Monitor Gamer Curvo Aoc Agon Quad 32 180hz 0,5ms Cq32g4e Preto",
       "preco": 1280.0,
@@ -7004,6 +7284,7 @@
       "preco_medio": 1280.0
     },
     {
+      "item_id": "MLB51335107",
       "oferta_id": "bef0b722680e12b2e616",
       "titulo": "Jogo de Toalhas Buddemeyer Atena Fio Penteado Banho Verde/Verde Claro 4 peças",
       "preco": 159.92,
@@ -7029,6 +7310,7 @@
       "preco_medio": 159.92
     },
     {
+      "item_id": "MLB26113887",
       "oferta_id": "bb0666b9ead62f68246a",
       "titulo": "Balança Digital De Vidro Corporal Temperado Até 180 Kg Quadrada Banheiro Portátil Comica",
       "preco": 29.99,
@@ -7054,6 +7336,7 @@
       "preco_medio": 29.99
     },
     {
+      "item_id": "MLB17366232",
       "oferta_id": "4f4fd24a177dd1173a53",
       "titulo": "Pedal de efeito Cuvave Cube Baby preto",
       "preco": 239.58,
@@ -7079,6 +7362,7 @@
       "preco_medio": 239.58
     },
     {
+      "item_id": "MLB60012839",
       "oferta_id": "4c288c4ecd97ea4486d7",
       "titulo": "Parafusadeira Furadeira De Impacto A Bateria 21V 3/8” Bivolt 1400 Rpm Com Acessórios E Maleta TB-21PZW The Black Tools",
       "preco": 129.9,
@@ -7104,6 +7388,7 @@
       "preco_medio": 129.9
     },
     {
+      "item_id": "MLB65190064",
       "oferta_id": "b63ff5ccabf349a64cc7",
       "titulo": "Gold Spell Tonico Poderoso Laranja 120ml Preenche Falhas",
       "preco": 49.97,
@@ -7129,6 +7414,7 @@
       "preco_medio": 49.97
     },
     {
+      "item_id": "MLB34506386",
       "oferta_id": "a7ef0f803adc24bd782d",
       "titulo": "Passadeira Felpuda Bege Corredor 2m Texfine Poliéster Sala Quarto Cozinha",
       "preco": 36.95,
@@ -7154,6 +7440,7 @@
       "preco_medio": 36.95
     },
     {
+      "item_id": "MLB39454258",
       "oferta_id": "e96e79f8ae24fb1c7f7d",
       "titulo": "Caixa De Som Pulse Storm 2 10 Pol Bleutooth Led Rádio-1500w cor Preto",
       "preco": 854.9,
@@ -7179,6 +7466,7 @@
       "preco_medio": 854.9
     },
     {
+      "item_id": "MLB64305534",
       "oferta_id": "6744bc21ef0adcf31dd7",
       "titulo": "Projetor Smart Portátil Full Hd 4k Android 11 Wi-fi Bluetooth Mini Projetor Home Theater Cinema Em Casa Imagem Nítida Som Potente Compatível Com Diversos Dispositivos",
       "preco": 239.99,
@@ -7204,6 +7492,7 @@
       "preco_medio": 239.99
     },
     {
+      "item_id": "MLB66527237",
       "oferta_id": "9ddc921106e364539243",
       "titulo": "Jogo De Toalhas Buddemeyer Bella Extra Soft Banho 4",
       "preco": 127.92,
@@ -7229,6 +7518,7 @@
       "preco_medio": 127.92
     },
     {
+      "item_id": "MLB63315912",
       "oferta_id": "4db1d898be3bd55590de",
       "titulo": "Kit 10 Potes Vidro Hermético Aristus 640ml Marmita Anti Vazamento Forno Micro-ondas Freezer Tampa 4 Travas - Cinza",
       "preco": 89.52,
@@ -7254,6 +7544,7 @@
       "preco_medio": 89.52
     },
     {
+      "item_id": "MLB35587178",
       "oferta_id": "e92a433969c0f37582a2",
       "titulo": "Tv box Aquário plus STV-3000 4k padrão 4K 16GB preto com 2GB de memória ram",
       "preco": 236.0,
@@ -7279,6 +7570,7 @@
       "preco_medio": 236.0
     },
     {
+      "item_id": "MLB53198659",
       "oferta_id": "559342e12d6ba8cf8582",
       "titulo": "Bicicleta Ergométrica Spinning Mecanica Roda Inércia 13kg Sprint Odin Fit",
       "preco": 1399.99,
@@ -7304,6 +7596,7 @@
       "preco_medio": 1399.99
     },
     {
+      "item_id": "MLB62511762",
       "oferta_id": "31abe0226044715a2a03",
       "titulo": "Celular Smartphone Realme C73 256gb 8gb Ram Dual Sim 120hz 6000mAh Verde",
       "preco": 1999.0,
@@ -7329,6 +7622,7 @@
       "preco_medio": 1345.55
     },
     {
+      "item_id": "MLB18725403",
       "oferta_id": "c016e01c5501f33bab44",
       "titulo": "Basic Whey 1kg Growth Supplements - Chocolate",
       "preco": 62.9,
@@ -7354,6 +7648,7 @@
       "preco_medio": 62.9
     },
     {
+      "item_id": "MLB48811463",
       "oferta_id": "68b505cf325156fc0034",
       "titulo": "Jogo de Toalhas Buddemeyer Bella Extra Soft Banho Rosa/Rosa Claro 4 peças",
       "preco": 127.92,
@@ -7379,6 +7674,7 @@
       "preco_medio": 127.92
     },
     {
+      "item_id": "MLB51117081",
       "oferta_id": "4f18a6b220b4c374f340",
       "titulo": "Chave De Impacto e Parafusadeira A Bateria 21v 4ah 3 em 1 Brushless Amarelo 50hz/60hz Sem Escova 2 Baterias Recarregável Bivolt MESTRI",
       "preco": 259.97,
@@ -7404,6 +7700,7 @@
       "preco_medio": 259.97
     },
     {
+      "item_id": "MLB22538792",
       "oferta_id": "34b38dd6e744794da569",
       "titulo": "Controle Microsoft Xbox Wireless Series X/s Velocity Green Cor Verde",
       "preco": 329.0,
@@ -7429,6 +7726,7 @@
       "preco_medio": 329.0
     },
     {
+      "item_id": "MLB55034955",
       "oferta_id": "5b43c13ff95d64396265",
       "titulo": "Celular Samsung Galaxy A07 128Gb 4Gb RAM Preto",
       "preco": 689.0,
@@ -7454,6 +7752,7 @@
       "preco_medio": 689.0
     },
     {
+      "item_id": "MLB19592785",
       "oferta_id": "39cdce76100d5db74326",
       "titulo": "Suplemento em pó Tasty Whey Adaptogen Science proteínas sabor clásico 900g",
       "preco": 219.0,
@@ -7479,6 +7778,7 @@
       "preco_medio": 219.0
     },
     {
+      "item_id": "MLB27788719",
       "oferta_id": "27cfb588513b61153cb8",
       "titulo": "Violão Tagima Nylon Gran Reserva Vegas Eq Natural Open Pore Marrom Escuro",
       "preco": 781.31,
@@ -7504,6 +7804,7 @@
       "preco_medio": 781.31
     },
     {
+      "item_id": "MLB15057059",
       "oferta_id": "f25bfd0cd391407dcdd8",
       "titulo": "Aquecedor a Óleo Mondial Preto/Prata 1500W A-06",
       "preco": 460.51,
@@ -7529,6 +7830,7 @@
       "preco_medio": 460.51
     },
     {
+      "item_id": "MLB24000050",
       "oferta_id": "f07abcbe0a1939713f9b",
       "titulo": "Aparelho Medidor de Pressão Digital de Braço BSP11 G-Tech",
       "preco": 90.69,
@@ -7554,6 +7856,7 @@
       "preco_medio": 90.69
     },
     {
+      "item_id": "MLB27946823",
       "oferta_id": "8c8a8c87a12b8f986123",
       "titulo": "Hipercalórico Anabolic Mass 28500 - 3kg - Profit Labs Sabor Chocolate com Morango",
       "preco": 67.3,
@@ -7579,6 +7882,7 @@
       "preco_medio": 67.3
     },
     {
+      "item_id": "MLB54575876",
       "oferta_id": "c1d9e881d12100bec55a",
       "titulo": "Cadeira Escritório Ergonômica Giratória com Apoio Lombar da Python Fly",
       "preco": 407.89,
@@ -7604,6 +7908,7 @@
       "preco_medio": 407.89
     },
     {
+      "item_id": "MLB59660744",
       "oferta_id": "76c24e4f4e0bfb7b6313",
       "titulo": "Projetor HY320 Hardline Smart TV Android WiFi 6 390 ANSI Lumens Full HD Suporte 4K HDMI Bluetooth HY 320 85-200 Polegadas Alto Falante Com Controle Remoto Bivolt Portátil",
       "preco": 249.99,
@@ -7629,6 +7934,7 @@
       "preco_medio": 249.99
     },
     {
+      "item_id": "MLB19590092",
       "oferta_id": "b64be2f2684b8331ccc7",
       "titulo": "Chuveiro Lorenzetti Loren Shower Ultra Eletrônico Branco 7500W",
       "preco": 121.71,
@@ -7654,6 +7960,7 @@
       "preco_medio": 121.71
     },
     {
+      "item_id": "MLB48933310",
       "oferta_id": "ff323d8ec47a1f811d1c",
       "titulo": "Tênis Esportivo Feminino Voa 2 Olympikus",
       "preco": 196.19,
@@ -7679,6 +7986,7 @@
       "preco_medio": 196.19
     },
     {
+      "item_id": "MLB63279922",
       "oferta_id": "73f73b5199222691cc68",
       "titulo": "Fechadura Digital De Sobrepor Fr 101 V Preta Intelbras",
       "preco": 252.96,
@@ -7704,6 +8012,7 @@
       "preco_medio": 252.96
     },
     {
+      "item_id": "MLB20554055",
       "oferta_id": "adca9530be4b0638c4f6",
       "titulo": "Tônico Poderoso Gold Spell 250ml Antiqueda E Preenche Falhas",
       "preco": 86.59,
@@ -7729,6 +8038,7 @@
       "preco_medio": 86.59
     },
     {
+      "item_id": "MLB26796581",
       "oferta_id": "abdeeab1accde284dd9b",
       "titulo": "Creatina Monohidratada Pura 500g Dark Lab Unidade",
       "preco": 44.9,
@@ -7754,6 +8064,7 @@
       "preco_medio": 44.9
     },
     {
+      "item_id": "MLB37897247",
       "oferta_id": "375f3482c9ce07bc721a",
       "titulo": "Samsung Galaxy Watch7 Smartwatch 44mm BT Galaxy AI - Verde",
       "preco": 1035.49,
@@ -7779,6 +8090,7 @@
       "preco_medio": 1035.49
     },
     {
+      "item_id": "MLB22569962",
       "oferta_id": "cad91c45f043808919bc",
       "titulo": "Câmera Inteligente Visão 360° IM4 C Intelbras",
       "preco": 246.9,
@@ -7804,6 +8116,7 @@
       "preco_medio": 246.9
     },
     {
+      "item_id": "MLB48810551",
       "oferta_id": "e2e364f18a8acede6813",
       "titulo": "Jogo De Toalhas Buddemeyer Bella Extra Soft Banho 4 Grafite/cinza Lisa",
       "preco": 119.92,
@@ -7829,6 +8142,7 @@
       "preco_medio": 119.92
     },
     {
+      "item_id": "MLB40230034",
       "oferta_id": "179a9cc39b4d3478a295",
       "titulo": "Câmera Inteligente Resistente a Chuva e Poeira iM7 S Branca Intelbras",
       "preco": 359.9,
@@ -7854,6 +8168,7 @@
       "preco_medio": 359.9
     },
     {
+      "item_id": "MLB23409605",
       "oferta_id": "ac38527a5eec8a01aeb3",
       "titulo": "Câmera De Vídeo Wi-Fi Intelbras IM3 C MicroSD 32GB Branco",
       "preco": 246.9,
@@ -7879,6 +8194,7 @@
       "preco_medio": 246.9
     },
     {
+      "item_id": "MLB27705742",
       "oferta_id": "6a71e9dc72e6d83adf76",
       "titulo": "Câmera Inteligente Intelbras iM5SC con Wi-Fi Full HD color Branca",
       "preco": 309.0,
@@ -7904,6 +8220,7 @@
       "preco_medio": 309.0
     },
     {
+      "item_id": "MLB53403093",
       "oferta_id": "4bb3a973dd590bca13e3",
       "titulo": "Câmera Inteligente Intelbras Ime 360 3mp Visão 360 Wi-fi Cor Branco",
       "preco": 183.6,
@@ -7929,6 +8246,7 @@
       "preco_medio": 183.6
     },
     {
+      "item_id": "MLB18596029",
       "oferta_id": "4f7f2f7c465b3ac008fa",
       "titulo": "Câmera Inteligente iM3 C Black Intelbras",
       "preco": 166.6,
@@ -7954,6 +8272,7 @@
       "preco_medio": 166.6
     },
     {
+      "item_id": "MLB67509529",
       "oferta_id": "279d73929090d7dc0385",
       "titulo": "Kit Relógio Condor Masculino Dourado Co2115ncg/k4a Dourado Azul",
       "preco": 140.24,
@@ -7979,6 +8298,7 @@
       "preco_medio": 140.24
     },
     {
+      "item_id": "MLB17517878",
       "oferta_id": "c7067cebd96cf8a146a6",
       "titulo": "Oxímetro OLED G-TECH",
       "preco": 78.58,
@@ -8004,6 +8324,7 @@
       "preco_medio": 78.58
     },
     {
+      "item_id": "MLB24287062",
       "oferta_id": "70709fc6eddce48193aa",
       "titulo": "Macaco Jacaré Hidráulico 2 Ton Com Maleta 3081 Bremen",
       "preco": 167.12,
@@ -8029,6 +8350,7 @@
       "preco_medio": 167.12
     },
     {
+      "item_id": "MLB19049039",
       "oferta_id": "b5391ea8782eedaf27da",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Natural",
       "preco": 182.9,
@@ -8054,6 +8376,7 @@
       "preco_medio": 182.9
     },
     {
+      "item_id": "MLB58592215",
       "oferta_id": "a053c5d881cb225c8cd6",
       "titulo": "Balança Comercial Digital Eletrônica Com Plataforma De Aço Mercados Varejão Comercio Loja Feira Comerciante Com Ate 40kg De Precisão Cor Preto E Branco",
       "preco": 189.0,
@@ -8079,6 +8402,7 @@
       "preco_medio": 189.0
     },
     {
+      "item_id": "MLB66383101",
       "oferta_id": "451c01d41d9a9ea96b38",
       "titulo": "Ar Condicionado Inverter Tcl T-pro 2.0 18000 Btus Qf Branco",
       "preco": 2469.0,
@@ -8104,6 +8428,7 @@
       "preco_medio": 2469.0
     },
     {
+      "item_id": "MLB28992390",
       "oferta_id": "db2e7bd2c351f2908401",
       "titulo": "Bomba De Tirar Leite Materno Portátil Eletrica 24mm Sem BPA Não Precisa Segurar Ou Ficar Apertando Mãos Livres Amamentação Extratora Elétrica Sugador Bombinha Marca Fergusom",
       "preco": 54.27,
@@ -8129,6 +8454,7 @@
       "preco_medio": 54.27
     },
     {
+      "item_id": "MLB46013144",
       "oferta_id": "5e67c6b85620b88a298c",
       "titulo": "Esmerilhadeira Lixadeira Angular 880w 115mm Hanabi Cor Azul-petróleo Frequência 60hz",
       "preco": 126.09,
@@ -8154,6 +8480,7 @@
       "preco_medio": 126.09
     },
     {
+      "item_id": "MLB58519492",
       "oferta_id": "bffd1eb34ba848be20a2",
       "titulo": "Fone Ouvido Bluetooth 5.4 Sem Fio Estojo De Carregamento Anti Ruido A Prova Dagua Compatível Com Ios Samsung Galaxy Android Tws Wireless Air Premium Microfone Touch Marca Pro Phone See",
       "preco": 49.71,
@@ -8179,6 +8506,7 @@
       "preco_medio": 49.71
     },
     {
+      "item_id": "MLB24325321",
       "oferta_id": "87c35d3c3120da4b5282",
       "titulo": "Kit 8 Cadeiras Allegra Master Waw Design Preta Polipropileno Empilhável",
       "preco": 521.0,
@@ -8204,6 +8532,7 @@
       "preco_medio": 521.0
     },
     {
+      "item_id": "MLB69284011",
       "oferta_id": "6bbe0549c2bb5ab4f238",
       "titulo": "Kit 2 Controles Para Ps4 Sem Fio Bluetooth Videogame Tv Smart Pc Gamer Celular Dual Shock Joystick Manete - Crowley",
       "preco": 96.9,
@@ -8229,6 +8558,7 @@
       "preco_medio": 96.9
     },
     {
+      "item_id": "MLB58315694",
       "oferta_id": "213d30efdec1f4161647",
       "titulo": "Galaxy Buds Core Preto",
       "preco": 233.99,
@@ -8254,6 +8584,7 @@
       "preco_medio": 233.99
     },
     {
+      "item_id": "MLB16268160",
       "oferta_id": "dfbae0fcb17982edf1f8",
       "titulo": "Controle Xbox Wireless Series X|s Carbon black",
       "preco": 346.75,
@@ -8279,6 +8610,7 @@
       "preco_medio": 346.75
     },
     {
+      "item_id": "MLB52027456",
       "oferta_id": "84b53c013f8710ae4171",
       "titulo": "Smart Tv Samsung 32&amp;quot&amp;quot Hd Tizen Hdr Wi-fi Hdmi Monitor Bivolt Preta Preto",
       "preco": 948.0,
@@ -8304,6 +8636,7 @@
       "preco_medio": 948.0
     },
     {
+      "item_id": "MLB51979690",
       "oferta_id": "eedbf2e6392cc90675cc",
       "titulo": "Banheira Bebê Dobrável Com Suporte Termômetro E Almofada Cor Rosa",
       "preco": 340.39,
@@ -8329,6 +8662,7 @@
       "preco_medio": 322.92333333333335
     },
     {
+      "item_id": "MLB27074801",
       "oferta_id": "262e8d05072cfd6c2d57",
       "titulo": "Transformador 7000va 220 Para 110 110v Para 220v Bivolt Conversor Adaptador De Voltagem 127v Inversor Energia Ar Condicionado 9000 12000 18000 Btus Geladeira Freezer Lava E Seca Escova Nespresso Forno",
       "preco": 245.0,
@@ -8354,6 +8688,7 @@
       "preco_medio": 245.0
     },
     {
+      "item_id": "MLB19770332",
       "oferta_id": "4c33cb9c78bc3dc59919",
       "titulo": "Air Fryer Fritadeira Sem Óleo Elétrica Electrolux 6,5l Family Cesto Removível Com Timer 1700w De Potência Eaf50 Grafite Efficient Por Rita Lobo",
       "preco": 367.45,
@@ -8379,6 +8714,7 @@
       "preco_medio": 367.45
     },
     {
+      "item_id": "MLB51050396",
       "oferta_id": "b5aae25f8efede9262e7",
       "titulo": "Fone De Ouvido Para Capacete Intercomunicador Bluetooth Headset Rgb Sem Fio Música GPS Chamadas Handsfree Alta Potência Woosh",
       "preco": 37.09,
@@ -8404,6 +8740,7 @@
       "preco_medio": 37.09
     },
     {
+      "item_id": "MLB64882912",
       "oferta_id": "3b532bb28ef7499f08fa",
       "titulo": "Esmerilhadeira Lixadeira Angular 4.1/2 Profissional Com Kit De Soquetes Catraca Reversível 40 Peças The Black Tools",
       "preco": 169.9,
@@ -8429,6 +8766,7 @@
       "preco_medio": 169.9
     },
     {
+      "item_id": "MLB36264774",
       "oferta_id": "f092cb69e93f6cfeda69",
       "titulo": "Máquina de Solda Inversora ESAB Bantam 2.5 Bivolt 110v/220v",
       "preco": 469.0,
@@ -8454,6 +8792,7 @@
       "preco_medio": 469.0
     },
     {
+      "item_id": "MLB64318778",
       "oferta_id": "2cc3b383c813febb0442",
       "titulo": "Jogo De Panelas Antiaderente 10 Peças Prime Alumínio Teflon Cor Bege",
       "preco": 201.66,
@@ -8479,6 +8818,7 @@
       "preco_medio": 201.66
     },
     {
+      "item_id": "MLB43954645",
       "oferta_id": "07b41ca1e4dbe179f2b6",
       "titulo": "Kit 2 Travesseiros 70x50 Antialérgico Lavável Fibra Siliconada Toque de Pluma de Ganso Oaktex Cor Branco",
       "preco": 37.99,
@@ -8504,6 +8844,7 @@
       "preco_medio": 37.99
     },
     {
+      "item_id": "MLB50592250",
       "oferta_id": "681b16bf937aa2b95f4b",
       "titulo": "Power Bank Basike 20000mAh Preto, Carga Rápida 22.5W para iPhone e Samsung, Com Cabos Embutidos e Display",
       "preco": 134.85,
@@ -8529,6 +8870,7 @@
       "preco_medio": 134.85
     },
     {
+      "item_id": "MLB23771424",
       "oferta_id": "715a6aea82ace1c28813",
       "titulo": "Impressora multifuncional HP Smart Tank 581 Colorida 1 USB 2.0 de alta velocidade (dispositivo); 1 porta Wi-Fi 802.11b/g/n; 1 Wi-Fi Direct - 100 a 240 VCA",
       "preco": 836.28,
@@ -8554,6 +8896,7 @@
       "preco_medio": 836.28
     },
     {
+      "item_id": "MLB36943302",
       "oferta_id": "5122d953d51cb5b75b3f",
       "titulo": "Cuba Pia de Apoio Sobrepor Oval 43x25 Branca Banheiro Lavabo Beltempo BT-2030",
       "preco": 127.92,
@@ -8579,6 +8922,7 @@
       "preco_medio": 127.92
     },
     {
+      "item_id": "MLB50269368",
       "oferta_id": "91f562f876aa58bd74d3",
       "titulo": "Secador De Cabelos Philco psc3500 4 Em 1 dobrável motor bldc Prateado",
       "preco": 419.0,
@@ -8604,6 +8948,7 @@
       "preco_medio": 429.0
     },
     {
+      "item_id": "MLB44844303",
       "oferta_id": "0ce7b1011bf2ec8784be",
       "titulo": "Câmera Lâmpada Intelbras Im6 Full Color 3mp 360 Wifi Interna Cor Branco",
       "preco": 199.92,
@@ -8629,6 +8974,7 @@
       "preco_medio": 203.92
     },
     {
+      "item_id": "MLB27720999",
       "oferta_id": "b338fe0d37e49a5f5c2a",
       "titulo": "Kit 2 Pneus 175/70R14 Firestone F-600 84T Aro 14",
       "preco": 729.16,
@@ -8654,6 +9000,7 @@
       "preco_medio": 729.16
     },
     {
+      "item_id": "MLB28128999",
       "oferta_id": "311062c8d441c6c39bbd",
       "titulo": "Ração Quatree Life Para Gatos Castrados Salmão E Arroz 10,1 kg",
       "preco": 147.05,
@@ -8679,6 +9026,7 @@
       "preco_medio": 147.05
     },
     {
+      "item_id": "MLB68929675",
       "oferta_id": "09d5b44f587313dce410",
       "titulo": "Aquecedor Elétrico Portátil A Ar Ventilador Quente Preto Aq04 - Mimo Style",
       "preco": 84.06,
@@ -8704,6 +9052,7 @@
       "preco_medio": 84.06
     },
     {
+      "item_id": "MLB29237195",
       "oferta_id": "4de915c984e4080de951",
       "titulo": "Macaco Jacaré Hidraulico 2t Jacarézinho Mecânico Com Maleta Bth200k The Black Tools",
       "preco": 174.5,
@@ -8729,6 +9078,7 @@
       "preco_medio": 174.5
     },
     {
+      "item_id": "MLB15711832",
       "oferta_id": "ca980b6c859dad58ff1d",
       "titulo": "Robô Aspirador de Pó WAP ROBOT W100 - 3 em 1 Varre Aspira e Passa Pano, Sensor Antiqueda e de Impacto",
       "preco": 375.99,
@@ -8754,6 +9104,7 @@
       "preco_medio": 375.99
     },
     {
+      "item_id": "MLB39257324",
       "oferta_id": "9e62982e29caa7160b88",
       "titulo": "Chuveiro Ducha Eletrônica Intense Fame 7800w Super Potente Preta 220 v",
       "preco": 303.32,
@@ -8779,6 +9130,7 @@
       "preco_medio": 303.32
     },
     {
+      "item_id": "MLB18572393",
       "oferta_id": "701ce96c5636633624b0",
       "titulo": "Secador De Cabelos Taiff Style Pro 2000w Prata",
       "preco": 199.66,
@@ -8804,6 +9156,7 @@
       "preco_medio": 199.66
     },
     {
+      "item_id": "MLB29694703",
       "oferta_id": "8d81769c8187efe74d0e",
       "titulo": "Air Fryer Britânia 4,2L Dura Mais 1500W BFR38 127V",
       "preco": 220.41,
@@ -8829,6 +9182,7 @@
       "preco_medio": 220.41
     },
     {
+      "item_id": "MLB19140419",
       "oferta_id": "804a88b49e2d7292b902",
       "titulo": "Whey Isolate Protein Fuse Refil 1,8kg Dark Lab - Mp Importad Sabor Creme de avelã",
       "preco": 151.9,
@@ -8854,6 +9208,7 @@
       "preco_medio": 151.9
     },
     {
+      "item_id": "MLB26516485",
       "oferta_id": "50b5b7dfce3ce378df5f",
       "titulo": "Esteira Elétrica Ergométrica Bivolt Ginastica Wct Fitness Cor Preto",
       "preco": 1606.97,
@@ -8879,6 +9234,7 @@
       "preco_medio": 1636.4850000000001
     },
     {
+      "item_id": "MLB38520576",
       "oferta_id": "ec73060cb7b5d4cde36e",
       "titulo": "Lavadora de alta pressão Bosch GHP 200 1700W 2000 PSI com acessórios",
       "preco": 799.9,
@@ -8904,6 +9260,7 @@
       "preco_medio": 799.9
     },
     {
+      "item_id": "MLB19731776",
       "oferta_id": "d45ad038397b0ce75372",
       "titulo": "Robô aspirador Robot W90 varre aspira e passa pano 30w Wap cor preto",
       "preco": 326.06,
@@ -8929,6 +9286,7 @@
       "preco_medio": 319.305
     },
     {
+      "item_id": "MLB25327723",
       "oferta_id": "e17c2b94722a97a8c5b0",
       "titulo": "Escova Secadora Philco Pes19sg 3 Acessórios 1300w Cor Prata",
       "preco": 209.9,
@@ -8954,6 +9312,7 @@
       "preco_medio": 209.9
     },
     {
+      "item_id": "MLB67632604",
       "oferta_id": "048221a3df9ee929ef10",
       "titulo": "Desumidificador Compressor GCZ 6 Litros para 120m² Silencioso e com Timer",
       "preco": 996.0,
@@ -8979,6 +9338,7 @@
       "preco_medio": 996.0
     },
     {
+      "item_id": "MLB49756297",
       "oferta_id": "e03691c4cd5d7ebba7ed",
       "titulo": "Projetor PFL5211 Full HD 5200lm Branco Intelbras 127/220V",
       "preco": 1179.03,
@@ -9004,6 +9364,7 @@
       "preco_medio": 1179.03
     },
     {
+      "item_id": "MLB35504239",
       "oferta_id": "c3de89a916f5b1dfa936",
       "titulo": "Monitor 19 Preto Led Bm19k4hvw Bluecase - 75hz / Hdmi / Vga",
       "preco": 176.28,
@@ -9029,6 +9390,7 @@
       "preco_medio": 176.28
     },
     {
+      "item_id": "MLB28575093",
       "oferta_id": "93a6e9fbe27ad1c15725",
       "titulo": "Jogo de ferramentas com 110 peças, embalagem fechada, VONDER",
       "preco": 399.0,
@@ -9054,6 +9416,7 @@
       "preco_medio": 399.0
     },
     {
+      "item_id": "MLB24197945",
       "oferta_id": "c845a79064d5ece086c4",
       "titulo": "Fogão Cooktop Elétrico Elgin 2 Bocas 2000w Preto",
       "preco": 119.9,
@@ -9079,6 +9442,7 @@
       "preco_medio": 119.9
     },
     {
+      "item_id": "MLB55868679",
       "oferta_id": "34897cec11c7ead02a96",
       "titulo": "Espelho 100x50 Orgânico Corpo Inteiro Grande Moldur Caramelo Preto",
       "preco": 84.99,
@@ -9104,6 +9468,7 @@
       "preco_medio": 84.99
     },
     {
+      "item_id": "MLB26200452",
       "oferta_id": "c6b221184b5e83e05966",
       "titulo": "Kit 5 Lâmpadas Led 50w Bulbo 6500k Branco Frio Alta Potência 110V/220V",
       "preco": 69.9,
@@ -9129,6 +9494,7 @@
       "preco_medio": 69.9
     },
     {
+      "item_id": "MLB19943893",
       "oferta_id": "83f382c6b2dbe4af9a2b",
       "titulo": "Panela De Pressão Fechamento Externo Profissional 20L Nacional",
       "preco": 419.9,
@@ -9154,6 +9520,7 @@
       "preco_medio": 419.9
     },
     {
+      "item_id": "MLB19807414",
       "oferta_id": "a72a4dd51cda8f0bd991",
       "titulo": "Café União Torrado e Moído Extraforte 500g Pacote",
       "preco": 19.2,
@@ -9179,6 +9546,7 @@
       "preco_medio": 19.2
     },
     {
+      "item_id": "MLB57652230",
       "oferta_id": "c43dd647c1b52b56caaa",
       "titulo": "Auto Transformador 1500va 110v P/ 220v 220v P/ 110v Conversor Energia Max Amper",
       "preco": 69.99,
@@ -9204,6 +9572,7 @@
       "preco_medio": 69.99
     },
     {
+      "item_id": "MLB56644328",
       "oferta_id": "32126636976106248b90",
       "titulo": "Tablet Xiaomi Redmi Pad 2 256 Gb 8 Gb Ram 11 Wi-fi Lavanda - Lavanda",
       "preco": 1500.0,
@@ -9229,6 +9598,7 @@
       "preco_medio": 1500.0
     },
     {
+      "item_id": "MLB56408764",
       "oferta_id": "793c0f4bb964349506a1",
       "titulo": "Creme Clareador para Axilas Virilha 60g",
       "preco": 148.8,
@@ -9254,6 +9624,7 @@
       "preco_medio": 148.8
     },
     {
+      "item_id": "MLB58927765",
       "oferta_id": "3fe2e1908dcbfc0fcf60",
       "titulo": "Parafusadeira Furadeira De Impacto Profissional Sem Fio 2 Baterias 21v Com Maleta Tb-21yx The Black Tools",
       "preco": 209.9,
@@ -9279,6 +9650,7 @@
       "preco_medio": 214.9
     },
     {
+      "item_id": "MLB15977315",
       "oferta_id": "27d595221806201c80d1",
       "titulo": "Philco PAS4000V aspirador de pó cor preto 127 V",
       "preco": 228.94,
@@ -9304,6 +9676,7 @@
       "preco_medio": 228.94
     },
     {
+      "item_id": "MLB63062501",
       "oferta_id": "044f4c3a6d30223b3d88",
       "titulo": "Hd Ssd Interno 120gb 2,5 Sata3 6gb/s Para Computador Pc Notebook Velocidade De Leitura/Gravação De 550mb/s - Preto - Spreaker Gamer",
       "preco": 160.04,
@@ -9329,6 +9702,7 @@
       "preco_medio": 160.04
     },
     {
+      "item_id": "MLB24117280",
       "oferta_id": "a34742c98c8d36f82dfb",
       "titulo": "Fone De Ouvido Headphone Dapon H02D Bluetooth 5.1 Over-ear 22h Preto",
       "preco": 78.9,
@@ -9354,6 +9728,7 @@
       "preco_medio": 78.9
     },
     {
+      "item_id": "MLB53258842",
       "oferta_id": "ee4ab8e61479de03e4cc",
       "titulo": "Cadeira De Alimentação Infantil 3 Em 1 Harmony Maxi Baby - Cinza",
       "preco": 282.0,
@@ -9379,6 +9754,7 @@
       "preco_medio": 282.0
     },
     {
+      "item_id": "MLB23011944",
       "oferta_id": "d5256b9dc034f5f5d3bd",
       "titulo": "Air Fryer Forno 5 em 1 12L 1700W Digital Espeto Giratório 2 Bandejas Antiaderentes 10 funções 7 Receitas aviso sonoro Fritadeira Elétrica sem Óleo Forno Bancada Electrolux EAF90 Grafite",
       "preco": 777.29,
@@ -9404,6 +9780,7 @@
       "preco_medio": 777.29
     },
     {
+      "item_id": "MLB52434020",
       "oferta_id": "6ec7a924231afcebeefa",
       "titulo": "Kit 2 Câmeras De Segurança Hw Ip Wi-fi 6mp Lente Dupla Visão Noturna 355° Detecção De Movimento Com App Icsee",
       "preco": 311.0,
@@ -9429,6 +9806,7 @@
       "preco_medio": 311.0
     },
     {
+      "item_id": "MLB49609713",
       "oferta_id": "05d5ecb40cf056c04e8d",
       "titulo": "Chuveiro Lorenzetti Bella Ducha 4T Ultra para Parede",
       "preco": 77.29,
@@ -9454,6 +9832,7 @@
       "preco_medio": 77.29
     },
     {
+      "item_id": "MLB27918095",
       "oferta_id": "0f451540b160f5473ac9",
       "titulo": "Kit 4 Pneus 175/65R14 Firestone F-600 82T Aro 14",
       "preco": 1206.49,
@@ -9479,6 +9858,7 @@
       "preco_medio": 1305.375
     },
     {
+      "item_id": "MLB19620474",
       "oferta_id": "75c615cf7f19df46dd8f",
       "titulo": "chuveiro Lorenzetti Multitemperaturas ducha top jet 7500w branco",
       "preco": 135.9,
@@ -9504,6 +9884,7 @@
       "preco_medio": 135.9
     },
     {
+      "item_id": "MLB66760336",
       "oferta_id": "2641e0f59a92076d4e5c",
       "titulo": "Mixer Turbo 3 Em 1 - 1000w 5 Velocidades Cor Preto",
       "preco": 144.99,
@@ -9529,6 +9910,7 @@
       "preco_medio": 144.99
     },
     {
+      "item_id": "MLB25264428",
       "oferta_id": "3be584a95e0b52fffd88",
       "titulo": "Lavadora de Alta pressão Kärcher Compacta 1500 PSI/Libras 1400W 300L/h com Aplicador de Detergente e Lança Regulável 220v",
       "preco": 329.0,
@@ -9554,6 +9936,7 @@
       "preco_medio": 329.0
     },
     {
+      "item_id": "MLB53658747",
       "oferta_id": "6a98120284e80152db80",
       "titulo": "Caixa de som bluetooth 200w 39000mah eq ipx6 Sabala DRa-909 cor preto",
       "preco": 1276.0,
@@ -9579,6 +9962,7 @@
       "preco_medio": 1276.0
     },
     {
+      "item_id": "MLB27935510",
       "oferta_id": "13cee213d349c008fd56",
       "titulo": "Bicicleta Ergométrica Spinning 20kg Wct Fitness Cor Preto/Verde",
       "preco": 1693.78,
@@ -9604,6 +9988,7 @@
       "preco_medio": 1724.8899999999999
     },
     {
+      "item_id": "MLB49195521",
       "oferta_id": "86a41904d2720efe4280",
       "titulo": "Kit Bateria Eletrônica Completa Groove Drums Edg500 5 Pads Peles Mesh 3 Pratos Profissional Sensibilidade Aro + Banco Fone De Ouvido",
       "preco": 2318.0,
@@ -9629,6 +10014,7 @@
       "preco_medio": 2318.0
     },
     {
+      "item_id": "MLB50870779",
       "oferta_id": "7a181426bc725823498c",
       "titulo": "Estante De Aço Multiuso 6 Bandejas Reforçada Antiferrugem",
       "preco": 197.0,
@@ -9654,6 +10040,7 @@
       "preco_medio": 197.0
     },
     {
+      "item_id": "MLB24028629",
       "oferta_id": "989a429819c5351050a9",
       "titulo": "Fone De Ouvido Soundcore by Anker P20i Graves Poderosos e Impactantes Bluetooth 5.3 30H de Reprodução Resistência à Água 2 Mics IA para Chamadas Claras Personalização de Som via App Cor Preto",
       "preco": 165.3,
@@ -9679,6 +10066,7 @@
       "preco_medio": 165.3
     },
     {
+      "item_id": "MLB22615743",
       "oferta_id": "4b2beada0a335229b078",
       "titulo": "Politriz Angular Vel. Variável 6 Pol. 1050w Lith Lt3000",
       "preco": 158.86,
@@ -9704,6 +10092,7 @@
       "preco_medio": 158.86
     },
     {
+      "item_id": "MLB24896740",
       "oferta_id": "75471d2925edf2efe035",
       "titulo": "Campainha Sem Fio Intelbras CIB 101 Preta",
       "preco": 69.9,
@@ -9729,6 +10118,7 @@
       "preco_medio": 69.9
     },
     {
+      "item_id": "MLB52893896",
       "oferta_id": "49c31a71102999e90e24",
       "titulo": "Cadeira De Escritorio Gamer Ergonômica Dunamis Preta Marqs Home Reclinável 180kg Resistente Giratória Confortavel Computador",
       "preco": 481.16,
@@ -9754,6 +10144,7 @@
       "preco_medio": 481.16
     },
     {
+      "item_id": "MLB25120687",
       "oferta_id": "459bb6c8a10153cb82ac",
       "titulo": "Ração Gran Plus Choice Gatos Adulto Frango E Carne 10,1kg",
       "preco": 110.68,
@@ -9779,6 +10170,7 @@
       "preco_medio": 110.68
     },
     {
+      "item_id": "MLB70081789",
       "oferta_id": "d1074c04748b02d7a73f",
       "titulo": "Aquecedor Elétrico Compacto Domestico Quarto Sala Escritório Quartzo Com 2 Potências 400w 800w Portátil Shokki",
       "preco": 123.4,
@@ -9804,6 +10196,7 @@
       "preco_medio": 124.7
     },
     {
+      "item_id": "MLB28333069",
       "oferta_id": "b27894b1a3c8991a6493",
       "titulo": "Armário De Cozinha Completa Modulada com Balcão para Cooktop Madesa Reims GRRM31000109 Com Armário Branco",
       "preco": 1536.39,
@@ -9829,6 +10222,7 @@
       "preco_medio": 1536.39
     },
     {
+      "item_id": "MLB68723058",
       "oferta_id": "34933baf72c05258d6cd",
       "titulo": "Lavadora Lava Jato Portátil de Alta Pressão Automotiva Sem Fio Hidrolavadora Recarregável com 2 Baterias + Maleta Completa Bivolt Hardline",
       "preco": 96.99,
@@ -9854,6 +10248,7 @@
       "preco_medio": 96.99
     },
     {
+      "item_id": "MLB56236618",
       "oferta_id": "245d78f819a903ea7de5",
       "titulo": "Fralda Geriatrica Adulto Confort Master Pants | Tamanho P/M | 32 Unidades",
       "preco": 71.9,
@@ -9879,6 +10274,7 @@
       "preco_medio": 71.9
     },
     {
+      "item_id": "MLB50372838",
       "oferta_id": "7252597d187a9438a6bc",
       "titulo": "Kit C/ 2 Câmeras Lâmpada Ip Wi-fi 360° | Visão Colorida | Áudio | Sensor De Movimento | E27 App Yoosee- Hw",
       "preco": 113.99,
@@ -9904,6 +10300,7 @@
       "preco_medio": 113.99
     },
     {
+      "item_id": "MLB23414010",
       "oferta_id": "f569d6fc4334effff8eb",
       "titulo": "Aspirador De Pó Vertical E Portátil Wap High Speed Plus 1350w 1,2 Litros Filtro Hepa Tecnologia Cyclone 3 Em 1",
       "preco": 124.56,
@@ -9929,6 +10326,7 @@
       "preco_medio": 124.56
     },
     {
+      "item_id": "MLB29089153",
       "oferta_id": "fdf543f6b34f2525730f",
       "titulo": "Ração Golden Special Gatos Adultos Frango E Carne 10,1 Kg",
       "preco": 108.72,
@@ -9954,6 +10352,7 @@
       "preco_medio": 118.065
     },
     {
+      "item_id": "MLB22327695",
       "oferta_id": "7dcc764c73aeba642473",
       "titulo": "Media Receiver Pioneer Mvh-x3000br Bluetooth Spotify Usb",
       "preco": 667.0,
@@ -9979,6 +10378,7 @@
       "preco_medio": 667.0
     },
     {
+      "item_id": "MLB23088087",
       "oferta_id": "3ff12a6cf4874b4b903d",
       "titulo": "Omron HEM-7122 Medidor De Pressão Digital Pilha AA",
       "preco": 133.67,
@@ -10004,6 +10404,7 @@
       "preco_medio": 133.67
     },
     {
+      "item_id": "MLB21850274",
       "oferta_id": "05050c98600c0bb363dd",
       "titulo": "Churrasqueira Elétrica De Mesa Elgin 42CHU2001000 Cor Preta",
       "preco": 75.9,
@@ -10029,6 +10430,7 @@
       "preco_medio": 75.9
     },
     {
+      "item_id": "MLB54543594",
       "oferta_id": "657a73a6578dd72c8b60",
       "titulo": "Camera Segurança Wifi Yoosee Mini Dome Full Hd Vianova Branco",
       "preco": 76.49,
@@ -10054,6 +10456,7 @@
       "preco_medio": 76.49
     },
     {
+      "item_id": "MLB53124446",
       "oferta_id": "268fb63233bb4f405f04",
       "titulo": "Câmera Segurança Wi-fi Ip Dual com Sirene Visão Noturna Colorida 355° App Icsee Prova Dágua Cor Preto - Hw",
       "preco": 154.99,
@@ -10079,6 +10482,7 @@
       "preco_medio": 154.99
     },
     {
+      "item_id": "MLB27918094",
       "oferta_id": "38300cbc22e59212292a",
       "titulo": "Kit 2 Pneus 175/65R14 Firestone F-600 82T Aro 14",
       "preco": 606.79,
@@ -10104,6 +10508,7 @@
       "preco_medio": 606.79
     },
     {
+      "item_id": "MLB56961557",
       "oferta_id": "b8d7a90f4013a66bace9",
       "titulo": "Notebook Positivo Vision i15M com Minitela, Intel Core 3, 8GB de RAM, SSD de 256GB e Tela de 15,6&quot; Full HD IPS Antirreflexo",
       "preco": 2399.88,
@@ -10129,6 +10534,7 @@
       "preco_medio": 2414.49
     },
     {
+      "item_id": "MLB67819107",
       "oferta_id": "9e425e7774beed63a72b",
       "titulo": "Parafusadeira Furadeira De Impacto 2 Baterias 20v Fonte Carregamento Bivolt Pfv238i Vonder",
       "preco": 284.65,
@@ -10154,6 +10560,7 @@
       "preco_medio": 284.65
     },
     {
+      "item_id": "MLB35276826",
       "oferta_id": "e6ce35916e292c143707",
       "titulo": "Sanduicheira Grill 2 Em 1 Kian Preta Elétrica 750w Cor Preto,Seu Mixto Quente Ultra Rápido, e Outros Petiscos",
       "preco": 56.9,
@@ -10179,6 +10586,7 @@
       "preco_medio": 56.9
     },
     {
+      "item_id": "MLB28717101",
       "oferta_id": "a712e96dc42efd943fbf",
       "titulo": "Cama Elástica Pula Pula Infantil Trampolim 1,4 Metros Atentu",
       "preco": 226.11,
@@ -10204,6 +10612,7 @@
       "preco_medio": 226.11
     },
     {
+      "item_id": "MLB45588941",
       "oferta_id": "91d7839590022f38ae15",
       "titulo": "Desodorante Colônia Malbec Tradicional Fragrância Amadeirada O Boticário 100ml",
       "preco": 161.91,
@@ -10229,6 +10638,7 @@
       "preco_medio": 161.91
     },
     {
+      "item_id": "MLB47308422",
       "oferta_id": "e1fbf13e87718fd86064",
       "titulo": "Xiaomi Poco X7 Pro 5g 12ram /512 Gb Global Cor Preto",
       "preco": 2170.28,
@@ -10254,6 +10664,7 @@
       "preco_medio": 2170.28
     },
     {
+      "item_id": "MLB66453791",
       "oferta_id": "b620a7d9fa7f312522a4",
       "titulo": "Papel Higiênico Familiar Folha Dupla 24 Rolos",
       "preco": 33.9,
@@ -10279,6 +10690,7 @@
       "preco_medio": 33.9
     },
     {
+      "item_id": "MLB45889825",
       "oferta_id": "3a973e6794e2073b8fc6",
       "titulo": "Esmerilhadeira Lixadeira Angular Hanabi 115mm 880w Profissional Cor Azul-petróleo Frequência 60 Hz",
       "preco": 126.09,
@@ -10304,6 +10716,7 @@
       "preco_medio": 126.09
     },
     {
+      "item_id": "MLB22655991",
       "oferta_id": "36282558f1166223d99d",
       "titulo": "Processador de Áudio Digital Automotivo Stetsom STX2448 com Crossover e Equalizador",
       "preco": 248.9,
@@ -10329,6 +10742,7 @@
       "preco_medio": 248.9
     },
     {
+      "item_id": "MLB54245381",
       "oferta_id": "a5896b45b6bae1487f60",
       "titulo": "Kit Kemei Máquina de Corte KM-2299 e Acabamento KM-1102 Bivolt",
       "preco": 131.92,
@@ -10354,6 +10768,7 @@
       "preco_medio": 131.92
     },
     {
+      "item_id": "MLB29187736",
       "oferta_id": "fc42f11449817389c1d2",
       "titulo": "Lavadora De Alta Pressão Vonder 1400w Lav 1600 Amarelo 127 V",
       "preco": 311.52,
@@ -10379,6 +10794,7 @@
       "preco_medio": 311.52
     },
     {
+      "item_id": "MLB18423764",
       "oferta_id": "7bd7373baa203d322a98",
       "titulo": "Perfume Rabanne Invictus Eau De Toilette 200 ml Masculino",
       "preco": 539.99,
@@ -10404,6 +10820,7 @@
       "preco_medio": 539.99
     },
     {
+      "item_id": "MLB27074522",
       "oferta_id": "d8af11fc79cf0131f848",
       "titulo": "Transformador 5000va De 110 Para 220 E 220v Para 110v Bivolt 12000 Btus Conversor Voltagem 5kva Energia Ar Condicionado Impressoras Brother Microondas Máquina Costura Geladeira Lavar Roupas 127v 127",
       "preco": 169.0,
@@ -10429,6 +10846,7 @@
       "preco_medio": 169.0
     },
     {
+      "item_id": "MLB50368081",
       "oferta_id": "badce56c33a20b7fab13",
       "titulo": "Câmera de Segurança IP Wi-Fi Lâmpada E27 HW 360° Full HD com Visão Noturna e Áudio - HW",
       "preco": 52.99,
@@ -10454,6 +10872,7 @@
       "preco_medio": 52.99
     },
     {
+      "item_id": "MLB20862597",
       "oferta_id": "ddeedeb09e6db8dd7fee",
       "titulo": "Aspirador de Pó e Água WAP GTW Inox 15 Barril 1700W com Bocal de Sopro e Acessórios",
       "preco": 385.4,
@@ -10479,6 +10898,7 @@
       "preco_medio": 385.4
     },
     {
+      "item_id": "MLB63673301",
       "oferta_id": "6a780022bed2e43107fa",
       "titulo": "Par Intercomunicador V6 Plus Capacete Comunicador Sem Fio Bluetooth Moto Par Fone De Ouvido Para Capacete Kit Conversar Moto Garupa",
       "preco": 265.9,
@@ -10504,6 +10924,7 @@
       "preco_medio": 265.9
     },
     {
+      "item_id": "MLB69128500",
       "oferta_id": "c36667c4bb2ccae91a0b",
       "titulo": "Auto Transformador 5000va 110v 220v Ar Até 12000btus Bivolt Preto",
       "preco": 119.99,
@@ -10529,6 +10950,7 @@
       "preco_medio": 119.99
     },
     {
+      "item_id": "MLB29084275",
       "oferta_id": "fa5257effcaece805f01",
       "titulo": "Yves Saint Laurent Myslf Edp - Perfume Masculino 100ml Volume da unidade 100 mL",
       "preco": 666.15,
@@ -10554,6 +10976,7 @@
       "preco_medio": 666.15
     },
     {
+      "item_id": "MLB16602519",
       "oferta_id": "7b7352b653d2c3d4f8b7",
       "titulo": "Liquidificador Full 1400w 15 Velocidades Oliq610 Preto Oster",
       "preco": 177.89,
@@ -10579,6 +11002,7 @@
       "preco_medio": 177.89
     },
     {
+      "item_id": "MLB46671029",
       "oferta_id": "c5ce976ceb3631de586f",
       "titulo": "Cooktop 4 Bocas Atlas Agile Up Mesa Vidro Mega Chama Bivolt",
       "preco": 336.51,
@@ -10604,6 +11028,7 @@
       "preco_medio": 336.51
     },
     {
+      "item_id": "MLB25042668",
       "oferta_id": "1493137ea09149a57240",
       "titulo": "Panela De Pressão Elétrica Itatiaia Essencial 3 Litros Inox",
       "preco": 211.5,
@@ -10629,6 +11054,7 @@
       "preco_medio": 211.5
     },
     {
+      "item_id": "MLB32978518",
       "oferta_id": "b53892cd47052dac905e",
       "titulo": "Lavadora Alta Pressão 1400w Lav 1600 Vonder 220v",
       "preco": 311.92,
@@ -10654,6 +11080,7 @@
       "preco_medio": 311.92
     },
     {
+      "item_id": "MLB66597831",
       "oferta_id": "9b2be6c87a219a7ef425",
       "titulo": "Omega Plus 240 Caps Dark Lab",
       "preco": 179.9,
@@ -10679,6 +11106,7 @@
       "preco_medio": 179.9
     },
     {
+      "item_id": "MLB37805131",
       "oferta_id": "ec1bef54ab76328a9602",
       "titulo": "Jogo 100 Peças Chaves De Fenda/ Phillips E Bits ForTG Pro FORTGPRO-FG8193",
       "preco": 117.9,
@@ -10704,6 +11132,7 @@
       "preco_medio": 117.9
     },
     {
+      "item_id": "MLB65476462",
       "oferta_id": "f45e950ac844cf27726c",
       "titulo": "Hoverboard Skate Elétrico Roxo 6,5 Polegadas Bluetooth Cores",
       "preco": 514.28,
@@ -10729,6 +11158,7 @@
       "preco_medio": 514.28
     },
     {
+      "item_id": "MLB44302915",
       "oferta_id": "1fc41a60989ebc7d0e62",
       "titulo": "Ar Condicionado Split Hi Wall TCL T-Pro 2.0 Inverter 9.000 Btus Frio R-32",
       "preco": 1569.0,
@@ -10754,6 +11184,7 @@
       "preco_medio": 1569.0
     },
     {
+      "item_id": "MLB51436469",
       "oferta_id": "76432a32b0174b36b85e",
       "titulo": "Fritadeira E Forno Elétrico Style Oven Fry Elgin 10l Preto",
       "preco": 251.96,
@@ -10779,6 +11210,7 @@
       "preco_medio": 251.96
     },
     {
+      "item_id": "MLB53429974",
       "oferta_id": "ccf5fd80ca87da730888",
       "titulo": "Vittak Cesto De Roupa Bambu 72 Litros Dobrável Retangular Com Tampa E Forro",
       "preco": 57.9,
@@ -10804,6 +11236,7 @@
       "preco_medio": 57.9
     },
     {
+      "item_id": "MLB61455819",
       "oferta_id": "ccf9741c7f2797c91909",
       "titulo": "Monitor Gamer Aoc Agon G50 24 144hz 0,5ms 24g50f Preto",
       "preco": 642.0,
@@ -10829,6 +11262,7 @@
       "preco_medio": 642.0
     },
     {
+      "item_id": "MLB60088566",
       "oferta_id": "41d34fdced7dd6633d76",
       "titulo": "Chave De Impacto Parafusadeira Several Furadeira Recarregável 21v Com Acessórios E Maleta 2600mah 2 Baterias",
       "preco": 250.52,
@@ -10854,6 +11288,7 @@
       "preco_medio": 250.52
     },
     {
+      "item_id": "MLB45892583",
       "oferta_id": "243272af2938f11d1018",
       "titulo": "Estante Armário Prateleira de Aço 6 Bandejas Organizador Galvanizada Suporta 150kg 198cm x 90cm x 28cm",
       "preco": 173.55,
@@ -10879,6 +11314,7 @@
       "preco_medio": 173.55
     },
     {
+      "item_id": "MLB52911735",
       "oferta_id": "ea09353992b0943be625",
       "titulo": "Cadeira De Escritório Ergonômica Giratória Boston G100 Com Estofado Mesh Luvinco Com Ajuste Lombar",
       "preco": 446.0,
@@ -10904,6 +11340,7 @@
       "preco_medio": 446.0
     },
     {
+      "item_id": "MLB50744233",
       "oferta_id": "58a4b9468fb0f1a961ad",
       "titulo": "Maquininha De Cartão Mercado Pago Point Pro 3 4g Wifi E Nfc Vivo",
       "preco": 119.9,
@@ -10929,6 +11366,7 @@
       "preco_medio": 119.9
     },
     {
+      "item_id": "MLB47688901",
       "oferta_id": "09ab744fe16e3d7967e5",
       "titulo": "Soprador de Folhas Profissional a Gasolina MULLTX 2T 25.4cc 0,9HP 280km/h Amarelo",
       "preco": 288.77,
@@ -10954,6 +11392,7 @@
       "preco_medio": 288.77
     },
     {
+      "item_id": "MLB18238728",
       "oferta_id": "9fe24b7289019a618531",
       "titulo": "Aspirador de Pó Vertical Electrolux 1450W STK15 com Fio Portátil de Mão 2 em 1 e 1,6 Litros de capacidade com Filtro Hepa Cinza-escuro",
       "preco": 175.78,
@@ -10979,6 +11418,7 @@
       "preco_medio": 175.78
     },
     {
+      "item_id": "MLB69440329",
       "oferta_id": "160d8e0c329279c25f5f",
       "titulo": "Monitor Gamer Gawfolk Curvo 34&quot; Ultrawide WQHD 240Hz, com FreeSync e Alto-Falantes",
       "preco": 1757.35,
@@ -11004,6 +11444,7 @@
       "preco_medio": 1757.35
     },
     {
+      "item_id": "MLB52897777",
       "oferta_id": "30dc91e60cc9ff39c796",
       "titulo": "Console Sony Playstation 5 Edição Slim Disk 1tb Branco + Controle Sem Fio Dualsense Ps5 Branco",
       "preco": 4275.21,
@@ -11029,6 +11470,7 @@
       "preco_medio": 4275.21
     },
     {
+      "item_id": "MLB47098336",
       "oferta_id": "df39985f1da5b8a22837",
       "titulo": "Câmera Interna Wi-fi Full Hd Im1 2mp Branca Intelbras Cor Branco",
       "preco": 149.9,
@@ -11054,6 +11496,7 @@
       "preco_medio": 149.9
     },
     {
+      "item_id": "MLB53210213",
       "oferta_id": "9e30b327d2a76c1876eb",
       "titulo": "Carregador Inteligente De Bateria Automotiva Several Importados 12v Portátil Rápido Para Carro Moto E Veículos Several",
       "preco": 57.39,
@@ -11079,6 +11522,7 @@
       "preco_medio": 57.39
     },
     {
+      "item_id": "MLB51539641",
       "oferta_id": "7d498b0019a4e568f8b8",
       "titulo": "Projeto Smart Portátil TV Hd 4k Bluetooth Wifi Cor Branco Android 11.0 5g Cinema em Casa Imagem Nítida Compatível Com Diversos Dispositivos Hy300 Com Controle VLX",
       "preco": 211.41,
@@ -11104,6 +11548,7 @@
       "preco_medio": 211.41
     },
     {
+      "item_id": "MLB58858507",
       "oferta_id": "1743593e4a87a3ae408e",
       "titulo": "Purificador de Água Gelada Fria e Natural Elétrico Compacto Eletrônico placa Filtro refil 6 meses ou 3000l Painel Touch Bivolt Preto PE12B Electrolux",
       "preco": 568.65,
@@ -11129,6 +11574,7 @@
       "preco_medio": 568.65
     },
     {
+      "item_id": "MLB38655102",
       "oferta_id": "098a1647671c6ea1255b",
       "titulo": "Papel Higiênico Supra Folha Tripla 24 Rolos",
       "preco": 35.25,
@@ -11154,6 +11600,7 @@
       "preco_medio": 35.25
     },
     {
+      "item_id": "MLB19049038",
       "oferta_id": "c5d03524d476c87988bb",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Chocolate",
       "preco": 183.9,
@@ -11179,6 +11626,7 @@
       "preco_medio": 183.9
     },
     {
+      "item_id": "MLB41863403",
       "oferta_id": "6066e57bdc57953834db",
       "titulo": "Monitor PC Gamer LG 27” IPS, Full HD, 100Hz, HDMI - 27MS500-B Bivolt",
       "preco": 629.1,
@@ -11204,6 +11652,7 @@
       "preco_medio": 629.1
     },
     {
+      "item_id": "MLB44540032",
       "oferta_id": "b3433147085731041ce7",
       "titulo": "Aparador de Pelos Super Groom 10 Mondial Bivolt BG-03",
       "preco": 89.1,
@@ -11229,6 +11678,7 @@
       "preco_medio": 89.1
     },
     {
+      "item_id": "MLB47106610",
       "oferta_id": "bc49b6832266fd98217a",
       "titulo": "Celular Samsung Galaxy A36 5g 256gb 8gb Ram Branco",
       "preco": 1999.0,
@@ -11254,6 +11704,7 @@
       "preco_medio": 1949.0
     },
     {
+      "item_id": "MLB18953093",
       "oferta_id": "51697f9da24b06fdfc0e",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Baunilha",
       "preco": 184.9,
@@ -11279,6 +11730,7 @@
       "preco_medio": 184.9
     },
     {
+      "item_id": "MLB38223355",
       "oferta_id": "e775956d8d51ae0ef942",
       "titulo": "Smart TV de 24&quot; Philco Roku TV PTV24G5YR2CP LED - Preto",
       "preco": 1195.08,
@@ -11304,6 +11756,7 @@
       "preco_medio": 1195.08
     },
     {
+      "item_id": "MLB48515682",
       "oferta_id": "7c7c641d116eb32d6608",
       "titulo": "Kit Wella Invigo Nutri Enrich Sh, Cond E Válvulas",
       "preco": 280.96,
@@ -11329,6 +11782,7 @@
       "preco_medio": 280.96
     },
     {
+      "item_id": "MLB15388664",
       "oferta_id": "255185b63cc80ccadfdf",
       "titulo": "Batedeira Planetária, Mondial, 700W - BP-01P-B",
       "preco": 250.49,
@@ -11354,6 +11808,7 @@
       "preco_medio": 250.49
     },
     {
+      "item_id": "MLB48594449",
       "oferta_id": "b09f0864196aace72350",
       "titulo": "Antena Digital 4k Hd Interna Externa Para Tv Samsung LG Smart Led Lcd 3d Uhf Cabo Longo Com Base Magnética",
       "preco": 29.89,
@@ -11379,6 +11834,7 @@
       "preco_medio": 29.89
     },
     {
+      "item_id": "MLB41106126",
       "oferta_id": "3295f45957370ce71e66",
       "titulo": "Smart TV Profissional LG 43&quot; Full HD Processador a5 Ger6 AI Alexa Integrada webOS 23 – 43LR671C-B",
       "preco": 1927.2,
@@ -11404,6 +11860,7 @@
       "preco_medio": 1927.2
     },
     {
+      "item_id": "MLB24728344",
       "oferta_id": "216c9b63a8ff866c4a1e",
       "titulo": "Ração Seca Quatree Supreme Gatos Adultos Castrados Salmão Batata 10kg",
       "preco": 162.44,
@@ -11429,6 +11886,7 @@
       "preco_medio": 162.44
     },
     {
+      "item_id": "MLB72670613",
       "oferta_id": "45997157955082372bff",
       "titulo": "Aquecedor Elétrico 2 Em 1 Kian Preto 1500w Aq100 2 Níveis De Aquecimento + Ventilação",
       "preco": 97.99,
@@ -11454,6 +11912,7 @@
       "preco_medio": 97.99
     },
     {
+      "item_id": "MLB68344553",
       "oferta_id": "d12af0ab981dcc6f1b01",
       "titulo": "Notebook Acer Gamer Nitro V15 Ryzen 7 7735hs 16gb Rtx4050 1tb Ssd Linux Tela 165hz Full Hd 15.6 Anv15-41-r8zp",
       "preco": 6303.93,
@@ -11479,6 +11938,7 @@
       "preco_medio": 6303.93
     },
     {
+      "item_id": "MLB35556218",
       "oferta_id": "0f8273178a590d129355",
       "titulo": "Ventilador De Teto C/ Controle 6 Vel. Fenix Ventisol",
       "preco": 256.68,
@@ -11504,6 +11964,7 @@
       "preco_medio": 256.68
     },
     {
+      "item_id": "MLB28659278",
       "oferta_id": "83391aacca521180c38e",
       "titulo": "Fechadura Digital Biométrica Kuanttum Delta PRO WiFi Senha App Tuya Preta",
       "preco": 338.0,
@@ -11529,6 +11990,7 @@
       "preco_medio": 338.0
     },
     {
+      "item_id": "MLB28467076",
       "oferta_id": "5d51ebe28660a5dd446b",
       "titulo": "Bicicleta Ergométrica Spinning Fitness Sport Inércia 8kg Preta",
       "preco": 496.8,
@@ -11554,6 +12016,7 @@
       "preco_medio": 524.4
     },
     {
+      "item_id": "MLB38176139",
       "oferta_id": "7a726eca8b0fb52250b9",
       "titulo": "Fone de Ouvido Bluetooth 5.4 soundcore P30i da Anker, Cancelamento de Ruído Adaptativo, Graves Poderosos, 45H de Reprodução, Estojo 2-em-1 com Suporte para Celular, IP54, Fone sem fio TWS, Preto",
       "preco": 205.0,
@@ -11579,6 +12042,7 @@
       "preco_medio": 205.0
     },
     {
+      "item_id": "MLB26703117",
       "oferta_id": "fa7806cd791e3d41666c",
       "titulo": "Chapinha Profissional MQ Pro 480 Turbo Cor Black E Detalhes Silver",
       "preco": 309.9,
@@ -11604,6 +12068,7 @@
       "preco_medio": 309.9
     },
     {
+      "item_id": "MLB19109935",
       "oferta_id": "e746402a7e389ad0e9d6",
       "titulo": "Esmerilhadeira angular Bosch Professional GWS 700 azul 710 W",
       "preco": 299.9,
@@ -11629,6 +12094,7 @@
       "preco_medio": 285.78
     },
     {
+      "item_id": "MLB44470347",
       "oferta_id": "e86f7124051882e43a22",
       "titulo": "Percarbonato De Sódio 100% Tira Manchas Calisul - Roupas Brancas e Coloridas",
       "preco": 21.53,
@@ -11654,6 +12120,7 @@
       "preco_medio": 21.53
     },
     {
+      "item_id": "MLB67640933",
       "oferta_id": "22b0afd61f5d831ff9a8",
       "titulo": "Carregador Portátil Power Bank Turbo voo transporte aéreo 10000mah Universal Para iPhone Samsung Motorlola Xiaomi 22.5w Com Display Digital Dtimp",
       "preco": 65.0,
@@ -11679,6 +12146,7 @@
       "preco_medio": 65.0
     },
     {
+      "item_id": "MLB26417959",
       "oferta_id": "63c99944cd927ba6f610",
       "titulo": "Varal De Chão Grande De Roupas 3 Andares Dobrável Cor Azul Kontuz 170 cm",
       "preco": 78.9,
@@ -11704,6 +12172,7 @@
       "preco_medio": 78.9
     },
     {
+      "item_id": "MLB29450079",
       "oferta_id": "adcf66b460a87a9e524c",
       "titulo": "Escova Secadora By Juliette ES-JU-01 3 em 1 1300W Mondial",
       "preco": 134.01,
@@ -11729,6 +12198,7 @@
       "preco_medio": 134.01
     },
     {
+      "item_id": "MLB24081502",
       "oferta_id": "6cd8b8a1e6534e1770e2",
       "titulo": "Kit 2x Creatina 300g Creatina Monohidratada Max Titanium Sem Sabor Alta Pureza",
       "preco": 85.4,
@@ -11754,6 +12224,7 @@
       "preco_medio": 85.4
     },
     {
+      "item_id": "MLB22511808",
       "oferta_id": "73759b71fdc902577298",
       "titulo": "Aspirador de Pó Vertical e Portátil WAP High Speed Plus 1350W 3 em 1",
       "preco": 123.99,
@@ -11779,6 +12250,7 @@
       "preco_medio": 123.99
     },
     {
+      "item_id": "MLB38520699",
       "oferta_id": "6cbbfa7504304504581b",
       "titulo": "Caixa de Som Boombox Plus AIWA BBS-01-LBL 200W Bluetooth 30H IP66 USB RGB",
       "preco": 1254.0,
@@ -11804,6 +12276,7 @@
       "preco_medio": 1254.0
     },
     {
+      "item_id": "MLB44338678",
       "oferta_id": "113a99a71f69cea3bc92",
       "titulo": "Carrinho De Mão Extra Forte 65 Litros 77714/435 Tramontina Cor Cinza Claro",
       "preco": 187.84,
@@ -11829,6 +12302,7 @@
       "preco_medio": 187.84
     },
     {
+      "item_id": "MLB53188213",
       "oferta_id": "3e2f1ae65bce5a283b93",
       "titulo": "Bicicleta Ergométrica Fitness Para Cardio E Musculação 6kg Inercia Com Base Cor Preto E Rosa Marca Sevenfit",
       "preco": 589.0,
@@ -11854,6 +12328,7 @@
       "preco_medio": 589.0
     },
     {
+      "item_id": "MLB35655836",
       "oferta_id": "791efbfdec94a7fa8062",
       "titulo": "Controle Gamesir T4 Nova Lite Sem Fio Para Pc Switch Android Ios Steam Celular Hall Effect Cor Space Purple",
       "preco": 174.5,
@@ -11879,6 +12354,7 @@
       "preco_medio": 174.5
     },
     {
+      "item_id": "MLB62147806",
       "oferta_id": "f8e22a029e49ffe8d581",
       "titulo": "Soundbar JBL Cinema SB595 Bluetooth 220w 3.1.2 Canais - JBLSB595BLKBR",
       "preco": 1599.0,
@@ -11904,6 +12380,7 @@
       "preco_medio": 1599.0
     },
     {
+      "item_id": "MLB50829128",
       "oferta_id": "ed76f4c9636be02d4f5c",
       "titulo": "Cooktop 5 Bocas A Gás Atlas Agile Up Mega Chama Preto",
       "preco": 386.91,
@@ -11929,6 +12406,7 @@
       "preco_medio": 386.91
     },
     {
+      "item_id": "MLB28131416",
       "oferta_id": "06117bc0b3b6cf4ea14a",
       "titulo": "Tapete Higiênico 50 Unidades (60x55) Descartável Manta Fralda Absorvente Gel Para Cachorro Pet Cão",
       "preco": 48.0,
@@ -11954,6 +12432,7 @@
       "preco_medio": 48.0
     },
     {
+      "item_id": "MLB45459312",
       "oferta_id": "3e7c1eadfc406a2c8082",
       "titulo": "Furadeira de Bancada FortG Pro 1/2&quot; 350W Bivolt 5 Velocidades",
       "preco": 475.37,
@@ -11979,6 +12458,7 @@
       "preco_medio": 475.37
     },
     {
+      "item_id": "MLB28617043",
       "oferta_id": "8b64ebfc2e660ea4fafe",
       "titulo": "Carrinho de Bebê Passeio Bambinelli Fox Reclinável Preto 2023",
       "preco": 434.13,
@@ -12004,6 +12484,7 @@
       "preco_medio": 434.13
     },
     {
+      "item_id": "MLB36688353",
       "oferta_id": "0bc5f3831967a1c4a27b",
       "titulo": "Fritadeira Elétrica Air Fryer Antiaderente WAP Oven 12 Litros com Painel Digital",
       "preco": 457.69,
@@ -12029,6 +12510,7 @@
       "preco_medio": 457.69
     },
     {
+      "item_id": "MLB66053625",
       "oferta_id": "e4dab6bd842a7ca9915f",
       "titulo": "200 Metros Bandeirinhas Festa Junina Arraiá São João Bandeirolas Coloridas Para Decoração Interna Enfeite De Festa Junina E Arraiá Completo",
       "preco": 49.65,
@@ -12054,6 +12536,7 @@
       "preco_medio": 49.65
     },
     {
+      "item_id": "MLB65574727",
       "oferta_id": "c0098186914a1ecb1553",
       "titulo": "Guarda Roupa Casal 8 Portas 4 Gavetas Paris Espresso Móveis Onix",
       "preco": 989.99,
@@ -12079,6 +12562,7 @@
       "preco_medio": 989.99
     },
     {
+      "item_id": "MLB53376207",
       "oferta_id": "0ebff09753458d5cb935",
       "titulo": "Perfurador Solo Trado Gasolina com 3 Brocas Extensão 1,20m Carbon Fak Laranja",
       "preco": 839.0,
@@ -12104,6 +12588,7 @@
       "preco_medio": 839.0
     },
     {
+      "item_id": "MLB53857717",
       "oferta_id": "696259319a9d36f6b2ef",
       "titulo": "Kit 2 Câmeras Lampada De Segurança Ip Wifi Com Visão Noturna Interna Externa App Yoosee Espiã 360º Cor Branco Casenn",
       "preco": 111.19,
@@ -12129,6 +12614,7 @@
       "preco_medio": 111.19
     },
     {
+      "item_id": "MLB18572364",
       "oferta_id": "52fb86ab81959a3cb8c9",
       "titulo": "Secador de Cabelo Profissional Lizze Extreme",
       "preco": 342.33,
@@ -12154,6 +12640,7 @@
       "preco_medio": 361.35
     },
     {
+      "item_id": "MLB28530314",
       "oferta_id": "c0661b65236797c9f59f",
       "titulo": "Chave De Impacto A Bateria 21V 1/2&quot; Pol 2400 Rpm Bivolt Com Acessórios E Maleta The Black Tools",
       "preco": 289.0,
@@ -12179,6 +12666,7 @@
       "preco_medio": 289.0
     },
     {
+      "item_id": "MLB52429969",
       "oferta_id": "81b57c9680dbc3b596bb",
       "titulo": "Cadeira Escritório Presidente Ergonômica NR17 Marqs Home Arcanis Preta com Apoio Lombar e Encosto Mesh Premium",
       "preco": 436.0,
@@ -12204,6 +12692,7 @@
       "preco_medio": 436.0
     },
     {
+      "item_id": "MLB28863589",
       "oferta_id": "476a2e67b9170bf0fb11",
       "titulo": "Varal De Chão Abas Slim Dobrável Retrátil Aço Reforçado Mor",
       "preco": 76.53,
@@ -12229,6 +12718,7 @@
       "preco_medio": 76.53
     },
     {
+      "item_id": "MLB21555776",
       "oferta_id": "fc0272cb1be1dd052a90",
       "titulo": "Multivitamínico 120 Cáps. Growth Supplements - Sabor Neutro (Nova Fórmula)",
       "preco": 49.9,
@@ -12254,6 +12744,7 @@
       "preco_medio": 49.9
     },
     {
+      "item_id": "MLB30999973",
       "oferta_id": "bda64cb9cceae9c64c5a",
       "titulo": "Smart Tv Samsung LS32BETBLGGXZD 32&quot; HD Led",
       "preco": 2000.0,
@@ -12279,6 +12770,7 @@
       "preco_medio": 2000.0
     },
     {
+      "item_id": "MLB19481428",
       "oferta_id": "e88de5f37b7a9f6cf3f8",
       "titulo": "Cooktop de Indução 4 Bocas Preto com Trava de Segurança Dako Supreme",
       "preco": 983.0,
@@ -12304,6 +12796,7 @@
       "preco_medio": 983.0
     },
     {
+      "item_id": "MLB25474028",
       "oferta_id": "30c7b99afd6d53bf3a24",
       "titulo": "Câmera Ip A8 App Icsee Infravermelho Prova D&amp;quotágua Externa Wifi Hd Cor Branco",
       "preco": 85.9,
@@ -12329,6 +12822,7 @@
       "preco_medio": 85.9
     },
     {
+      "item_id": "MLB22535617",
       "oferta_id": "17dd7c6ae612d52f7df3",
       "titulo": "Cadeira Gamer com Apoio de Pés Level Preta Healer",
       "preco": 465.45,
@@ -12354,6 +12848,7 @@
       "preco_medio": 465.45
     },
     {
+      "item_id": "MLB32717965",
       "oferta_id": "3ff1bcf6eaeb371f0440",
       "titulo": "Conj de Panelas 8 Peças Ceramic Life Smart Plus Vanilla - Brinox",
       "preco": 1099.99,
@@ -12379,6 +12874,7 @@
       "preco_medio": 1099.99
     },
     {
+      "item_id": "MLB62998911",
       "oferta_id": "d11e01b55543404496df",
       "titulo": "Impressora Multifuncional HP DeskJet Ink Advantage 2975 Colorida 1 USB 2.0 de alta velocidade Wi-Fi de banda dupla - 100 a 240 VCA - AJ4Y4A#AK4",
       "preco": 445.0,
@@ -12404,6 +12900,7 @@
       "preco_medio": 445.0
     },
     {
+      "item_id": "MLB39960346",
       "oferta_id": "50fb769b46044b01c42c",
       "titulo": "Controle Sem Fio Joystick Bluetooth Para Ps4 Videogame Tv Samsung Pc P4 Ps 4 Dual Shock Manete Pc Gamer Tv Smart Controle Bluetooth Celular Headset Sem Fio Com P2 - Marca Redfin Preto",
       "preco": 54.88,
@@ -12429,6 +12926,7 @@
       "preco_medio": 54.88
     },
     {
+      "item_id": "MLB23851475",
       "oferta_id": "347be933d527db473071",
       "titulo": "Soprador de folhas lateral Fak260S 2T 26Cc 0,90Hp Carbon Fak cor laranja profissional a gasolina",
       "preco": 359.0,
@@ -12454,6 +12952,7 @@
       "preco_medio": 359.0
     },
     {
+      "item_id": "MLB51032833",
       "oferta_id": "3db22bd137dbc61c8e60",
       "titulo": "Placa De Vídeo Msi Rtx 5060 8gb Gddr7 128 Bits Shadow 2x Oc",
       "preco": 2499.0,
@@ -12479,6 +12978,7 @@
       "preco_medio": 2499.0
     },
     {
+      "item_id": "MLB58934030",
       "oferta_id": "ed737211ebc89b2fe0b2",
       "titulo": "Micro-Ondas Philco 28L Preto Espelhado Flat PMO30F",
       "preco": 599.0,
@@ -12504,6 +13004,7 @@
       "preco_medio": 599.0
     },
     {
+      "item_id": "MLB23202980",
       "oferta_id": "0a1afcc4c6abd81b432c",
       "titulo": "Cooktop 5 Bocas Dako Supreme Com Tripla Chama Preto Bivolt Preto",
       "preco": 584.15,
@@ -12529,6 +13030,7 @@
       "preco_medio": 584.15
     },
     {
+      "item_id": "MLB19563319",
       "oferta_id": "45554a5565b205024aa2",
       "titulo": "Fogão Brastemp 4 Bocas Inox Bfo4nbr - Bivolt",
       "preco": 1282.4,
@@ -12554,6 +13056,7 @@
       "preco_medio": 1282.4
     },
     {
+      "item_id": "MLB25708528",
       "oferta_id": "d6bf35e1440f9aaebe4b",
       "titulo": "Shampoo Redutor de Grisalhos Grecin Control GX Para Todas os Tons Cabelo 118ml",
       "preco": 71.33,
@@ -12579,6 +13082,7 @@
       "preco_medio": 71.33
     },
     {
+      "item_id": "MLB57489948",
       "oferta_id": "10bb458b50825b4e975e",
       "titulo": "Monitor LG UltraGear 27G411A-B 27&quot;,FHD, 144Hz, 1ms (MBR), NVIDIA G-SYNC, AMD FreeSync, HDR10",
       "preco": 787.55,
@@ -12604,6 +13108,7 @@
       "preco_medio": 710.7149999999999
     },
     {
+      "item_id": "MLB17003267",
       "oferta_id": "659595389521b970a9ca",
       "titulo": "Cafeteira Nescafé Dolce Gusto Arno Genio S Plus Dgs2 Preta Cor Preto",
       "preco": 458.31,
@@ -12629,6 +13134,7 @@
       "preco_medio": 458.31
     },
     {
+      "item_id": "MLB29482203",
       "oferta_id": "5e29f9dd942dab0ef697",
       "titulo": "L&amp;quotoréal Professionnel Inforcer Kit Shampoo + Máscara 250ml",
       "preco": 266.99,
@@ -12654,6 +13160,7 @@
       "preco_medio": 232.995
     },
     {
+      "item_id": "MLB19049048",
       "oferta_id": "dac64c3aee9eefb983e6",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Milkshake de Chocolate",
       "preco": 183.9,
@@ -12679,6 +13186,7 @@
       "preco_medio": 183.9
     },
     {
+      "item_id": "MLB64206195",
       "oferta_id": "312e681c27b3de95dedd",
       "titulo": "Caixa Som Philco Extreme 1200w Connection Tws Pcx6900 2 Mic Preto",
       "preco": 910.47,
@@ -12704,6 +13212,7 @@
       "preco_medio": 910.47
     },
     {
+      "item_id": "MLB63777677",
       "oferta_id": "4917bffa06e3d7e08756",
       "titulo": "Smart Tv Samsung 43 Ls43f6000fgxzd Full Hd Led 110v/220v",
       "preco": 1502.77,
@@ -12729,6 +13238,7 @@
       "preco_medio": 2083.885
     },
     {
+      "item_id": "MLB26886277",
       "oferta_id": "f859dda0a184662ed62b",
       "titulo": "Cama Box Baú Casal Colchão Gazin Molas Flora Bege 138x188x63cm",
       "preco": 1175.29,
@@ -12754,6 +13264,7 @@
       "preco_medio": 1175.29
     },
     {
+      "item_id": "MLB13409957",
       "oferta_id": "eca895ac820d240c9cc7",
       "titulo": "Chaleira Elétrica 1,8L 1200W Unitermi Atacama",
       "preco": 38.49,
@@ -12779,6 +13290,7 @@
       "preco_medio": 38.49
     },
     {
+      "item_id": "MLB24428758",
       "oferta_id": "25588b22e250e628a597",
       "titulo": "Vaso Sanitário Monobloco Caixa Acoplada Completo Privada Cor Branco Tubrax - VAB0003",
       "preco": 529.9,
@@ -12804,6 +13316,7 @@
       "preco_medio": 529.9
     },
     {
+      "item_id": "MLB44898097",
       "oferta_id": "dae733ece17daa6944a2",
       "titulo": "Micro-ondas 33l Philco Teclas Fáceis Limpa Fácil 1400w Pm36 127V",
       "preco": 500.12,
@@ -12829,6 +13342,7 @@
       "preco_medio": 500.12
     },
     {
+      "item_id": "MLB22663071",
       "oferta_id": "274bf85b609d6ddf1171",
       "titulo": "Panela De Pressão Brinox Pressure 4,2l Ø20 X 14,5 Cm Vanilla Baunilha",
       "preco": 219.0,
@@ -12854,6 +13368,7 @@
       "preco_medio": 219.0
     },
     {
+      "item_id": "MLB34178051",
       "oferta_id": "42c2949f7f9879346314",
       "titulo": "Café Torrado E Moido Tradicional Pouch 500g Intensidade 8 União Pacote",
       "preco": 19.15,
@@ -12879,6 +13394,7 @@
       "preco_medio": 19.15
     },
     {
+      "item_id": "MLB61862927",
       "oferta_id": "0b955bb6ee48e8ba0d0f",
       "titulo": "Jogo De Panelas Induçao Antiaderente Cerâmica 10 Peças Ppg Pfoa Free Grafite",
       "preco": 615.49,
@@ -12904,6 +13420,7 @@
       "preco_medio": 615.49
     },
     {
+      "item_id": "MLB22246671",
       "oferta_id": "294a7ade398d73efcbbc",
       "titulo": "Notebook Acer Aspire 5 A515-45-R2A3 AMD Ryzen 5 Windows 11 Home 8GB 512GB SSD 15,6&amp;quot Full HD",
       "preco": 3222.81,
@@ -12929,6 +13446,7 @@
       "preco_medio": 3401.855
     },
     {
+      "item_id": "MLB1055308843",
       "oferta_id": "c2a5a8b0662d035744f4",
       "titulo": "iPhone 17 256 GB - Sálvia - Distribuidor Autorizado",
       "preco": 5925.72,
@@ -12954,6 +13472,7 @@
       "preco_medio": 5925.72
     },
     {
+      "item_id": "MLB24076624",
       "oferta_id": "9b7d54c7539a6250b8ad",
       "titulo": "Parafusadeira Furadeira The Black Tools TB12A 3/8 a Bateria Cor Amarelo Frequência 60Hz",
       "preco": 67.8,
@@ -12979,6 +13498,7 @@
       "preco_medio": 67.8
     },
     {
+      "item_id": "MLB53429614",
       "oferta_id": "8e51b982c03ba83d671d",
       "titulo": "Notebook Lenovo Ideapad I5-13420h 8gb 1tb Ssd15.3 Fhd Linux Cinza",
       "preco": 3419.1,
@@ -13004,6 +13524,7 @@
       "preco_medio": 3419.1
     },
     {
+      "item_id": "MLB66517451",
       "oferta_id": "5be3a59e99146690af89",
       "titulo": "Bicicleta Ergométrica Spinning Profissional Inércia 15kg App",
       "preco": 799.0,
@@ -13029,6 +13550,7 @@
       "preco_medio": 799.0
     },
     {
+      "item_id": "MLB22647624",
       "oferta_id": "15f84ff0ad08f060d87c",
       "titulo": "Purificador De Água Ibbl E-due Prata 79073001",
       "preco": 493.0,
@@ -13054,6 +13576,7 @@
       "preco_medio": 476.85
     },
     {
+      "item_id": "MLB17822926",
       "oferta_id": "7513361432facd15f5ba",
       "titulo": "Relógio Casio G-Shock Masculino Carbon GA-2100-1A1DR Preto",
       "preco": 152.36,
@@ -13079,6 +13602,7 @@
       "preco_medio": 152.36
     },
     {
+      "item_id": "MLB44317631",
       "oferta_id": "03e9fc4438fee105cf9d",
       "titulo": "Monitor Gamer LG UltraGear 27” IPS, 180Hz, 1ms (GtG), NVIDIA G-SYNC , AMD FreeSync, HDR10, sRGB 99% - 27GS60F-B",
       "preco": 1010.16,
@@ -13104,6 +13628,7 @@
       "preco_medio": 1009.7
     },
     {
+      "item_id": "MLB18363110",
       "oferta_id": "e5d55dc3407dfee2e83e",
       "titulo": "Micro-ondas Electrolux 31L cor Inox Espelhado com Painel Integrado e Função Tira Odor MI41S",
       "preco": 696.1,
@@ -13129,6 +13654,7 @@
       "preco_medio": 696.1
     },
     {
+      "item_id": "MLB21836282",
       "oferta_id": "f37d6c0cc301912c1ac2",
       "titulo": "Relógio oficial Casio G Shock Gbd-200",
       "preco": 155.8,
@@ -13154,6 +13680,7 @@
       "preco_medio": 155.8
     },
     {
+      "item_id": "MLB45766004",
       "oferta_id": "7995940f37e2eb3f9446",
       "titulo": "Xiaomi Poco X7 Pro Dual SIM 5g 512gb Preto 12ram 50mpx",
       "preco": 2327.99,
@@ -13179,6 +13706,7 @@
       "preco_medio": 2327.99
     },
     {
+      "item_id": "MLB30144703",
       "oferta_id": "3fc3c7a36e624c26d5c5",
       "titulo": "Parafusadeira Furadeira De Impacto The Black Tools Profissional TB-21PX 2 Baterias Com Maleta 60Hz Amarelo",
       "preco": 179.9,
@@ -13204,6 +13732,7 @@
       "preco_medio": 179.9
     },
     {
+      "item_id": "MLB48590295",
       "oferta_id": "0d301680b23f4a1f154e",
       "titulo": "Mala Bordo Cabo Frio Abs Polo King Luxcel Preto",
       "preco": 213.29,
@@ -13229,6 +13758,7 @@
       "preco_medio": 213.29
     },
     {
+      "item_id": "MLB69175240",
       "oferta_id": "bf33414be4eb01c11e3e",
       "titulo": "Chave De Impacto a Bateria Profissional Recarregável 88v 4ah Brushless Parafusadeira Furadeira Alta Potência Sem Escova 2 Baterias MESTRI M-88V",
       "preco": 214.97,
@@ -13254,6 +13784,7 @@
       "preco_medio": 214.97
     },
     {
+      "item_id": "MLB22607777",
       "oferta_id": "41872e6a6e7b05509b81",
       "titulo": "Sanduicheira Mondial Master Grill Mondial 750W S-20",
       "preco": 77.07,
@@ -13279,6 +13810,7 @@
       "preco_medio": 77.07
     },
     {
+      "item_id": "MLB45341890",
       "oferta_id": "f19841521790283c4a40",
       "titulo": "Mesa Dobrável Vira Maleta Com Alça Portátil 1.80m Para Camping Pesca Jardim Área Externa Ou Interna Salão De Festas Gourmet Cor Preto Luvinco",
       "preco": 291.0,
@@ -13304,6 +13836,7 @@
       "preco_medio": 258.45
     },
     {
+      "item_id": "MLB69327437",
       "oferta_id": "9ae83f34e2473279db4c",
       "titulo": "Câmera De Segurança Ip Wifi A8 Full Hd Icsee Ptz 355° Com Visão Noturna Áudio Bidirecional Ip66 Monitoramento Remoto Para Celular Android E iPhone",
       "preco": 78.9,
@@ -13329,6 +13862,7 @@
       "preco_medio": 78.9
     },
     {
+      "item_id": "MLB63904966",
       "oferta_id": "fa196465eaae9020a8e1",
       "titulo": "Kit 10 Pote De Vidro Marmita Hermético 640ml Freezer Fitness Rishon",
       "preco": 97.43,
@@ -13354,6 +13888,7 @@
       "preco_medio": 97.43
     },
     {
+      "item_id": "MLB53171876",
       "oferta_id": "e118bb68a37788e15ab9",
       "titulo": "Tcl Smartphone 60 Se 4g, Octa Core, 512gb 18gb Ram (8+10), 6.7 Hd+ 90hz, Nfc, Dual Sim, 50mp",
       "preco": 900.82,
@@ -13379,6 +13914,7 @@
       "preco_medio": 900.82
     },
     {
+      "item_id": "MLB16602518",
       "oferta_id": "c7851d8c08fecd5f6819",
       "titulo": "Liquidificador Oster OLIQ610 1400w Full 3,2L Cor Preto",
       "preco": 162.84,
@@ -13404,6 +13940,7 @@
       "preco_medio": 161.905
     },
     {
+      "item_id": "MLB19140327",
       "oferta_id": "ec65e0aad1c56d57e12f",
       "titulo": "Whey Protein Concentrado 1kg Growth Supplements - Leite em Pó",
       "preco": 183.9,
@@ -13429,6 +13966,7 @@
       "preco_medio": 183.9
     },
     {
+      "item_id": "MLB44212011",
       "oferta_id": "391476a4462b05d415cf",
       "titulo": "DeckCasa Escova elétrica de limpeza JY-6010 Branco Unidade 1",
       "preco": 46.92,
@@ -13454,6 +13992,7 @@
       "preco_medio": 46.92
     },
     {
+      "item_id": "MLB18308913",
       "oferta_id": "08676a0e90ab2e74a05e",
       "titulo": "Nestlé Moça Leite Condensado Integral Lata 395gr",
       "preco": 6.49,
@@ -13479,6 +14018,7 @@
       "preco_medio": 6.49
     },
     {
+      "item_id": "MLB58504778",
       "oferta_id": "74e7f67f173ade024b9b",
       "titulo": "Balança Digital Eletrônica Comercial 40kg Precisão Mercado Azul Hold On.",
       "preco": 183.23,
@@ -13504,6 +14044,7 @@
       "preco_medio": 183.23
     },
     {
+      "item_id": "MLB24028774",
       "oferta_id": "dcd48a9114ea8b5c5f84",
       "titulo": "Impressora 3x1 Multifuncional Epson Ecotank L3250 Wifi Biv Cor Preto 100V/240V",
       "preco": 1022.0,
@@ -13529,6 +14070,7 @@
       "preco_medio": 1022.0
     },
     {
+      "item_id": "MLB22335179",
       "oferta_id": "3dae22b0b5e2e3c06c3b",
       "titulo": "Lorenzetti Loren Shower ULTRA multitemperaturas chuveiro Branco",
       "preco": 115.51,
@@ -13554,6 +14096,7 @@
       "preco_medio": 115.51
     },
     {
+      "item_id": "MLB62276296",
       "oferta_id": "629a28d99932fd6c2309",
       "titulo": "Jogo De Panelas Induçao Antiaderente Cerâmica 10 Peças Ppg Pfoa Free Baunilha",
       "preco": 649.76,
@@ -13579,6 +14122,7 @@
       "preco_medio": 649.76
     },
     {
+      "item_id": "MLB17411744",
       "oferta_id": "ddf07a83bc4fa9b016d0",
       "titulo": "Cadeira De Escritório Giratória Com Altura Ajustável Begônia Cor Preto",
       "preco": 149.59,
@@ -13604,6 +14148,7 @@
       "preco_medio": 149.59
     },
     {
+      "item_id": "MLB24804661",
       "oferta_id": "595106a0b098361b2880",
       "titulo": "Purificador de Água Gelada Fria e Natural Eletrônico Placa Compacto Electrolux PE12G com Filtro Carvão 6 meses ou 3000L Painel Touch Cinza",
       "preco": 611.8,
@@ -13629,6 +14174,7 @@
       "preco_medio": 611.8
     },
     {
+      "item_id": "MLB67270079",
       "oferta_id": "2a7c63f44b947a95293c",
       "titulo": "Smart Tv Philco 40 P40vik Led Roku Dolby Audio Wi-fi Hdmi Hdr Full Hd 110/220v",
       "preco": 1952.07,
@@ -13654,6 +14200,7 @@
       "preco_medio": 1952.07
     },
     {
+      "item_id": "MLB45702954",
       "oferta_id": "f36792003117f7b4f2f0",
       "titulo": "Impressora 3d Bambu Lab A1 Mini - A1M",
       "preco": 2699.99,
@@ -13679,6 +14226,7 @@
       "preco_medio": 2699.99
     },
     {
+      "item_id": "MLB18572379",
       "oferta_id": "9dcc4836575dbe3fc605",
       "titulo": "Secador De Cabelos Style Azul Tiffany 2000w Taiff Azul",
       "preco": 188.75,
@@ -13704,6 +14252,7 @@
       "preco_medio": 188.75
     },
     {
+      "item_id": "MLB67444410",
       "oferta_id": "d77f8ed594762c786a35",
       "titulo": "Smartphone Motorola Edge 70 Fusion 5g Fifa World Cup Collection - 256gb 24gb (8gb Ram + 16gb Ram Boost), Camera 50mp Sony Lytia 710, Tela 1.5k Extreme Amoled - Grafite",
       "preco": 2519.1,
@@ -13729,6 +14278,7 @@
       "preco_medio": 2519.1
     },
     {
+      "item_id": "MLB27437738",
       "oferta_id": "7f593129bac4f2a2ba14",
       "titulo": "Cadeira de escritório Oficial Webshop Diretor Mesh Dir360 ergonômica preta com estofado de malha",
       "preco": 102.0,
@@ -13754,6 +14304,7 @@
       "preco_medio": 102.0
     },
     {
+      "item_id": "MLB61619405",
       "oferta_id": "c9f9ac84d33ded0740ac",
       "titulo": "Caixa De Som Bluetooth Jbl Partybox Encore 2 Essential Preto",
       "preco": 1379.0,
@@ -13779,6 +14330,7 @@
       "preco_medio": 1379.0
     },
     {
+      "item_id": "MLB47535705",
       "oferta_id": "2c7c7df8fd775bd59077",
       "titulo": "Câmera Inteligente Im7 + 3mp De Resolução Branca Intelbras",
       "preco": 364.65,
@@ -13804,6 +14356,7 @@
       "preco_medio": 364.65
     },
     {
+      "item_id": "MLB54987753",
       "oferta_id": "428acf8f35142c82de45",
       "titulo": "Celular Samsung Galaxy A17 Com Ia, 128gb, 4gb Ram, Câm De 50mp, Tela De 6.7 , Nfc, Ip54 - Preto",
       "preco": 791.0,
@@ -13829,6 +14382,7 @@
       "preco_medio": 791.0
     },
     {
+      "item_id": "MLB66191173",
       "oferta_id": "185cd75e279bba352f17",
       "titulo": "Smart Tv Samsung 32 Ls32h5000fgxzd Hd Led Wifi Hdmi 110/220v",
       "preco": 1471.08,
@@ -13854,6 +14408,7 @@
       "preco_medio": 1471.08
     },
     {
+      "item_id": "MLB63648098",
       "oferta_id": "93c38f969b6ff2ac1e00",
       "titulo": "Baú Ativoauto De Alumínio 65l Para Moto, Preto, Com Encosto E Base Universal",
       "preco": 660.0,
@@ -13879,6 +14434,7 @@
       "preco_medio": 660.0
     },
     {
+      "item_id": "MLB63419803",
       "oferta_id": "158d18aec5060eb934e2",
       "titulo": "Maquina Inversora De Solda Mig Sem Gás 130a 3 Em 1 Tig Lift Com Acessórios Amarelo The Black Tools 220v",
       "preco": 505.91,
@@ -13904,6 +14460,7 @@
       "preco_medio": 505.91
     },
     {
+      "item_id": "MLB58582424",
       "oferta_id": "60420728decf40d7ec4f",
       "titulo": "TESTO ESSENCIAL - Fórmula Exclusiva com Feno Grego + Boro + Arginina + ZMA + Vitamina B6 - Precursor da Testosterona - 60 cápsulas",
       "preco": 57.77,
@@ -13929,6 +14486,7 @@
       "preco_medio": 57.77
     },
     {
+      "item_id": "MLB55898949",
       "oferta_id": "5b0983849bda6fb61f02",
       "titulo": "A Pistola De Pintura Hvlp 1.4l 600w Com 4 Bicos Tpp150",
       "preco": 192.9,
@@ -13954,6 +14512,7 @@
       "preco_medio": 192.9
     },
     {
+      "item_id": "MLB100882551263",
       "oferta_id": "6ad524263c28a847762b",
       "titulo": "Mini Compressor Ar Calibrador Encher Pneu Portátil Digital",
       "preco": 109.03,
@@ -13979,6 +14538,7 @@
       "preco_medio": 109.03
     },
     {
+      "item_id": "MLB86033825762",
       "oferta_id": "1e5bc03a8ae3b68697b1",
       "titulo": "Tênis Vizzano Feminino White Leve Academia 1440.107",
       "preco": 158.27,
@@ -14004,6 +14564,7 @@
       "preco_medio": 158.27
     },
     {
+      "item_id": "MLB65131882",
       "oferta_id": "349f066dc75a1c97662a",
       "titulo": "Balança Digital De Precisão 10kg Davely Cook Cozinha Para Uso Domestico E Profissional Fitness Ideal Para Dietas Treinos Alimentos Confeitaria Nutrição Branco 10 Kg",
       "preco": 19.9,
@@ -14029,6 +14590,7 @@
       "preco_medio": 19.6
     },
     {
+      "item_id": "MLB65530475",
       "oferta_id": "9b13a3f1d6de97f8ed46",
       "titulo": "Lanterna Mais Forte Do Mundo Recarregável Tática Potente Led Apfer",
       "preco": 48.0,
@@ -14054,6 +14616,7 @@
       "preco_medio": 46.91
     },
     {
+      "item_id": "MLB58579835",
       "oferta_id": "ae81412176481c6df54d",
       "titulo": "NAC 600mg - Fórmula Exclusiva com Máxima Concentração e Pureza - N-Acetil L-Cisteína - 60 Cápsulas",
       "preco": 46.77,
@@ -14079,6 +14642,7 @@
       "preco_medio": 46.77
     },
     {
+      "item_id": "MLB39156440",
       "oferta_id": "efa6a5454bd10fa6a5e0",
       "titulo": "Tapete 2,00x1,50 Peludo Felpudo Para Sala e Quarto Cores Cor Bege-mesclado Desenho Do Tecido Pelo Alto Casa Laura Enxovais Tapete Médio Para Sala 2x1,5m, Antiderrapante e Lavável - Bege Mesclado",
       "preco": 59.9,
@@ -14104,6 +14668,7 @@
       "preco_medio": 59.9
     },
     {
+      "item_id": "MLB113308850529",
       "oferta_id": "a01a6635040451e4f28f",
       "titulo": "Vestido Quadrilha Xadrez Feminino Ombro A Ombro Festa Junina",
       "preco": 138.9,
@@ -14129,6 +14694,7 @@
       "preco_medio": 138.9
     },
     {
+      "item_id": "MLB61669343",
       "oferta_id": "46974a685e200c4babf4",
       "titulo": "PENTA MAGNÉSIO - Bisglicinato + Dimalato + Citrato + Taurato + Óxido de Magnésio - A Combinação Perfeita de 5 Magnésios com Máxima Pureza e Biodisponibilidade - 60 Cápsulas",
       "preco": 56.77,
@@ -14154,6 +14720,7 @@
       "preco_medio": 56.77
     },
     {
+      "item_id": "MLB107833879506",
       "oferta_id": "6da87426de7e19cfafe8",
       "titulo": "Cinta Modeladora Redutora Feminina Mb 33 Barbatanas",
       "preco": 165.89,
@@ -14179,6 +14746,7 @@
       "preco_medio": 165.89
     },
     {
+      "item_id": "MLB62043239",
       "oferta_id": "abf809911c469c00e528",
       "titulo": "Desobstruidora De Alta Pressão Wap Wl 4200 Ultra 5 Pistões 2200w 1305psi 510l/h Com Jato Regulável E Motor De Indução 220v Cinza 60 Hz",
       "preco": 639.2,
@@ -14204,6 +14772,7 @@
       "preco_medio": 639.2
     },
     {
+      "item_id": "MLB112706258071",
       "oferta_id": "b97f34996f02bb31bc42",
       "titulo": "Camisa Gola Polo Feminina Básica Algodão Social Uniforme",
       "preco": 29.9,
@@ -14229,6 +14798,7 @@
       "preco_medio": 29.9
     },
     {
+      "item_id": "MLB96292389413",
       "oferta_id": "45e64b884daf77cc080f",
       "titulo": "Kit 4-calças Jeans Ideal Trabalho Pesado Reforçada Elastano",
       "preco": 180.14,
@@ -14254,6 +14824,7 @@
       "preco_medio": 180.14
     },
     {
+      "item_id": "MLB54034711",
       "oferta_id": "1d3bd317ae502e5220b1",
       "titulo": "Cadeira Escritorio Presidente Esteirinha Verita Rija Preto Couro Sintético",
       "preco": 486.28,
@@ -14279,6 +14850,7 @@
       "preco_medio": 486.28
     },
     {
+      "item_id": "MLB77908142830",
       "oferta_id": "07ab16751de1a065079b",
       "titulo": "Garrafa Térmica 1 Litro Com Termômetro Led Para Chás / Café",
       "preco": 51.2,
@@ -14304,6 +14876,7 @@
       "preco_medio": 51.2
     },
     {
+      "item_id": "MLB111509654802",
       "oferta_id": "b4295f313d7adbcfcb2a",
       "titulo": "Camisa Gola Polo Masculina Pique Premium Algodão Confortável",
       "preco": 34.8,
@@ -14329,6 +14902,7 @@
       "preco_medio": 34.8
     },
     {
+      "item_id": "MLB108875633353",
       "oferta_id": "b686af4569928ff238e8",
       "titulo": "Calça Skinny Preta Rasgada Masculina Jeans C/ Elastano Lycra",
       "preco": 60.7,
@@ -14354,6 +14928,7 @@
       "preco_medio": 60.7
     },
     {
+      "item_id": "MLB89374143383",
       "oferta_id": "3aad3fd7bc146770e2b1",
       "titulo": "Jogo Toalhas Banho Grossas Macias Algodão 4pç Absorventes",
       "preco": 94.9,
@@ -14379,6 +14954,7 @@
       "preco_medio": 94.9
     },
     {
+      "item_id": "MLB6664766808",
       "oferta_id": "9fb55dbcc60322957a13",
       "titulo": "Conversor De Mídia Fibra Óptica Gigabit 1000mbps Rj45 A+b",
       "preco": 73.36,
@@ -14404,6 +14980,7 @@
       "preco_medio": 73.36
     },
     {
+      "item_id": "MLB71803949208",
       "oferta_id": "7b303e15c76c1a1fabda",
       "titulo": "Chinelo Havaianas Dual Masculina",
       "preco": 55.77,
@@ -14429,6 +15006,7 @@
       "preco_medio": 55.77
     },
     {
+      "item_id": "MLB95848039523",
       "oferta_id": "4b1c7cce6372971072ab",
       "titulo": "800mlgarrafa Térmica Água Squeeze Inox Academiaquente E Frio",
       "preco": 32.95,
@@ -14454,6 +15032,7 @@
       "preco_medio": 32.95
     },
     {
+      "item_id": "MLB62162205",
       "oferta_id": "4c7e08ad843ff335d55e",
       "titulo": "VITAMINA D3 + K2 Menaquinona-7 - Fórmula com Máxima Concentração e Biodisponibilidade - 60 Cápsulas",
       "preco": 48.65,
@@ -14479,6 +15058,7 @@
       "preco_medio": 48.71
     },
     {
+      "item_id": "MLB93930023177",
       "oferta_id": "62d73175760ab2601e75",
       "titulo": "Luva X11 Masculina Blackout 2 Touch Verão Motociclista Moto",
       "preco": 85.43,
@@ -14504,6 +15084,7 @@
       "preco_medio": 85.43
     },
     {
+      "item_id": "MLB89460924740",
       "oferta_id": "7d3a28794468e68cfd69",
       "titulo": "Capacete Moto Aberto New Liberty Three Viseira Cristal",
       "preco": 108.7,
@@ -14529,6 +15110,7 @@
       "preco_medio": 108.7
     },
     {
+      "item_id": "MLB112061288981",
       "oferta_id": "3f92f90b612fd8c1ff0a",
       "titulo": "Jaqueta Feminina Puffer Frio Impermeável Bobojaco 46 Ao 52",
       "preco": 113.62,
@@ -14554,6 +15136,7 @@
       "preco_medio": 113.62
     },
     {
+      "item_id": "MLB29723565",
       "oferta_id": "628595bee49d6ad743d2",
       "titulo": "Lavitan Vitamina Para Cabelos E Unhas Com 60 Cápsulas / Kit Com 3 Unidades De 60cps Sem Sabor",
       "preco": 34.99,
@@ -14579,6 +15162,7 @@
       "preco_medio": 34.99
     },
     {
+      "item_id": "MLB62042884",
       "oferta_id": "ebeb7441e50fc69b718f",
       "titulo": "Desobstruidora De Alta Pressão Profissional Wap Wl 4500 Ultra 2200w 2000psi 500l/h Motor Indução 220v Cinza 60 Hz",
       "preco": 1359.2,
@@ -14604,6 +15188,7 @@
       "preco_medio": 1359.2
     },
     {
+      "item_id": "MLB109195889583",
       "oferta_id": "b0339c90bf9e3292bc77",
       "titulo": "Kit 5 Cuecas Masculinas Dry Fit Lisas Variadas Microfibra",
       "preco": 53.63,
@@ -14629,6 +15214,7 @@
       "preco_medio": 53.63
     },
     {
+      "item_id": "MLB48955624",
       "oferta_id": "2b162da05ccec6e2b9ce",
       "titulo": "Mini Projetor Davely HY300 4K Android com Wi-Fi e Bluetooth",
       "preco": 199.9,
@@ -14654,6 +15240,7 @@
       "preco_medio": 186.9
     },
     {
+      "item_id": "MLB110345645894",
       "oferta_id": "620968f597b001046302",
       "titulo": "Tenis Mizuno Jet 8 Masculino",
       "preco": 240.94,
@@ -14679,6 +15266,7 @@
       "preco_medio": 240.94
     },
     {
+      "item_id": "MLB779362",
       "oferta_id": "50486160f9c7ee36e470",
       "titulo": "Sofá Veneza 2,40m Retrátil Reclinável Grafite Usb Porta Copo Grafite",
       "preco": 1444.0,
@@ -14704,6 +15292,7 @@
       "preco_medio": 1444.0
     },
     {
+      "item_id": "MLB19542141",
       "oferta_id": "840426dc622d90a0a353",
       "titulo": "Café Em Grao Torrado Expresso Arábica Torra Escura Grãos 1kg Gourmet Cafe Italle",
       "preco": 62.0,
@@ -14729,6 +15318,7 @@
       "preco_medio": 62.0
     },
     {
+      "item_id": "MLB68838381",
       "oferta_id": "41332165b4aae5321488",
       "titulo": "Balança Bioimpedancia Digital 180kg Smart Imc Profissional Rishon Com Aplicativo",
       "preco": 33.2,
@@ -14754,6 +15344,7 @@
       "preco_medio": 31.035000000000004
     },
     {
+      "item_id": "MLB24438946",
       "oferta_id": "a42125920e51493f2610",
       "titulo": "Bola Volei 8.0 Pró Penalty Quadra Selo Fivb Amarelo Amarelo/roxo",
       "preco": 284.99,
@@ -14779,6 +15370,7 @@
       "preco_medio": 284.99
     },
     {
+      "item_id": "MLB85461139997",
       "oferta_id": "f233284436734750aabb",
       "titulo": "Tênis Reserva Roma Masculino Casual Cano Baixo Elegante",
       "preco": 293.99,
@@ -14804,6 +15396,7 @@
       "preco_medio": 255.99
     },
     {
+      "item_id": "MLB93955563541",
       "oferta_id": "7e4f1bb0976a230c0921",
       "titulo": "Tênis Corrida adidas Boost Run Original Feminino",
       "preco": 306.99,
@@ -14829,6 +15422,7 @@
       "preco_medio": 306.99
     },
     {
+      "item_id": "MLB110805634459",
       "oferta_id": "d13707367785af868dba",
       "titulo": "Tênis Fila Vector Masculino Lançamento Treino Academia",
       "preco": 178.99,
@@ -14854,6 +15448,7 @@
       "preco_medio": 178.99
     },
     {
+      "item_id": "MLB83332404511",
       "oferta_id": "2f8d2df5b63fd60461d0",
       "titulo": "Tênis Reserva Masculino Casual Cano Baixo Antiderrapante",
       "preco": 265.99,
@@ -14879,6 +15474,7 @@
       "preco_medio": 265.99
     },
     {
+      "item_id": "MLB45532516",
       "oferta_id": "985defa637531bbd3f64",
       "titulo": "Jogo De Lençol Cama Solteiro 02 Peças 400 Fios Ponto Palito C/ Elástico Hotel Cor Azul-marinho Liso",
       "preco": 27.93,
@@ -14904,6 +15500,7 @@
       "preco_medio": 27.93
     },
     {
+      "item_id": "MLB12465919",
       "oferta_id": "8538c7d16000adde3716",
       "titulo": "Termogenico Thermocaps 200mg 60caps Ftw - Diabo Verde Sem Sabor",
       "preco": 32.57,
@@ -14929,6 +15526,7 @@
       "preco_medio": 32.57
     },
     {
+      "item_id": "MLB83357220054",
       "oferta_id": "9aeb28545b14e97c0305",
       "titulo": "Chinelo Ultra Leve Piccadilly Ortopédico Nuvem Marshmallow",
       "preco": 56.99,
@@ -14954,6 +15552,7 @@
       "preco_medio": 56.99
     },
     {
+      "item_id": "MLB110630239438",
       "oferta_id": "8eecf0fc9751b90f1ba2",
       "titulo": "Mochila Viagem Feminina Masculina Para Notebook Executiva",
       "preco": 113.0,
@@ -14979,6 +15578,7 @@
       "preco_medio": 113.0
     },
     {
+      "item_id": "MLB112810074435",
       "oferta_id": "0bd5087921562fa8636c",
       "titulo": "Kit 4 Cuecas Lupo Boxer Algodão Box Confortável Original",
       "preco": 73.99,
@@ -15004,6 +15604,7 @@
       "preco_medio": 73.99
     },
     {
+      "item_id": "MLB28859007",
       "oferta_id": "8dd6a8430dc375cf1776",
       "titulo": "Kit Jogo De Ferramentas Completo C/ Soquetes E Chaves Tbt12940k The Black Tools Preto",
       "preco": 132.05,
@@ -15029,6 +15630,7 @@
       "preco_medio": 132.05
     },
     {
+      "item_id": "MLB21862682",
       "oferta_id": "036020e4b3496508cb1b",
       "titulo": "Cafe Capsula Café Torrado Capsulas Compatíveis Nespresso Capsula De Café Italle 50 Unidades",
       "preco": 60.0,
@@ -15054,6 +15656,7 @@
       "preco_medio": 60.0
     },
     {
+      "item_id": "MLB111256104870",
       "oferta_id": "d8a36f478bef196eb5c8",
       "titulo": "Calça Jogger Tactel Soltinha Slim Academia Esportiva",
       "preco": 39.9,
@@ -15079,6 +15682,7 @@
       "preco_medio": 39.9
     },
     {
+      "item_id": "MLB51586079",
       "oferta_id": "b3d5895dc426dfbe8bdb",
       "titulo": "Câmera Residencial Infravermelho Ip Bullet Hilook By Hikvision Ipc-b121h-c(2.8mm) Branco",
       "preco": 145.0,
@@ -15104,6 +15708,7 @@
       "preco_medio": 145.0
     },
     {
+      "item_id": "MLB61105291",
       "oferta_id": "699a9d84add8fa472d3c",
       "titulo": "Ez Silver Essence - Eau De Parfum 100ml Exclusivo",
       "preco": 37.83,
@@ -15129,6 +15734,7 @@
       "preco_medio": 38.415
     },
     {
+      "item_id": "MLB105511107400",
       "oferta_id": "b296a98bd1ff1716204b",
       "titulo": "Tenis Branco Feminino Esportivo Vili Olimp Academia Treino",
       "preco": 85.4,
@@ -15154,6 +15760,7 @@
       "preco_medio": 85.4
     },
     {
+      "item_id": "MLB31768611",
       "oferta_id": "b467dfa7ed55afd289f4",
       "titulo": "Jogo Kit De Soquetes Ferramentas Manuais Chave Catraca Reversível 1/2 Pol 8 A 32mm Cor Amarelo Bcs022 The Black Tools",
       "preco": 138.9,
@@ -15179,6 +15786,7 @@
       "preco_medio": 138.9
     },
     {
+      "item_id": "MLB98393158897",
       "oferta_id": "22fd30fb17c7e0514db9",
       "titulo": "Blusas Camisa Feminina Proteção Uv Academia Treino Caminhada",
       "preco": 33.3,
@@ -15204,6 +15812,7 @@
       "preco_medio": 33.3
     },
     {
+      "item_id": "MLB111287768550",
       "oferta_id": "9eb1db6c372a028b1346",
       "titulo": "Caminha Redonda Pet Sherpa Cama Para Cães Gatos Macia Quente",
       "preco": 30.99,
@@ -15229,6 +15838,7 @@
       "preco_medio": 30.99
     },
     {
+      "item_id": "MLB41975964",
       "oferta_id": "a424892dfda5f16f9f9c",
       "titulo": "Console Playstation 5 Pro 2tb Branco Sony Bivolt Branco",
       "preco": 6799.0,
@@ -15254,6 +15864,7 @@
       "preco_medio": 6699.0
     },
     {
+      "item_id": "MLB34801962",
       "oferta_id": "d2776693edbdf130b36d",
       "titulo": "Impressora Multifuncional HP Smart Tank 584 - Preta",
       "preco": 1399.0,
@@ -15279,6 +15890,7 @@
       "preco_medio": 1057.7
     },
     {
+      "item_id": "MLB22805343",
       "oferta_id": "ae93fa329efd73c1b9ac",
       "titulo": "Escada Articulada 4x4 em Alumínio 16 Degraus 4,48m - Reisam",
       "preco": 522.5,
@@ -15304,6 +15916,7 @@
       "preco_medio": 528.0
     },
     {
+      "item_id": "MLB112808924525",
       "oferta_id": "b7c01bdc7924477014bd",
       "titulo": "Piso Adesivo Vinilico Autocolante Madeira 1,67m2 Meupiso",
       "preco": 27.53,
@@ -15329,6 +15942,7 @@
       "preco_medio": 27.53
     },
     {
+      "item_id": "MLB86088934078",
       "oferta_id": "f130d76d7d22e37e2136",
       "titulo": "Cortina Blackout Blecaute 2,20x130 Sala Cozinha Quarto Voil",
       "preco": 59.21,
@@ -15354,6 +15968,7 @@
       "preco_medio": 59.21
     },
     {
+      "item_id": "MLB93205744763",
       "oferta_id": "46dcf4cdf497e51bbadd",
       "titulo": "Tênis Lacoste T-base Lancamento",
       "preco": 219.99,
@@ -15379,6 +15994,7 @@
       "preco_medio": 219.99
     },
     {
+      "item_id": "MLB28118778",
       "oferta_id": "976b2ac6dd5268be8082",
       "titulo": "Banqueta Império Brazil Business Slim Cor Preto X 2 Unidades 114cm De Altura",
       "preco": 417.12,
@@ -15404,6 +16020,7 @@
       "preco_medio": 417.12
     },
     {
+      "item_id": "MLB50997160",
       "oferta_id": "214209dc70c67ae7b40b",
       "titulo": "Kit 10 Refletor Led Slim Externo 200w 6500k Branco Frio Ip66 110v/220v Bivolt Preto Cod: Alut000702-10 Alut By Avant 127/220v Branco Frio 6500k",
       "preco": 590.9,
@@ -15429,6 +16046,7 @@
       "preco_medio": 590.9
     },
     {
+      "item_id": "MLB29614932",
       "oferta_id": "3141c6db44c08b63cd35",
       "titulo": "Cortina 3,00x2,80 Metros Blackout Blecaute Palha Corta Luz Em Tecido Grosso Para Quarto E Sala Casa Laura Enxovais",
       "preco": 73.62,
@@ -15454,6 +16072,7 @@
       "preco_medio": 73.62
     },
     {
+      "item_id": "MLB111112711213",
       "oferta_id": "8c7b43d37da2da0d9daa",
       "titulo": "Roupão Masculino Pollo Hobby Plush Flannel Para Frio Inverno",
       "preco": 106.43,
@@ -15479,6 +16098,7 @@
       "preco_medio": 106.43
     },
     {
+      "item_id": "MLB63550920",
       "oferta_id": "aa1b9b5bf3a6db8adaeb",
       "titulo": "Riscadeira Pisos Profissional Cortador Manual Porcelanato Azulejo 120 Cm Guia Laser 18 Rolamentos Ttc240 The Black Tools",
       "preco": 759.9,
@@ -15504,6 +16124,7 @@
       "preco_medio": 759.9
     },
     {
+      "item_id": "MLB83623356128",
       "oferta_id": "599964b0eb1baec4cc2a",
       "titulo": "4 Conjunto Catraca Amarração Cinta Preta 4,6 Metros 800kg",
       "preco": 65.76,
@@ -15529,6 +16150,7 @@
       "preco_medio": 65.76
     },
     {
+      "item_id": "MLB60204100",
       "oferta_id": "bd25eaa6f4970096530f",
       "titulo": "Tapete Higiênico 80x60 30un Pata Limpa Descartável Cachorro Pet Cão Fralda Manta Absorvente Branco",
       "preco": 56.9,
