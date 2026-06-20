@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-06-20T17:43:39",
+  "gerado_em": "2026-06-20T18:17:21",
   "produtos": [
     {
       "item_id": "MLB51163340",
@@ -8342,21 +8342,6 @@
       "ultima_atualizacao": "2026-06-20 11:09:32"
     },
     {
-      "item_id": "MLB24438946",
-      "titulo": "Bola Volei 8.0 Pró Penalty Quadra Selo Fivb Amarelo Amarelo/roxo",
-      "preco_atual": 284.99,
-      "menor_preco": 284.99,
-      "maior_preco": 284.99,
-      "preco_medio": 284.99,
-      "categoria": "ofertas",
-      "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
-      "economia_valor": null,
-      "produto_url": "produto/MLB24438946/bola-volei-8-0-pro-penalty-quadra-selo-fivb-amarelo-amarelo-roxo/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_892159-MLA99961034565_112025-AB.webp",
-      "ultima_atualizacao": "2026-06-20 11:09:23"
-    },
-    {
       "item_id": "MLB58582424",
       "titulo": "TESTO ESSENCIAL - Fórmula Exclusiva com Feno Grego + Boro + Arginina + ZMA + Vitamina B6 - Precursor da Testosterona - 60 cápsulas",
       "preco_atual": 57.77,
@@ -8864,6 +8849,21 @@
       "economia_valor": 45.7,
       "produto_url": "produto/MLB68838381/balanca-bioimpedancia-digital-180kg-smart-imc-profissional-rishon-com-aplicativo/",
       "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_957981-MLA110124413534_042026-O.webp",
+      "ultima_atualizacao": "2026-06-20 11:09:23"
+    },
+    {
+      "item_id": "MLB24438946",
+      "titulo": "Bola Volei 8.0 Pró Penalty Quadra Selo Fivb Amarelo Amarelo/roxo",
+      "preco_atual": 284.99,
+      "menor_preco": 284.99,
+      "maior_preco": 284.99,
+      "preco_medio": 284.99,
+      "categoria": "ofertas",
+      "categoria_caminho": "ofertas",
+      "desconto_percentual": null,
+      "economia_valor": null,
+      "produto_url": "produto/MLB24438946/bola-volei-8-0-pro-penalty-quadra-selo-fivb-amarelo-amarelo-roxo/",
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_892159-MLA99961034565_112025-AB.webp",
       "ultima_atualizacao": "2026-06-20 11:09:23"
     },
     {
