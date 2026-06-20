@@ -1,6 +1,6 @@
 # Relatório de Integridade do Site
 
-- Gerado em: 2026-06-20 13:36:21
+- Gerado em: 2026-06-20 14:07:52
 - Operação: auditoria
 - Total de ofertas públicas: 622
 - Total de páginas individuais: 622
