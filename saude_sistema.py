@@ -14,6 +14,7 @@ from estado_sistema import ONLINE, obter_estado_sistema
 FORMATO_DATA = "%Y-%m-%d %H:%M:%S"
 LIMITE_HORAS_OPERACAO = 24
 LIMITE_HORAS_DEPLOY = 168
+LIMITE_HORAS_COLETA_CRITICA = 48
 PID_SCHEDULER = Path(".ia_promocoes.pid")
 PID_ANALYTICS = Path(".promogg_analytics.pid")
 PID_PAINEL = Path(".promogg_painel.pid")
@@ -107,6 +108,26 @@ def _catalogo_publico():
     }
 
 
+def _catalogo_integro(catalogo):
+    return (
+        catalogo["ofertas"] >= CATALOGO_MINIMO
+        and catalogo["ofertas"] == catalogo["paginas"]
+        and not catalogo["links_invalidos"]
+        and not catalogo["imagens_invalidas"]
+    )
+
+
+def _coleta_compromete_disponibilidade(coleta, catalogo, momento):
+    """Retorna motivos objetivos para elevar falhas de coleta a incidente crítico."""
+    motivos = []
+    idade = _idade_horas(coleta["data_evento"], momento) if coleta else None
+    if not _catalogo_integro(catalogo):
+        motivos.append("catálogo público não está íntegro")
+    if idade is None or idade > LIMITE_HORAS_COLETA_CRITICA:
+        motivos.append("não há coleta válida recente")
+    return motivos
+
+
 def _fallback_playwright_ativo(conn):
     modo = os.getenv("MELI_COLETA_MODO", "auto").strip().lower() or "auto"
     row = conn.execute(
@@ -125,7 +146,7 @@ def _classificar_evento(item, fallback_playwright=False):
     tipo = str(item.get("tipo_evento") or "").lower()
 
     if "http 403" in texto or ("api" in texto and "fallback" in texto):
-        return "alerta" if fallback_playwright or "fallback" in texto else "erro"
+        return "alerta"
     if "oferta pública duplicada ignorada" in texto:
         return "info"
     if "fallback local" in texto or ("ollama" in texto and "fallback" in texto):
@@ -302,8 +323,17 @@ def obter_relatorio_saude(agora=None):
         alertas.append({"nivel": "alerta", "mensagem": f"{len(classificados['alerta'])} alerta(s) operacional(is) nas últimas 24h."})
     if len([evento for evento in classificados["erro"] if evento["origem"] == "telegram"]) >= 3:
         alertas.insert(0, {"nivel": "critico", "mensagem": "Falhas repetidas de publicação no Telegram."})
-    if len([evento for evento in classificados["erro"] if evento["origem"] in {"coleta", "mercado_livre"}]) >= 3 and not fallback_playwright:
-        alertas.insert(0, {"nivel": "critico", "mensagem": "Coleta falhou repetidamente sem fallback disponível."})
+    erros_coleta = [evento for evento in classificados["erro"] if evento["origem"] in {"coleta", "mercado_livre", "scheduler"}]
+    coleta_critica = _coleta_compromete_disponibilidade(coleta, catalogo, momento)
+    if len(erros_coleta) >= 3:
+        if coleta_critica:
+            alertas.insert(0, {"nivel": "critico", "mensagem": "Coleta falhou repetidamente e compromete a disponibilidade: " + "; ".join(coleta_critica) + "."})
+            coleta_situacao = "falha crítica de coleta"
+        else:
+            alertas.append({"nivel": "alerta", "mensagem": f"Última coleta teve falha, mas catálogo público segue íntegro com {catalogo['ofertas']} ofertas e {catalogo['paginas']} páginas."})
+            coleta_situacao = "falha isolada sem impacto atual no catálogo"
+    else:
+        coleta_situacao = "coleta recente disponível"
     if aprovadas == 0:
         alertas.append({"nivel": "alerta", "mensagem": "Não há ofertas aprovadas para publicação."})
 
@@ -311,6 +341,7 @@ def obter_relatorio_saude(agora=None):
     return {
         "status_geral": status_geral,
         "ultima_coleta": _exibir_registro(coleta),
+        "coleta_situacao": coleta_situacao,
         "ultimo_analytics": analytics or "sem registro ainda",
         "analytics_situacao": analytics_situacao,
         "ultima_ia_consultiva": ia["criado_em"] if ia else "sem registro ainda",
@@ -341,6 +372,7 @@ def imprimir_relatorio_saude():
     relatorio = obter_relatorio_saude()
     print(f"Saúde do Sistema: {relatorio['status_geral']}")
     print(f"Última coleta: {relatorio['ultima_coleta']}")
+    print(f"Coleta: {relatorio.get('coleta_situacao', 'sem registro')}")
     print(f"Última atualização de preços: {relatorio['ultima_atualizacao_precos']}")
     print(f"Último monitoramento: {relatorio['ultimo_monitoramento']}")
     print(f"Último site gerado: {relatorio['ultimo_site_gerado']}")
@@ -404,7 +436,7 @@ def validar_saude_sistema():
     erros = []
     try:
         relatorio = obter_relatorio_saude()
-        campos = {"status_geral", "ultima_coleta", "ultima_atualizacao_precos", "ultimo_monitoramento", "ultimo_site_gerado", "ultimo_deploy", "ultimo_telegram", "ultimo_analytics", "analytics_situacao", "ultima_ia_consultiva", "integridade_banco", "erros_24h", "alertas", "eventos_classificados", "catalogo", "servicos"}
+        campos = {"status_geral", "ultima_coleta", "coleta_situacao", "ultima_atualizacao_precos", "ultimo_monitoramento", "ultimo_site_gerado", "ultimo_deploy", "ultimo_telegram", "ultimo_analytics", "analytics_situacao", "ultima_ia_consultiva", "integridade_banco", "erros_24h", "alertas", "eventos_classificados", "catalogo", "servicos"}
         if not campos.issubset(relatorio):
             erros.append("Relatório de saúde incompleto")
         conteudo = json.dumps(relatorio, ensure_ascii=False).lower()

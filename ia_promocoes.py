@@ -347,6 +347,7 @@ def imprimir_status():
     saude = obter_relatorio_saude()
     niveis_saude = [alerta["nivel"] for alerta in saude["alertas"]]
     print(f"Saúde: {saude['status_geral']} | críticos={niveis_saude.count('critico')} alertas={niveis_saude.count('alerta')} avisos={niveis_saude.count('aviso')}")
+    print(f"Coleta: {saude.get('coleta_situacao', 'sem registro')}")
 
     erros = logs_recentes("error", 5)
     if erros:
