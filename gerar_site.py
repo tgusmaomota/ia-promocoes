@@ -96,6 +96,7 @@ def listar_ofertas():
                    postagens.data_publicacao, produtos.imagem AS imagem_url,
                    produtos.menor_preco, produtos.maior_preco, produtos.preco_medio, produtos.variacao_preco,
                    produtos.destaque_menor_preco, produtos.ultima_verificacao
+                   , produtos.preco_original, produtos.desconto_percentual, produtos.economia_valor
             FROM postagens
             JOIN produtos ON produtos.id = postagens.produto_id
             WHERE postagens.plataforma = 'mercado_livre'
@@ -134,6 +135,9 @@ def listar_ofertas():
             "titulo": titulo,
             "preco": preco,
             "preco_formatado": formatar_preco(preco),
+            "preco_original": preco_publico_valido(oferta.get("preco_original")),
+            "desconto_percentual": preco_publico_valido(oferta.get("desconto_percentual")),
+            "economia_valor": preco_publico_valido(oferta.get("economia_valor")),
             "menor_preco": preco_publico_valido(oferta.get("menor_preco")) or preco,
             "menor_preco_formatado": formatar_preco(preco_publico_valido(oferta.get("menor_preco")) or preco),
             "variacao_preco": variacao_preco,
@@ -516,6 +520,12 @@ function criarCard(oferta) {
     const preco = document.createElement("p");
     preco.className = "price";
     preco.textContent = formatarPreco(oferta.preco, oferta.preco_formatado);
+    const promocao = document.createElement("p");
+    promocao.className = "updated";
+    const desconto = Number(oferta.desconto_percentual) || 0;
+    const original = Number(oferta.preco_original) || 0;
+    promocao.textContent = desconto > 0 ? (desconto.toFixed(0) + "% OFF" + (original > 0 ? " · De " + formatarPreco(original) : "")) : "";
+    promocao.hidden = !promocao.textContent;
     const historico = document.createElement("div");
     historico.className = "price-history";
     const menorLabel = document.createElement("span");
@@ -540,7 +550,7 @@ function criarCard(oferta) {
     link.rel = "noopener sponsored";
     link.textContent = "Ver oferta";
 
-    card.append(topo, titulo, atualizado, label, preco, historico, destaque, link);
+    card.append(topo, titulo, atualizado, label, preco, promocao, historico, destaque, link);
     return card;
 }
 
@@ -1301,6 +1311,7 @@ def validar_site_publico():
     erros = []
     campos_permitidos = {
         "oferta_id", "titulo", "preco", "preco_formatado", "menor_preco", "menor_preco_formatado",
+        "preco_original", "desconto_percentual", "economia_valor",
         "variacao_preco", "destaque_menor_preco", "categoria", "link", "imagem_url",
         "plataforma", "produto_url", "data_publicacao", "ultima_verificacao", "maior_preco", "preco_medio",
     }
@@ -1324,6 +1335,8 @@ def validar_site_publico():
             erros.append(f"oferta {indice}: campo interno exposto: {', '.join(sorted(internos))}")
         if not link_afiliado_valido(oferta.get("link")):
             erros.append(f"oferta {indice}: link afiliado inválido")
+        if re.search(r"(?i)(?:R\$\s*\d|\d+\s*%\s*OFF)", str(oferta.get("titulo", ""))):
+            erros.append(f"oferta {indice}: título público contém preço ou desconto")
         imagem = oferta.get("imagem_url", "")
         if imagem and not imagem_publica_valida(imagem):
             erros.append(f"oferta {indice}: imagem não possui URL pública")

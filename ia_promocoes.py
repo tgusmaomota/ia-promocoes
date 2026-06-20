@@ -352,6 +352,110 @@ def comando_coletar():
     return 0
 
 
+def comando_coletar_confiavel(visual=False):
+    from coleta_confiavel import coletar_confiavel
+
+    preparar_base()
+    try:
+        resultado = coletar_confiavel(visual=visual)
+    except Exception as erro:
+        print(f"Coleta confiável interrompida: {erro}")
+        return 1
+    print(f"Encontrados: {resultado['encontrados']}")
+    print(f"Completos: {resultado['completos']}")
+    print(f"Salvos/atualizados: {resultado['salvos']}")
+    print(f"Com meli.la: {resultado['afiliados']}")
+    print(f"Falhas: {len(resultado['falhas'])}")
+    print("Relatório: RELATORIO_COLETA_CONFIAVEL.md")
+    print("Telegram não foi acionado.")
+    return 0 if not resultado["falhas"] else 1
+
+
+def comando_limpar_titulos():
+    from limpar_titulos import limpar_titulos_existentes
+
+    preparar_base()
+    resultado = limpar_titulos_existentes()
+    print(f"Títulos corrigidos: {resultado['corrigidos']}")
+    print(f"Backup: {resultado['backup']}")
+    for antes, depois in resultado["exemplos"]:
+        print(f"- Antes: {antes}")
+        print(f"  Depois: {depois}")
+    print("Relatório: RELATORIO_LIMPEZA_TITULOS.md")
+    return 0
+
+
+def comando_reprocessar_pendentes(dry_run=False):
+    from reprocessar_pendentes import reprocessar_pendentes
+
+    resultado = reprocessar_pendentes(dry_run=dry_run)
+    modo = "Simulação" if dry_run else "Reprocessamento"
+    print(f"{modo}: total={resultado['total']} aprovados_auto={resultado['aprovados_auto']} pendentes={resultado['pendentes']} rejeitados={resultado['rejeitados']}")
+    if resultado["backup"]:
+        print(f"Backup: {resultado['backup']}")
+    print("Relatório: RELATORIO_REPROCESSAMENTO_PENDENTES.md")
+    print("Telegram e deploy não foram acionados.")
+    return 0
+
+
+def comando_simular_score():
+    from auditoria_score import simular_score
+
+    preparar_base()
+    resultado = simular_score()
+    print(f"Pendentes auditadas: {resultado['total']}")
+    for nome, cenario in resultado["cenarios"].items():
+        print(f"\n{nome}")
+        print(f"- aprovadas_auto: {cenario['aprovadas_auto']}")
+        print(f"- revisao_manual: {cenario['revisao_manual']}")
+        print(f"- rejeitadas: {cenario['rejeitadas']}")
+    print(f"\nRelatório: {resultado['relatorio']}")
+    print("Simulação concluída: nenhuma regra ou status foi alterado.")
+    return 0
+
+
+def comando_atualizar_categorias():
+    from atualizar_categorias import atualizar_categorias
+
+    preparar_base()
+    resultado = atualizar_categorias()
+    print(f"Produtos consultados: {resultado['total']}")
+    print(f"Categorias reais atualizadas: {resultado['atualizadas']}")
+    print(f"Categorias já reais: {resultado['ja_reais']}")
+    print(f"Fallbacks locais: {resultado['fallback']}")
+    print(f"Erros de API: {resultado['erros']}")
+    print("Relatório: RELATORIO_ATUALIZACAO_CATEGORIAS.md")
+    return 0
+
+
+def comando_calibrar_curadoria():
+    from calibracao_curadoria import aplicar_calibracao
+
+    preparar_base()
+    resultado = aplicar_calibracao()
+    curadoria = resultado["curadoria"]
+    categorias = resultado["categorias"]
+    print(f"Backup: {resultado['backup']}")
+    print(f"Curadoria: aprovadas={curadoria['aprovados_auto']} pendentes={curadoria['pendentes']} rejeitadas={curadoria['rejeitados']}")
+    print(f"Categorias: atualizadas={categorias['atualizadas']} fallback={categorias['fallback']} erros_api={categorias['erros']}")
+    print(f"Relatório: {resultado['relatorio']}")
+    print("Telegram, deploy e modo ONLINE não foram acionados.")
+    return 0
+
+
+def comando_reprocessar_pendentes_enriquecido(dry_run=False):
+    from reprocessar_pendentes_enriquecido import reprocessar_pendentes_enriquecido
+
+    preparar_base()
+    resultado = reprocessar_pendentes_enriquecido(dry_run=dry_run)
+    print(f"Enriquecido: total={resultado['total']} aprovadas={resultado['aprovados']} pendentes={resultado['pendentes']} rejeitadas={resultado['rejeitados']}")
+    if resultado["backup"]:
+        print(f"Backup: {resultado['backup']}")
+    print("Relatório: RELATORIO_ENRIQUECIMENTO_OFERTAS.md")
+    print("Telegram, deploy e modo ONLINE não foram acionados.")
+    return 0
+
+
 def comando_testar_coleta_api(comparar_playwright=False):
     """Compara fontes sem inserir, atualizar ou publicar qualquer oferta."""
     from coletor_mercadolivre_api import coletar_ofertas_api
@@ -386,6 +490,114 @@ def comando_testar_coleta_api(comparar_playwright=False):
         print("Recomendação: revisar MELI_COLETA_TERMOS e OAuth antes de ativar a coleta API.")
     print("Modo de comparação: produtos, histórico, fila e site não foram alterados; apenas a saúde da busca API pode ser atualizada.")
     return 0 if api else 1
+
+
+def comando_diagnosticar_playwright():
+    from playwright_perfil import imprimir_diagnostico
+
+    imprimir_diagnostico()
+    return 0
+
+
+def comando_reparar_playwright():
+    from playwright_perfil import reparar_perfil
+
+    try:
+        resultado = reparar_perfil()
+    except RuntimeError as erro:
+        print(f"Reparo não concluído: {erro}")
+        return 1
+    print(f"Processos encerrados: {len(resultado['encerrados'])}")
+    print(f"Locks removidos: {len(resultado['locks_removidos'])}")
+    print(f"Perfil reserva: {resultado['reserva']}")
+    print(f"Perfil principal disponível: {'sim' if resultado['disponivel'] else 'não'}")
+    return 0
+
+
+def comando_auditar_base():
+    from recuperacao_base import imprimir_auditoria_base
+
+    imprimir_auditoria_base()
+    return 0
+
+
+def comando_diagnosticar_afiliado():
+    from auditoria_afiliados import imprimir_diagnostico
+
+    imprimir_diagnostico()
+    return 0
+
+
+def comando_gerar_afiliados():
+    from fila_postagens import gerar_fila_de_produtos
+    from gerador_afiliados_oficial import gerar_links_afiliados
+
+    preparar_base()
+    try:
+        resultado = gerar_links_afiliados()
+    except Exception as erro:
+        print(f"Não foi possível gerar links afiliados: {erro}")
+        return 1
+    fila = gerar_fila_de_produtos()
+    print(f"Pendentes de afiliado: {resultado['pendentes']}")
+    print(f"Links meli.la gerados: {resultado['gerados']}")
+    print(f"Falhas: {resultado['falhas']}")
+    print(f"Curadoria após links: aprovados={fila['aprovados']} pendentes/rejeitados={fila['rejeitados']}")
+    print("Telegram não foi acionado.")
+    return 0 if not resultado["falhas"] else 1
+
+
+def _validar_permalink_argumento(argumentos):
+    if not argumentos:
+        print("Informe a URL do produto Mercado Livre.")
+        return ""
+    url = argumentos[0].strip()
+    if not url.startswith(("https://www.mercadolivre.com", "https://meli.la/")):
+        print("Informe uma URL HTTPS do Mercado Livre.")
+        return ""
+    return url
+
+
+def comando_diagnosticar_compartilhar(argumentos):
+    from gerador_afiliados_oficial import diagnosticar_compartilhar
+
+    url = _validar_permalink_argumento(argumentos)
+    if not url:
+        return 1
+    resultado = diagnosticar_compartilhar(url, clicar=False)
+    print(f"Botão oficial encontrado: {'sim' if resultado['encontrado'] else 'não'}")
+    print(f"Estratégia: {resultado['estrategia']}")
+    print(f"Coordenadas: {resultado['coordenadas'] or 'não disponível'}")
+    print(f"Screenshot: {resultado['screenshot_antes'] or 'não disponível'}")
+    return 0 if resultado["encontrado"] else 1
+
+
+def comando_testar_afiliado(argumentos):
+    from gerador_afiliados_oficial import diagnosticar_compartilhar
+
+    url = _validar_permalink_argumento(argumentos)
+    if not url:
+        return 1
+    resultado = diagnosticar_compartilhar(url, clicar=True)
+    link = resultado["link"]
+    mascarado = f"https://meli.la/{link.rsplit('/', 1)[-1][:3]}..." if link else "não encontrado"
+    print(f"Botão oficial encontrado: {'sim' if resultado['encontrado'] else 'não'}")
+    print(f"Estratégia: {resultado['estrategia']}")
+    print(f"Link meli.la: {mascarado}")
+    print(f"Screenshots: antes={resultado['screenshot_antes'] or '-'} depois={resultado['screenshot_depois'] or '-'} link={resultado['screenshot_link'] or '-'}")
+    print("Banco, aprovação, Telegram e site não foram alterados.")
+    return 0 if link else 1
+
+
+def comando_reconstruir_base():
+    from recuperacao_base import reconstruir_base
+
+    resultado = reconstruir_base()
+    print(f"Reconstrução: {resultado['resultado']}")
+    print(f"Ofertas no site: {resultado.get('ofertas_site', 0)}")
+    print(f"Páginas de produto: {resultado.get('paginas_produto', 0)}")
+    print("Relatório: RELATORIO_RECUPERACAO_BASE.md")
+    return 0 if resultado.get("homologado") else 1
 
 
 def comando_simular():
@@ -480,6 +692,7 @@ def comando_validar():
     from estado_sistema import MANUTENCAO, OFFLINE, ONLINE, definir_estado_sistema, obter_estado_sistema
     from meli_oauth import validar_oauth_local
     from coletor_mercadolivre_api import validar_coleta_api
+    from gerador_link_mercadolivre import link_afiliado_valido
 
     erros = []
     estado_original = obter_estado_sistema()
@@ -488,6 +701,12 @@ def comando_validar():
         gerar_site()
         erros += validar_site_publico() + validar_assistente() + validar_saude_sistema() + validar_operacao_sistema() + validar_revisora() + validar_oauth_local()
         erros += validar_coleta_api()
+        with conectar() as conn:
+            links_inseguros = conn.execute(
+                "SELECT COUNT(*) FROM postagens WHERE status IN ('aprovado_auto', 'aprovado_manual', 'publicado') AND (link_afiliado IS NULL OR link_afiliado = '' OR link_afiliado NOT LIKE 'https://meli.la/%')"
+            ).fetchone()[0]
+        if links_inseguros:
+            erros.append(f"Há {links_inseguros} postagem(ns) aprovada(s) sem link meli.la")
         definir_estado_sistema(MANUTENCAO, "validação automática")
         gerar_site()
         if "Estamos realizando melhorias internas" not in Path("site/index.html").read_text(encoding="utf-8"):
@@ -826,6 +1045,13 @@ def main():
             "simular",
             "publicar-um",
             "coletar",
+            "coletar-confiavel",
+            "limpar-titulos",
+            "reprocessar-pendentes",
+            "simular-score",
+            "atualizar-categorias",
+            "calibrar-curadoria",
+            "reprocessar-pendentes-enriquecido",
             "gerar-site",
             "validar",
             "servir-site",
@@ -849,9 +1075,19 @@ def main():
             "meli-testar-token",
             "meli-refresh-token",
             "testar-coleta-api",
+            "diagnosticar-playwright",
+            "reparar-playwright",
+            "auditar-base",
+            "reconstruir-base",
+            "diagnosticar-afiliado",
+            "gerar-afiliados",
+            "diagnosticar-compartilhar",
+            "testar-afiliado",
         ],
     )
     parser.add_argument("argumentos", nargs="*")
+    parser.add_argument("--visual", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     comandos = {
@@ -868,6 +1104,13 @@ def main():
         "simular": comando_simular,
         "publicar-um": comando_publicar_um,
         "coletar": comando_coletar,
+        "coletar-confiavel": lambda: comando_coletar_confiavel(args.visual),
+        "limpar-titulos": comando_limpar_titulos,
+        "reprocessar-pendentes": lambda: comando_reprocessar_pendentes(args.dry_run),
+        "simular-score": comando_simular_score,
+        "atualizar-categorias": comando_atualizar_categorias,
+        "calibrar-curadoria": comando_calibrar_curadoria,
+        "reprocessar-pendentes-enriquecido": lambda: comando_reprocessar_pendentes_enriquecido(args.dry_run),
         "gerar-site": comando_gerar_site,
         "validar": comando_validar,
         "servir-site": comando_servir_site,
@@ -891,6 +1134,14 @@ def main():
         "meli-testar-token": comando_meli_testar_token,
         "meli-refresh-token": comando_meli_refresh_token,
         "testar-coleta-api": lambda: comando_testar_coleta_api("playwright" in args.argumentos),
+        "diagnosticar-playwright": comando_diagnosticar_playwright,
+        "reparar-playwright": comando_reparar_playwright,
+        "auditar-base": comando_auditar_base,
+        "reconstruir-base": comando_reconstruir_base,
+        "diagnosticar-afiliado": comando_diagnosticar_afiliado,
+        "gerar-afiliados": comando_gerar_afiliados,
+        "diagnosticar-compartilhar": lambda: comando_diagnosticar_compartilhar(args.argumentos),
+        "testar-afiliado": lambda: comando_testar_afiliado(args.argumentos),
     }
     return comandos[args.comando]()
 
