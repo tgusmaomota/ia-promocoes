@@ -1,6 +1,8 @@
 """Pré-voo seguro para a operação de produção do Promogg."""
 
 import os
+import json
+import re
 import sqlite3
 import subprocess
 import sys
@@ -8,7 +10,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from banco import conectar, inicializar_banco, registrar_evento_sistema
+from banco import DB_PATH, registrar_evento_sistema
 
 
 ROOT = Path.cwd()
@@ -44,6 +46,83 @@ def _tem_backups():
     return bool(pasta.exists() and any(arquivo.is_file() for arquivo in pasta.rglob("*")))
 
 
+def _conectar_banco_somente_leitura():
+    caminho = (ROOT / DB_PATH).resolve()
+    if not caminho.is_file():
+        raise FileNotFoundError("banco.db não encontrado")
+    conexao = sqlite3.connect(f"file:{caminho}?mode=ro", uri=True)
+    conexao.row_factory = sqlite3.Row
+    conexao.execute("PRAGMA query_only = ON")
+    return conexao
+
+
+def validar_preflight_somente_leitura():
+    """Valida banco e artefatos estáticos existentes sem escrita ou migração."""
+    erros = []
+    try:
+        with _conectar_banco_somente_leitura() as conn:
+            integridade = str(conn.execute("PRAGMA integrity_check").fetchone()[0]).lower()
+        if integridade != "ok":
+            erros.append(f"SQLite integrity_check={integridade}")
+    except (sqlite3.Error, OSError) as erro:
+        erros.append(f"Banco somente leitura indisponível: {erro}")
+
+    site = ROOT / "site"
+    ofertas_path = site / "ofertas.json"
+    try:
+        ofertas = json.loads(ofertas_path.read_text(encoding="utf-8")).get("ofertas", [])
+    except (OSError, json.JSONDecodeError) as erro:
+        return erros + [f"ofertas.json inválido: {erro}"]
+    if not isinstance(ofertas, list) or not ofertas:
+        return erros + ["ofertas.json não contém ofertas públicas"]
+
+    paginas = {str(caminho.relative_to(site).parent) for caminho in (site / "produto").glob("*/*/index.html")}
+    esperadas = {str(oferta.get("produto_url") or "").strip("/") for oferta in ofertas}
+    esperadas.discard("")
+    if esperadas != paginas:
+        erros.append("ofertas públicas e páginas individuais não correspondem")
+
+    for indice, oferta in enumerate(ofertas, start=1):
+        link = str(oferta.get("link") or "")
+        imagem = str(oferta.get("imagem_url") or "")
+        produto_url = str(oferta.get("produto_url") or "").strip("/")
+        partes_url = produto_url.split("/")
+        item_id = str(oferta.get("item_id") or (partes_url[1] if len(partes_url) >= 2 and partes_url[0] == "produto" else ""))
+        titulo = str(oferta.get("titulo") or "")
+        if not re.fullmatch(r"MLB\d{5,}", item_id):
+            erros.append(f"oferta {indice}: item_id inválido")
+        if not link.startswith("https://meli.la/"):
+            erros.append(f"oferta {indice}: link meli.la inválido")
+        if not imagem.startswith(("https://", "http://")):
+            erros.append(f"oferta {indice}: imagem pública inválida")
+        if re.search(r"(?i)(?:R\$\s*\d|\d+\s*%\s*OFF)", titulo):
+            erros.append(f"oferta {indice}: título contém preço ou desconto")
+        pagina = site / produto_url / "index.html"
+        if not produto_url or not pagina.is_file():
+            erros.append(f"oferta {indice}: página individual ausente")
+            continue
+        conteudo = pagina.read_text(encoding="utf-8").lower()
+        if not all(marcador in conteudo for marcador in ("rel=\"canonical\"", "og:title", "twitter:card", "application/ld+json")):
+            erros.append(f"oferta {indice}: SEO incompleto")
+        if any(marcador in conteudo for marcador in ("observacao_interna", "aprovado_auto", "aprovado_manual", "pendente_revisao", "rejeitado")):
+            erros.append(f"oferta {indice}: dado interno exposto")
+
+    try:
+        index = (site / "index.html").read_text(encoding="utf-8").lower()
+        robots = (site / "robots.txt").read_text(encoding="utf-8").lower()
+        sitemap = (site / "sitemap.xml").read_text(encoding="utf-8")
+        analytics = (site / "analytics.js").read_text(encoding="utf-8")
+        if not all(marcador in index for marcador in ("rel=\"canonical\"", "og:image", "twitter:card")):
+            erros.append("SEO da página inicial incompleto")
+        if "sitemap:" not in robots or "<urlset" not in sitemap:
+            erros.append("robots.txt ou sitemap.xml inválido")
+        if "PromoggAnalytics" not in analytics:
+            erros.append("instrumentação de analytics ausente")
+    except OSError as erro:
+        erros.append(f"Artefato público ausente: {erro}")
+    return erros
+
+
 def _verificar_oauth(testar_remoto):
     from meli_oauth import status_oauth_local
 
@@ -60,15 +139,14 @@ def _verificar_oauth(testar_remoto):
         return _resultado("OAuth", "critico", f"Token OAuth não pôde ser validado: {str(erro)[:220]}")
 
 
-def executar_preflight_producao(testar_oauth_remoto=True):
+def executar_preflight_producao(testar_oauth_remoto=True, seco=False):
     """Verifica pré-requisitos sem iniciar, publicar ou alterar ofertas."""
     load_dotenv(ROOT / ".env", override=False)
     itens = []
 
     itens.append(_resultado("Python", "ok" if sys.version_info >= (3, 10) else "critico", f"Python {sys.version.split()[0]}"))
     try:
-        inicializar_banco()
-        with conectar() as conn:
+        with _conectar_banco_somente_leitura() as conn:
             integridade = str(conn.execute("PRAGMA integrity_check").fetchone()[0]).lower()
         itens.append(_resultado("Banco", "ok" if integridade == "ok" else "critico", f"SQLite integrity_check={integridade}"))
     except (sqlite3.Error, OSError) as erro:
@@ -91,12 +169,12 @@ def executar_preflight_producao(testar_oauth_remoto=True):
     itens.append(_verificar_oauth(testar_oauth_remoto))
 
     try:
-        from analytics_promogg import status_analytics
-
-        analytics = status_analytics()
-        if analytics["javascript_pronto"]:
+        analytics_js = ROOT / "site" / "analytics.js"
+        analytics_pronto = analytics_js.is_file() and "PromoggAnalytics" in analytics_js.read_text(encoding="utf-8")
+        endpoint_configurado = bool(re.search(r'data-analytics-url="https://', (ROOT / "site" / "index.html").read_text(encoding="utf-8")))
+        if analytics_pronto:
             texto = "Instrumentação local pronta"
-            if not analytics["endpoint_publico_configurado"]:
+            if not endpoint_configurado:
                 texto += "; endpoint público ainda não configurado"
                 itens.append(_resultado("Analytics", "alerta", texto))
             else:
@@ -114,9 +192,7 @@ def executar_preflight_producao(testar_oauth_remoto=True):
         itens.append(_resultado("Painel", "critico", "Streamlit não está instalado."))
 
     try:
-        from gerar_site import validar_site_publico
-
-        erros_catalogo = validar_site_publico()
+        erros_catalogo = validar_preflight_somente_leitura()
         if erros_catalogo:
             itens.append(_resultado("Site", "critico", f"Validação do catálogo falhou: {erros_catalogo[0]}"))
         else:

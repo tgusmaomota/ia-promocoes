@@ -10,7 +10,8 @@ from gerar_site import OFERTAS_PATH, PRODUTOS_DIR, SITE_DIR, listar_ofertas
 RELATORIO = Path("RELATORIO_INTEGRIDADE_SITE.md")
 
 
-def auditar_paginas_produto():
+def auditar_paginas_produto(escrever_relatorio=True, caminho_relatorio=None):
+    """Audita catálogo e páginas; a escrita do relatório é opcional para pré-voos."""
     try:
         dados = json.loads(OFERTAS_PATH.read_text(encoding="utf-8"))
         ofertas = dados.get("ofertas", [])
@@ -38,11 +39,12 @@ def auditar_paginas_produto():
         resultado["erros"].append(f"{len(sem_pagina)} oferta(s) pública(s) sem página individual")
     if orfas:
         resultado["erros"].append(f"{len(orfas)} página(s) órfã(s)")
-    _escrever_relatorio(resultado)
+    if escrever_relatorio:
+        _escrever_relatorio(resultado, caminho_relatorio=caminho_relatorio)
     return resultado
 
 
-def _escrever_relatorio(resultado, acao="auditoria"):
+def _escrever_relatorio(resultado, acao="auditoria", caminho_relatorio=None):
     linhas = [
         "# Relatório de Integridade do Site", "",
         f"- Gerado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
@@ -66,7 +68,9 @@ def _escrever_relatorio(resultado, acao="auditoria"):
         linhas.append(f"- {item_id}: {len(itens)} ocorrência(s); mantida a primeira conforme ordenação pública")
     if not resultado["duplicados_item"]:
         linhas.append("- nenhuma")
-    RELATORIO.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+    destino = Path(caminho_relatorio) if caminho_relatorio else RELATORIO
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_text("\n".join(linhas) + "\n", encoding="utf-8")
 
 
 def corrigir_paginas_produto():

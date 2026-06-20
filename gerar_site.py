@@ -1419,7 +1419,7 @@ def resumo_seo_publico():
     }
 
 
-def validar_site_publico():
+def validar_site_publico(escrever_relatorio=True):
     """Valida o contrato do catálogo estático sem consultar dados sensíveis."""
     erros = []
     campos_permitidos = {
@@ -1442,7 +1442,7 @@ def validar_site_publico():
     # A auditoria também detecta órfãs e duplicidades da fonte, além das
     # checagens individuais abaixo.
     from integridade_paginas_produto import auditar_paginas_produto
-    integridade = auditar_paginas_produto()
+    integridade = auditar_paginas_produto(escrever_relatorio=escrever_relatorio)
     erros.extend(integridade.get("erros", []))
     if len(ofertas) != len(integridade.get("paginas", [])):
         erros.append("quantidade de ofertas públicas difere das páginas individuais válidas")

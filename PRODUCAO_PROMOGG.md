@@ -14,6 +14,14 @@ Para revisar sem iniciar serviços, deploy ou Telegram:
 python3 ia_promocoes.py iniciar-producao --dry-run
 ```
 
+O modo seco é somente leitura: não gera relatórios rastreados, não registra evento operacional e não altera o estado do Git.
+
+Também é possível auditar os artefatos existentes sem regenerar o site:
+
+```bash
+python3 ia_promocoes.py validar --somente-leitura
+```
+
 ## Manutenção e parada
 
 ```bash

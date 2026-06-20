@@ -839,9 +839,10 @@ def comando_iniciar_producao(dry_run=False):
     from producao_promogg import executar_preflight_producao, imprimir_preflight, registrar_resultado_preflight
 
     preparar_base()
-    resultado = executar_preflight_producao(testar_oauth_remoto=not dry_run)
+    resultado = executar_preflight_producao(testar_oauth_remoto=not dry_run, seco=dry_run)
     imprimir_preflight(resultado)
-    registrar_resultado_preflight(resultado)
+    if not dry_run:
+        registrar_resultado_preflight(resultado)
     if not resultado["aprovado"]:
         print("Produção não foi iniciada. Corrija as pendências críticas e execute novamente.")
         return 1
@@ -943,6 +944,19 @@ def comando_validar(checar_estados=True):
         return 1
     registrar_evento_sistema("validacao", "operacao", "sucesso", "Validação operacional concluída")
     print("Validação concluída: site, SEO, analytics, assistentes, banco, saúde e backup operacionais.")
+    return 0
+
+
+def comando_validar_somente_leitura():
+    from producao_promogg import validar_preflight_somente_leitura
+
+    erros = validar_preflight_somente_leitura()
+    if erros:
+        print("Validação somente leitura falhou:")
+        for erro in erros[:20]:
+            print(f"- {erro}")
+        return 1
+    print("Validação somente leitura concluída: banco, catálogo, páginas, links, imagens e SEO estão íntegros.")
     return 0
 
 
@@ -1377,6 +1391,7 @@ def main():
     parser.add_argument("argumentos", nargs="*")
     parser.add_argument("--visual", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--somente-leitura", action="store_true")
     args = parser.parse_args()
 
     comandos = {
@@ -1412,7 +1427,7 @@ def main():
         "recuperar-indisponiveis": lambda: comando_recuperar_indisponiveis(args.dry_run),
         "corrigir-paginas-produto": comando_corrigir_paginas_produto,
         "gerar-site": comando_gerar_site,
-        "validar": comando_validar,
+        "validar": comando_validar_somente_leitura if args.somente_leitura else comando_validar,
         "servir-site": comando_servir_site,
         "publicar-site": comando_publicar_site,
         "subir-site": comando_subir_site,
