@@ -409,6 +409,24 @@ def comando_limpar_titulos():
     return 0
 
 
+def comando_login_mercadolivre():
+    """Abre o perfil persistente exclusivamente para autenticação manual."""
+    from login_ml import login_manual_mercadolivre
+
+    try:
+        resultado = login_manual_mercadolivre()
+    except Exception as erro:
+        print(f"Login Mercado Livre não concluído: {erro}")
+        return 1
+
+    print(resultado["mensagem"])
+    if resultado["autenticada"]:
+        print("Login confirmado. A sessão foi preservada em perfil_mercadolivre.")
+        return 0
+    print("Login não confirmado. Tente novamente e confira se entrou na conta antes de pressionar Enter.")
+    return 1
+
+
 def _executar_teste_captura(url, comparar=False):
     from playwright.sync_api import sync_playwright
     from agente_ofertas import extrair_item_id
@@ -601,7 +619,7 @@ COMANDOS_PROMOGG = {
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "Segurança e Diagnóstico": {"meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Executa recuperação estruturada da base."},
+    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Executa recuperação estruturada da base."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
 
@@ -1373,6 +1391,7 @@ def main():
             "treinar-revisora",
             "limpar-seguro",
             "mapa",
+            "login-mercadolivre",
             "meli-auth",
             "meli-testar-token",
             "meli-refresh-token",
@@ -1447,6 +1466,7 @@ def main():
         "treinar-revisora": comando_treinar_revisora,
         "limpar-seguro": comando_limpar_seguro,
         "mapa": comando_mapa,
+        "login-mercadolivre": comando_login_mercadolivre,
         "meli-auth": comando_meli_auth,
         "meli-testar-token": comando_meli_testar_token,
         "meli-refresh-token": comando_meli_refresh_token,
