@@ -16,7 +16,14 @@ from mercadolivre_api import ErroMercadoLivre, consultar_item
 
 def _indisponibilidade_confirmada(item):
     motivo = str(item.get("motivo") or "").lower()
-    return "não encontrado" in motivo or "not found" in motivo or "status mercado livre:" in motivo
+    # Apenas uma resposta conclusiva do anúncio pode retirar uma oferta do
+    # catálogo. Falhas de autenticação, rede e timeout são tratadas abaixo.
+    return (
+        "não encontrado" in motivo
+        or "not found" in motivo
+        or "http 404" in motivo
+        or any(status in motivo for status in ("status mercado livre: closed", "status mercado livre: paused"))
+    )
 
 
 def monitoramento_executado_hoje():
@@ -90,7 +97,7 @@ def monitorar_precos_diariamente(forcar=False):
                     marcar_produto_indisponivel(produto["id"], produto, motivo)
                     resultado["indisponíveis"] += 1
                 else:
-                    registrar_observacao_preco(produto["id"], produto, None, "verificacao_inconclusiva")
+                    registrar_observacao_preco(produto["id"], produto, None, "verificacao_inconclusiva", fonte_preco="api_item")
                     registrar_log("monitor_precos", f"Verificação inconclusiva; status preservado: {produto.get('item_id') or produto['id']}", nivel="warning", dados=motivo)
                 continue
 
@@ -104,7 +111,7 @@ def monitorar_precos_diariamente(forcar=False):
                 "imagem": item.get("imagem_url", ""),
             })
             detalhes = registrar_observacao_preco(
-                produto["id"], produto_atualizado, item["preco"], "ok"
+                produto["id"], produto_atualizado, item["preco"], "ok", fonte_preco="api_item"
             )
             resultado["verificados"] += 1
 
@@ -131,7 +138,7 @@ def monitorar_precos_diariamente(forcar=False):
             registrar_evento_sistema("monitoramento_precos", "mercado_livre", "erro", "Falha ao verificar preço", str(erro))
             # 403 e outras falhas de API nunca alteram a disponibilidade do produto.
             try:
-                registrar_observacao_preco(produto["id"], produto, None, "erro_api")
+                registrar_observacao_preco(produto["id"], produto, None, "erro_api", fonte_preco="api_item")
             except Exception:
                 pass
         except Exception as erro:
@@ -143,6 +150,12 @@ def monitorar_precos_diariamente(forcar=False):
                 nivel="error",
             )
             registrar_evento_sistema("monitoramento_precos", "mercado_livre", "erro", "Erro inesperado no monitoramento", str(erro))
+            try:
+                registrar_observacao_preco(
+                    produto["id"], produto, None, "verificacao_inconclusiva", fonte_preco="api_item"
+                )
+            except Exception:
+                pass
 
         if falhas_consecutivas >= 5:
             resultado["interrompidos"] = len(produtos) - indice - 1

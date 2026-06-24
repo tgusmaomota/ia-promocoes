@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
-from banco import conectar, inicializar_banco
+from banco import conectar
 from gerador_link_mercadolivre import link_afiliado_valido
 
 
@@ -20,7 +20,6 @@ def _imagem_valida(url):
 
 
 def auditar_qualidade_catalogo():
-    inicializar_banco()
     dados = json.loads((SITE / "ofertas.json").read_text(encoding="utf-8"))
     ofertas = dados.get("ofertas", [])
     links = [str(oferta.get("link") or "") for oferta in ofertas]

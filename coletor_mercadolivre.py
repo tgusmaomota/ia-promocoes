@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from agente_ofertas import coletar_ofertas
-from banco import registrar_evento_sistema, registrar_log, salvar_ou_atualizar_produto_api, salvar_produto
+from banco import registrar_evento_sistema, registrar_log, salvar_ou_atualizar_produto_api
 from gerador_link_mercadolivre import gerar_link_afiliado
 from mercadolivre_api import ErroMercadoLivre, consultar_item
 from saneamento_ofertas import sanear_titulo
@@ -145,17 +145,22 @@ def coletar(salvar_no_banco=True):
     rejeitados = 0
 
     if salvar_no_banco:
+        itens_processados = set()
         for produto in normalizados:
+            chave = str(produto.get("item_id") or produto.get("link_original") or "").strip()
+            if chave and chave in itens_processados:
+                registrar_log("deduplicacao", f"Produto repetido na mesma coleta ignorado: {chave}")
+                continue
+            if chave:
+                itens_processados.add(chave)
             try:
-                if origem == "api":
-                    resultado = salvar_ou_atualizar_produto_api(produto)
-                    ok = resultado["acao"] == "criado"
-                    motivo = resultado.get("criterio", "")
-                    if resultado["acao"] == "atualizado":
-                        salvos += 1
-                        continue
-                else:
-                    ok, _, motivo = salvar_produto(produto)
+                # A mesma atualização idempotente é usada para API e
+                # Playwright: um item reencontrado atualiza preço/dados e
+                # acrescenta histórico quando necessário, sem duplicá-lo.
+                produto["origem_coleta"] = origem
+                resultado = salvar_ou_atualizar_produto_api(produto)
+                ok = resultado["acao"] in {"criado", "atualizado"}
+                motivo = resultado.get("criterio", "")
             except Exception as erro:
                 rejeitados += 1
                 registrar_log("coletor_mercadolivre", f"Falha ao salvar produto: {produto['titulo']} ({erro})", nivel="error")

@@ -1,17 +1,22 @@
-"""Auditoria e reconstrução controlada da base ativa do Promogg."""
+"""Reconstrução conservadora da base ativa, com proteção do catálogo público."""
 
 import os
+import shutil
+import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-from banco import conectar, inicializar_banco, registrar_evento_sistema, registrar_log
+from banco import DB_PATH, conectar, inicializar_banco, registrar_evento_sistema, registrar_log, semear_historico_existente
+from catalogo_integridade import avaliar_catalogo, carregar_referencia_aprovada, resumo_catalogo
 
 
 RELATORIO = Path("RELATORIO_RECUPERACAO_BASE.md")
+BACKUPS_DIR = Path("backups") / "reconstrucao_base"
+ARTEFATOS_CATALOGO = (Path("site"), Path("dist_site"))
+ARQUIVOS_AUXILIARES = (Path("posts_prontos.csv"), Path("whatsapp_posts.txt"))
 
 
 def auditar_base():
-    inicializar_banco()
     with conectar() as conn:
         dados = {
             "produtos_total": conn.execute("SELECT COUNT(*) FROM produtos").fetchone()[0],
@@ -35,122 +40,176 @@ def imprimir_auditoria_base():
     return dados
 
 
-def _contagem_site():
-    ofertas = 0
-    paginas = 0
+def _contagem_site(diretorio=Path("site")):
+    resumo = resumo_catalogo(diretorio)
+    return resumo["ofertas"], resumo["paginas"]
+
+
+def criar_backup_reconstrucao():
+    """Cria cópia consistente do banco e do catálogo antes de qualquer mutação."""
+    destino = BACKUPS_DIR / datetime.now().strftime("%Y%m%d_%H%M%S")
+    destino.mkdir(parents=True, exist_ok=False)
+
+    banco_destino = destino / "banco.db"
+    origem = sqlite3.connect(DB_PATH)
     try:
-        import json
-        dados = json.loads(Path("site/ofertas.json").read_text(encoding="utf-8"))
-        ofertas = len(dados.get("ofertas", []))
-    except (OSError, ValueError, AttributeError):
-        pass
-    if Path("site/produto").exists():
-        paginas = len(list(Path("site/produto").glob("*/index.html")))
-    return ofertas, paginas
+        copia = sqlite3.connect(banco_destino)
+        try:
+            origem.backup(copia)
+        finally:
+            copia.close()
+    finally:
+        origem.close()
+
+    for origem_artefato in ARTEFATOS_CATALOGO:
+        if origem_artefato.exists():
+            shutil.copytree(origem_artefato, destino / origem_artefato.name)
+    for origem_arquivo in ARQUIVOS_AUXILIARES:
+        if origem_arquivo.is_file():
+            shutil.copy2(origem_arquivo, destino / origem_arquivo.name)
+    return destino
+
+
+def restaurar_catalogo(backup):
+    """Restaura somente os artefatos públicos, mantendo novos dados históricos."""
+    backup = Path(backup)
+    restaurados = []
+    for artefato in ARTEFATOS_CATALOGO:
+        origem = backup / artefato.name
+        if not origem.exists():
+            continue
+        if artefato.exists():
+            shutil.rmtree(artefato)
+        shutil.copytree(origem, artefato)
+        restaurados.append(str(artefato))
+    return restaurados
 
 
 def gerar_relatorio_recuperacao(resultado):
     antes = resultado.get("antes", {})
     depois = resultado.get("depois", {})
+    integridade = resultado.get("integridade", {})
     linhas = [
-        "# Relatório de Recuperação da Base - Promogg",
-        "",
+        "# Relatório de Recuperação da Base - Promogg", "",
         f"- Data/hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         f"- Resultado: {resultado.get('resultado', 'incompleto')}",
-        "",
-        "## Causa raiz",
-        resultado.get("causa_raiz", "Não informada."),
-        "",
-        "## Correções aplicadas",
-    ]
-    linhas += [f"- {item}" for item in resultado.get("correcoes", [])] or ["- Nenhuma alteração aplicada."]
-    linhas += [
-        "",
+        f"- Modo: {'simulação' if resultado.get('dry_run') else 'execução'}",
+        f"- Backup: {resultado.get('backup') or 'não criado (simulação)'}", "",
+        "## Proteções aplicadas",
+        "- A fila global de postagens não é executada durante a reconstrução.",
+        "- O monitoramento completo não é forçado durante a reconstrução.",
+        "- Falhas transitórias de API preservam o status anterior.",
+        "- O catálogo novo precisa respeitar mínimo, páginas, links e queda máxima.", "",
         "## Base antes/depois",
         f"- Produtos: {antes.get('produtos_total', 0)} -> {depois.get('produtos_total', 0)}",
-        f"- Ativos: {antes.get('ativos', 0)} -> {depois.get('ativos', 0)}",
-        f"- Indisponíveis preservados no histórico: {antes.get('indisponiveis', 0)} -> {depois.get('indisponiveis', 0)}",
+        f"- Histórico de preços: {antes.get('historico', 0)} -> {depois.get('historico', 0)}",
         f"- Novas ofertas coletadas: {resultado.get('novos', 0)}",
-        f"- Ofertas recuperadas/atualizadas: {resultado.get('atualizados', 0)}",
-        f"- Indisponíveis removidos do catálogo ativo: {resultado.get('indisponiveis_catalogo', 0)}",
-        f"- Ofertas públicas: {resultado.get('ofertas_site', 0)}",
-        f"- Páginas de produto: {resultado.get('paginas_produto', 0)}",
-        f"- Meta mínima (30/30): {'atingida' if resultado.get('homologado') else 'não atingida'}",
-        "",
+        f"- Itens atualizados: {resultado.get('atualizados', 0)}",
+        f"- Linhas-base de histórico criadas: {resultado.get('historico_semeado', 0)}",
+        f"- Fila global executada: não", "",
+        "## Catálogo",
+        f"- Referência: {integridade.get('referencia', {}).get('ofertas', 0)} ofertas",
+        f"- Candidato: {integridade.get('atual', {}).get('ofertas', resultado.get('ofertas_site', 0))} ofertas",
+        f"- Páginas candidatas: {integridade.get('atual', {}).get('paginas', resultado.get('paginas_produto', 0))}",
+        f"- Queda: {integridade.get('queda_percentual', 0):.2f}%",
+        f"- Bloqueios: {'; '.join(integridade.get('erros', [])) or 'nenhum'}", "",
         "## Situação final",
         resultado.get("situacao_final", ""),
     ]
     if resultado.get("erro"):
-        linhas += ["", "## Bloqueio", f"- {resultado['erro']}"]
+        linhas += ["", "## Erro", f"- {resultado['erro']}"]
     RELATORIO.write_text("\n".join(linhas) + "\n", encoding="utf-8")
     return RELATORIO
 
 
-def reconstruir_base():
-    """Coleta uma nova base sem apagar produtos, histórico, cliques ou postagens."""
-    from coletor_mercadolivre import coletar
-    from fila_postagens import gerar_fila_de_produtos
-    from gerador_afiliados_oficial import gerar_links_afiliados
-    from gerar_site import gerar_site, validar_site_publico
-    from monitor_precos import monitorar_precos_diariamente
-
+def reconstruir_base(dry_run=False):
+    """Atualiza a base sem permitir que uma coleta degradada substitua o catálogo."""
     antes = auditar_base()
+    referencia_local = resumo_catalogo(Path("site"))
+    referencia_aprovada = carregar_referencia_aprovada()
+    referencia = referencia_local if referencia_local["ofertas"] >= referencia_aprovada.get("ofertas", 0) else referencia_aprovada
     resultado = {
-        "resultado": "incompleto",
-        "causa_raiz": "Base ativa reduzida por itens indisponíveis e coleta Playwright bloqueada.",
-        "correcoes": [
-            "Produtos indisponíveis foram preservados no SQLite e continuam excluídos do catálogo ativo.",
-            "Coleta manual usa API/item_id quando disponível e Playwright com perfil reserva como fallback.",
-        ],
+        "resultado": "simulação" if dry_run else "incompleto",
+        "dry_run": dry_run,
         "antes": antes,
-        "indisponiveis_catalogo": antes["indisponiveis"],
+        "depois": antes,
+        "ofertas_site": referencia_local["ofertas"],
+        "paginas_produto": referencia_local["paginas"],
+        "integridade": avaliar_catalogo(Path("site"), referencia=referencia),
+        "situacao_final": "Nenhuma coleta, curadoria, monitoramento ou arquivo público foi alterado." if dry_run else "",
     }
+    if dry_run:
+        gerar_relatorio_recuperacao(resultado)
+        return resultado
+
+    if not Path(DB_PATH).is_file():
+        resultado.update({"resultado": "bloqueado", "erro": "banco.db não encontrado", "situacao_final": "Reconstrução não iniciada."})
+        gerar_relatorio_recuperacao(resultado)
+        return resultado
+    backup = criar_backup_reconstrucao()
+    resultado["backup"] = str(backup)
     try:
+        inicializar_banco()
+        from coletor_mercadolivre import coletar
+        from gerador_afiliados_oficial import gerar_links_afiliados
+        from gerar_site import gerar_site, validar_site_publico
+
         modo_confiavel = os.getenv("COLETA_MODO_CONFIAVEL", "").strip().lower() in {"1", "true", "sim", "yes"}
         if modo_confiavel:
             from coleta_confiavel import coletar_confiavel
-
             coleta = coletar_confiavel()
-            produtos = [{"item_id": "coleta_confiavel"}] * coleta["salvos"]
+            produtos = [{"item_id": "coleta_confiavel"}] * int(coleta.get("salvos", 0))
         else:
             produtos = coletar()
         if not produtos:
-            raise RuntimeError("A coleta não retornou ofertas novas.")
+            raise RuntimeError("A coleta não retornou ofertas; catálogo anterior foi preservado.")
+
         afiliados = {"gerados": 0, "falhas": 0} if modo_confiavel else gerar_links_afiliados()
-        fila = {"aprovados": 0, "rejeitados": 0} if modo_confiavel else gerar_fila_de_produtos()
-        monitoramento = monitorar_precos_diariamente(forcar=True)
-        site = gerar_site()
-        erros_site = validar_site_publico()
-        depois = auditar_base()
-        ofertas, paginas = _contagem_site()
-        homologado = (
-            not erros_site
-            and depois["aprovados"] >= 30
-            and ofertas >= 30
-            and paginas >= 30
-        )
+        historico_semeado = semear_historico_existente()
+
+        # Não executar gerar_fila_de_produtos nem monitorar_precos aqui. Ambos
+        # percorrem a base inteira e não fazem parte de uma reconstrução segura.
+        gerar_site()
+        erros_site = validar_site_publico(escrever_relatorio=False)
+        integridade = avaliar_catalogo(Path("site"), referencia=referencia)
         resultado.update({
-            "resultado": "homologado" if homologado else "meta não atingida",
-            "novos": max(0, depois["produtos_total"] - antes["produtos_total"]),
-            "atualizados": max(0, len(produtos) - max(0, depois["produtos_total"] - antes["produtos_total"])),
-            "fila": fila,
+            "novos": max(0, auditar_base()["produtos_total"] - antes["produtos_total"]),
+            "atualizados": max(0, len(produtos) - max(0, auditar_base()["produtos_total"] - antes["produtos_total"])),
             "afiliados": afiliados,
-            "monitoramento": monitoramento,
-            "depois": depois,
-            "ofertas_site": ofertas,
-            "paginas_produto": paginas,
-            "homologado": homologado,
-            "situacao_final": "Base renovada e validada." if homologado else "Coleta concluída, mas a meta mínima de 30 ofertas/páginas não foi atingida.",
+            "historico_semeado": historico_semeado,
+            "integridade": integridade,
         })
-        registrar_evento_sistema("reconstrucao_base", "operacao", "sucesso" if homologado else "aviso", resultado["situacao_final"])
+        if erros_site or not integridade["aprovado"]:
+            restaurados = restaurar_catalogo(backup)
+            resultado.update({
+                "resultado": "bloqueado e restaurado",
+                "erro": "; ".join((erros_site + integridade["erros"])[:8]),
+                "restaurados": restaurados,
+                "situacao_final": "O catálogo candidato não passou na proteção; site e dist_site anteriores foram restaurados. Nenhum deploy foi executado.",
+            })
+            registrar_evento_sistema("reconstrucao_base", "operacao", "alerta", "Reconstrução bloqueada; catálogo anterior restaurado", resultado["erro"])
+        else:
+            atual = integridade["atual"]
+            resultado.update({
+                "resultado": "homologado localmente",
+                "homologado": True,
+                "ofertas_site": atual["ofertas"],
+                "paginas_produto": atual["paginas"],
+                "situacao_final": "Base atualizada e catálogo local preservado/validado. Deploy permanece uma ação manual.",
+            })
+            registrar_evento_sistema("reconstrucao_base", "operacao", "sucesso", "Reconstrução local homologada", f"ofertas={atual['ofertas']}")
+        resultado["depois"] = auditar_base()
+        resultado["ofertas_site"], resultado["paginas_produto"] = _contagem_site()
     except Exception as erro:
+        restaurados = restaurar_catalogo(backup)
         resultado.update({
+            "resultado": "interrompido e restaurado",
             "erro": str(erro),
+            "restaurados": restaurados,
             "depois": auditar_base(),
             "ofertas_site": _contagem_site()[0],
             "paginas_produto": _contagem_site()[1],
-            "homologado": False,
-            "situacao_final": "Reconstrução interrompida sem apagar dados existentes.",
+            "situacao_final": "Reconstrução interrompida; catálogo anterior foi restaurado e nenhum deploy foi executado.",
         })
         registrar_log("reconstrucao_base", f"Reconstrução interrompida: {erro}", nivel="error")
         registrar_evento_sistema("reconstrucao_base", "operacao", "erro", "Reconstrução interrompida", str(erro))

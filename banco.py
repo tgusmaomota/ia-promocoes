@@ -101,9 +101,16 @@ def _migrar_historico_precos(conn):
             categoria_id TEXT,
             categoria_nome TEXT,
             status_verificacao TEXT NOT NULL,
+            fonte_preco TEXT,
             FOREIGN KEY (produto_id) REFERENCES produtos(id)
         )
     """)
+    colunas_historico = _colunas_tabela(conn, "historico_precos")
+    if "fonte_preco" not in colunas_historico:
+        backup = _backup_antes_migracao()
+        conn.execute("ALTER TABLE historico_precos ADD COLUMN fonte_preco TEXT")
+        if backup:
+            print(f"Backup do banco criado antes da migração de fonte de preço: {backup}")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_historico_item_data ON historico_precos(item_id, data_verificacao DESC)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_historico_produto_data ON historico_precos(produto_id, data_verificacao DESC)")
 
@@ -722,8 +729,10 @@ def salvar_ou_atualizar_produto_api(produto):
     produto_historico = dict(existente)
     produto_historico.update(produto)
     produto_historico["link_afiliado"] = produto.get("link_afiliado") or existente["link_afiliado"]
+    # Cada coleta válida é uma observação histórica, inclusive quando o preço
+    # ficou igual. Assim tendência e última verificação não dependem de queda.
+    registrar_observacao_preco(produto_id, produto_historico, preco, "coletado")
     if mudou_preco:
-        registrar_observacao_preco(produto_id, produto_historico, preco, "coletado")
         # Reavaliação registra a nova evidência, mas não altera publicação nem aprovação existente.
         from analisador_promocao import analisar_produto
 
@@ -857,7 +866,14 @@ def atualizar_categoria_produto(produto_id, produto):
         )
 
 
-def registrar_observacao_preco(produto_id, produto, preco, status_verificacao="ok", data_verificacao=None):
+def registrar_observacao_preco(
+    produto_id,
+    produto,
+    preco,
+    status_verificacao="ok",
+    data_verificacao=None,
+    fonte_preco=None,
+):
     """Acrescenta uma observação de preço sem alterar observações anteriores."""
     inicializar_banco()
     try:
@@ -869,6 +885,11 @@ def registrar_observacao_preco(produto_id, produto, preco, status_verificacao="o
         preco = None
 
     data_verificacao = data_verificacao or agora()
+    fonte_preco = str(
+        fonte_preco
+        or produto.get("origem_coleta")
+        or {"ok": "api_item", "coletado": "coleta", "baseline_local": "baseline_local"}.get(status_verificacao, status_verificacao)
+    ).strip()[:80]
     item_id = str(produto.get("item_id", "")).strip()
     if not item_id:
         raise ValueError("Não é possível registrar histórico sem item_id")
@@ -889,8 +910,8 @@ def registrar_observacao_preco(produto_id, produto, preco, status_verificacao="o
             """
             INSERT INTO historico_precos (
                 produto_id, item_id, titulo, plataforma, preco, data_verificacao,
-                link_afiliado, categoria_id, categoria_nome, status_verificacao
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                link_afiliado, categoria_id, categoria_nome, status_verificacao, fonte_preco
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 produto_id,
@@ -903,6 +924,7 @@ def registrar_observacao_preco(produto_id, produto, preco, status_verificacao="o
                 str(produto.get("categoria_id", "")).strip(),
                 str(produto.get("categoria_nome") or produto.get("categoria") or "").strip(),
                 status_verificacao,
+                fonte_preco,
             ),
         )
 

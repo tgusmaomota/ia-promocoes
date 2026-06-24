@@ -1,18 +1,77 @@
 # Relatório de Coleta Confiável - Promogg
 
-- Início: 2026-06-20 09:20:49
-- Fim: 2026-06-20 09:32:56
-- Tempo total (s): 727.6
-- Encontrados: 81
-- Capturados completos: 58
-- Salvos/atualizados: 58
-- Com meli.la: 58
-- Aprovados: 28
-- Pendentes: 12
+- Início: 2026-06-20 21:55:11
+- Fim: 2026-06-20 21:59:10
+- Tempo total (s): 238.7
+- Encontrados: 40
+- Capturados completos: 0
+- Salvos/atualizados: 0
+- Com meli.la: 0
+- Aprovados: 0
+- Pendentes: 0
 - Rejeitados: 0
-- Falhas: 3
+- Falhas: 59
 
 ## Motivos de falha
-- MLB779362: item_id ausente ou inválido
-- MLB49127798: portal não retornou link afiliado oficial meli.la
-- MLB779362: item_id ausente ou inválido
+- MLB55027309: Page.wait_for_timeout: Target page, context or browser has been closed
+- MLB61517857: name 'extrair_item_id' is not defined
+- MLB18596029: name 'extrair_item_id' is not defined
+- MLB48810551: name 'extrair_item_id' is not defined
+- MLB37897247: name 'extrair_item_id' is not defined
+- MLB52897777: name 'extrair_item_id' is not defined
+- MLB63777677: name 'extrair_item_id' is not defined
+- MLB53403093: name 'extrair_item_id' is not defined
+- MLB55521828: name 'extrair_item_id' is not defined
+- MLB50181290: name 'extrair_item_id' is not defined
+- MLB34113516: name 'extrair_item_id' is not defined
+- MLB67275824: name 'extrair_item_id' is not defined
+- MLB23772724: name 'extrair_item_id' is not defined
+- MLB54963045: Page.goto: Target page, context or browser has been closed
+- MLB38058572: Page.goto: net::ERR_ABORTED; maybe frame was detached?
+Call log:
+  - navigating to "https://www.mercadolivre.com.br/samsung-galaxy-watch7-smartwatch-44mm-bt-galaxy-ai-verde/p/MLB38058572?pdp_filters=deal%3AMLB779362-1#polycard_client=offers&deal_print_id=cebc3a96-75db-4582-ad92-bdb9f282e92b&position=17&tracking_id=1ba2ce8f-4bfa-4961-8edc-bc10d37e5b33&wid=MLB3775159827&sid=offers", waiting until "domcontentloaded"
+
+- MLB779362: name 'extrair_item_id' is not defined
+- MLB39205913: name 'extrair_item_id' is not defined
+- MLB23409605: name 'extrair_item_id' is not defined
+- MLB47109375: name 'extrair_item_id' is not defined
+- MLB54963150: name 'extrair_item_id' is not defined
+- MLB66055148: name 'extrair_item_id' is not defined
+- MLB49089309: name 'extrair_item_id' is not defined
+- MLB47115842: Page.goto: Target page, context or browser has been closed
+- MLB18725310: name 'extrair_item_id' is not defined
+- MLB67841910: name 'extrair_item_id' is not defined
+- MLB17822926: name 'extrair_item_id' is not defined
+- MLB19762752: name 'extrair_item_id' is not defined
+- MLB63040715: name 'extrair_item_id' is not defined
+- MLB54986607: name 'extrair_item_id' is not defined
+- MLB63950169: name 'extrair_item_id' is not defined
+- MLB24273671: Page.wait_for_timeout: Target page, context or browser has been closed
+- MLB19530922: name 'extrair_item_id' is not defined
+- MLB66191173: name 'extrair_item_id' is not defined
+- MLB47097785: name 'extrair_item_id' is not defined
+- MLB58684601: name 'extrair_item_id' is not defined
+- MLB62392624: name 'extrair_item_id' is not defined
+- MLB27705742: name 'extrair_item_id' is not defined
+- MLB67267597: name 'extrair_item_id' is not defined
+- MLB27472599: name 'extrair_item_id' is not defined
+- MLB65319819: name 'extrair_item_id' is not defined
+- página 2: Page.goto: Target page, context or browser has been closed
+- página 3: Page.goto: Target page, context or browser has been closed
+- página 4: Page.goto: Target page, context or browser has been closed
+- página 5: Page.goto: Target page, context or browser has been closed
+- página 6: Page.goto: Target page, context or browser has been closed
+- página 7: Page.goto: Target page, context or browser has been closed
+- página 8: Page.goto: Target page, context or browser has been closed
+- página 9: Page.goto: Target page, context or browser has been closed
+- página 10: Page.goto: Target page, context or browser has been closed
+- página 11: Page.goto: Target page, context or browser has been closed
+- página 12: Page.goto: Target page, context or browser has been closed
+- página 13: Page.goto: Target page, context or browser has been closed
+- página 14: Page.goto: Target page, context or browser has been closed
+- página 15: Page.goto: Target page, context or browser has been closed
+- página 16: Page.goto: Target page, context or browser has been closed
+- página 17: Page.goto: Target page, context or browser has been closed
+- página 18: Page.goto: Target page, context or browser has been closed
+- página 19: Page.goto: Target page, context or browser has been closed
+- página 20: Page.goto: Target page, context or browser has been closed

@@ -76,6 +76,15 @@ def validar_preflight_somente_leitura():
     if not isinstance(ofertas, list) or not ofertas:
         return erros + ["ofertas.json não contém ofertas públicas"]
 
+    try:
+        from catalogo_integridade import avaliar_catalogo
+
+        protecao_catalogo = avaliar_catalogo(site)
+        if not protecao_catalogo["aprovado"]:
+            erros.append("catálogo não homologado: " + "; ".join(protecao_catalogo["erros"][:2]))
+    except Exception as erro:
+        erros.append(f"não foi possível verificar proteção do catálogo: {erro}")
+
     paginas = {str(caminho.relative_to(site).parent) for caminho in (site / "produto").glob("*/*/index.html")}
     esperadas = {str(oferta.get("produto_url") or "").strip("/") for oferta in ofertas}
     esperadas.discard("")

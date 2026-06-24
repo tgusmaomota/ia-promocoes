@@ -1,6 +1,6 @@
 # Relatório de Qualidade do Catálogo
 
-- Gerado em: 2026-06-20 13:05:02
+- Gerado em: 2026-06-24 11:24:45
 - Indicador final: **APROVADO COM RESSALVAS**
 
 ## Links afiliados
@@ -36,10 +36,10 @@
 - Sem categoria pública: 0
 
 ## Curadoria
-- Aprovados automaticamente: 502
-- Aprovados manualmente: 124
-- Publicados: 29
-- Pendentes: 160
+- Aprovados automaticamente: 492
+- Aprovados manualmente: 123
+- Publicados: 40
+- Pendentes: 204
 - Rejeitados: 11
 
 ## Recomendação
