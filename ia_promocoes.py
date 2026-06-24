@@ -616,12 +616,16 @@ COMANDOS_PROMOGG = {
     "Coleta": {"coletar": "Coleta normal com modo configurado.", "coletar-confiavel": "Coleta lenta com checkpoint por produto.", "testar-coleta-api": "Compara API e Playwright sem persistir.", "testar-captura-produto": "Diagnostica a captura híbrida sem persistir.", "comparar-captura": "Compara captura legada e híbrida sem persistir."},
     "Afiliados": {"gerar-afiliados": "Gera links oficiais meli.la pendentes.", "diagnosticar-afiliado": "Resume a saúde dos links afiliados.", "diagnosticar-compartilhar": "Inspeciona o botão oficial sem alterar dados.", "testar-afiliado": "Testa geração de meli.la sem persistir."},
     "Curadoria": {"reprocessar-pendentes": "Reaplica a curadoria aos pendentes.", "reprocessar-pendentes-enriquecido": "Simula ou aplica curadoria com sinais públicos.", "simular-score": "Compara cenários de score sem alterar banco.", "limpar-titulos": "Saneia títulos com backup.", "calibrar-curadoria": "Aplica calibração segura com backup."},
-    "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
+    "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Executa recuperação estruturada da base."},
+    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
+
+# Recuperação local do SQLite a partir do catálogo público restaurado; não coleta,
+# não publica e mantém a proteção já existente em gerar-site.
+COMANDOS_PROMOGG["Monitoramento"]["recuperar-banco-catalogo"] = "Recupera elegibilidade do banco pelo catálogo restaurado; use --dry-run primeiro."
 
 
 def comando_comandos():
@@ -644,6 +648,21 @@ def comando_recuperar_indisponiveis(dry_run=False):
     print("Relatório: RELATORIO_RECUPERACAO_INDISPONIVEIS.md")
     print("Telegram, deploy e ONLINE não foram acionados.")
     return 0
+
+
+def comando_recuperar_banco_catalogo(dry_run=False):
+    from recuperacao_banco_catalogo import recuperar_banco_catalogo
+
+    resultado = recuperar_banco_catalogo(dry_run=dry_run)
+    metricas = resultado["analise"]["metricas"]
+    print(f"Modo: {'dry-run' if dry_run else 'execução real'}")
+    print(f"Catálogo no banco: {metricas['catalogo_no_banco']}/{metricas['catalogo_restaurado']}")
+    print(f"Indisponíveis: {metricas['indisponivel']} | recuperáveis: {metricas['recuperaveis']} | pendentes: {metricas['pendentes']}")
+    print(f"Recuperados: {resultado['recuperados']} | backup: {resultado['backup'] or 'não aplicável'}")
+    print(f"Catálogo protegido: {'sim, geração abortada/restaurada' if resultado['protegido'] else 'não, validação aprovada'}")
+    print("Relatório: RELATORIO_RECUPERACAO_BANCO_CATALOGO.md")
+    print("Nenhum deploy, Telegram, coleta, monitoramento forçado ou mudança para ONLINE foi acionado.")
+    return 1 if resultado["integridade"].get("erros") else 0
 
 
 def comando_corrigir_paginas_produto():
@@ -791,15 +810,54 @@ def comando_testar_afiliado(argumentos):
     return 0 if link else 1
 
 
-def comando_reconstruir_base():
+def comando_reconstruir_base(dry_run=False):
     from recuperacao_base import reconstruir_base
 
-    resultado = reconstruir_base()
+    resultado = reconstruir_base(dry_run=dry_run)
     print(f"Reconstrução: {resultado['resultado']}")
     print(f"Ofertas no site: {resultado.get('ofertas_site', 0)}")
     print(f"Páginas de produto: {resultado.get('paginas_produto', 0)}")
+    if resultado.get("backup"):
+        print(f"Backup: {resultado['backup']}")
+    if resultado.get("erro"):
+        print(f"Bloqueio: {resultado['erro']}")
     print("Relatório: RELATORIO_RECUPERACAO_BASE.md")
-    return 0 if resultado.get("homologado") else 1
+    return 0 if dry_run or resultado.get("homologado") else 1
+
+
+def comando_auditar_precos():
+    from integridade_precos import auditar_precos
+
+    resultado = auditar_precos()
+    print("Auditoria de preços")
+    for chave, valor in resultado["metricas"].items():
+        print(f"- {chave.replace('_', ' ')}: {valor}")
+    print("Relatório: RELATORIO_INTEGRIDADE_PRECOS.md")
+    return 0
+
+
+def comando_restaurar_catalogo_valido(dry_run=False):
+    from restauracao_catalogo import restaurar_catalogo_valido
+
+    resultado = restaurar_catalogo_valido(dry_run=dry_run)
+    print(f"Backups/candidatos encontrados: {len(resultado['candidatos'])}")
+    for candidato in resultado["candidatos"][:8]:
+        print(
+            f"- {candidato['tipo']} {candidato['origem'][:16]}: "
+            f"ofertas={candidato['ofertas']} páginas={candidato['paginas']} "
+            f"links_inválidos={candidato['links_invalidos']}"
+        )
+    escolhido = resultado.get("candidato")
+    if escolhido:
+        print(f"Melhor candidato: {escolhido['tipo']} {escolhido['origem']} ({escolhido['ofertas']} ofertas)")
+    if resultado.get("backup"):
+        print(f"Backup do estado atual: {resultado['backup']}")
+    if resultado.get("restaurados"):
+        print("Restaurados: " + ", ".join(resultado["restaurados"]))
+    for erro in resultado.get("erros", []):
+        print(f"Pendência: {erro}")
+    print("Relatório: RELATORIO_RESTAURACAO_CATALOGO.md")
+    return 0 if escolhido and not resultado.get("erros") else 1
 
 
 def comando_simular():
@@ -904,8 +962,16 @@ def comando_parar_producao():
 
 
 def comando_gerar_site():
+    from catalogo_integridade import gerar_catalogo_protegido
+
     preparar_base()
-    resultado = gerar_site()
+    protecao = gerar_catalogo_protegido(gerar_site)
+    resultado = protecao["geracao"]
+    if protecao["protegido"]:
+        print("Geração bloqueada: o catálogo gerado ficou abaixo da referência; catálogo anterior foi preservado.")
+        for erro in protecao["integridade"]["erros"][:3]:
+            print(f"- {erro}")
+        return 1
     print(f"Site gerado em site/ com {resultado['ofertas']} ofertas.")
     return 0
 
@@ -1368,6 +1434,7 @@ def main():
             "auditar-indisponiveis",
             "auditar-qualidade-catalogo",
             "recuperar-indisponiveis",
+            "recuperar-banco-catalogo",
             "corrigir-paginas-produto",
             "gerar-site",
             "validar",
@@ -1378,6 +1445,7 @@ def main():
             "relatorio",
             "relatorio-precos",
             "monitorar-precos",
+            "auditar-precos",
             "perguntar",
             "treinar-memoria",
             "saude",
@@ -1400,6 +1468,7 @@ def main():
             "reparar-playwright",
             "auditar-base",
             "reconstruir-base",
+            "restaurar-catalogo-valido",
             "diagnosticar-afiliado",
             "gerar-afiliados",
             "diagnosticar-compartilhar",
@@ -1443,6 +1512,7 @@ def main():
         "auditar-indisponiveis": comando_auditar_indisponiveis,
         "auditar-qualidade-catalogo": comando_auditar_qualidade_catalogo,
         "recuperar-indisponiveis": lambda: comando_recuperar_indisponiveis(args.dry_run),
+        "recuperar-banco-catalogo": lambda: comando_recuperar_banco_catalogo(args.dry_run),
         "corrigir-paginas-produto": comando_corrigir_paginas_produto,
         "gerar-site": comando_gerar_site,
         "validar": comando_validar_somente_leitura if args.somente_leitura else comando_validar,
@@ -1453,6 +1523,7 @@ def main():
         "relatorio": comando_relatorio,
         "relatorio-precos": comando_relatorio_precos,
         "monitorar-precos": comando_monitorar_precos,
+        "auditar-precos": comando_auditar_precos,
         "perguntar": lambda: comando_perguntar(" ".join(args.argumentos)),
         "treinar-memoria": comando_treinar_memoria,
         "saude": comando_saude,
@@ -1474,7 +1545,8 @@ def main():
         "diagnosticar-playwright": comando_diagnosticar_playwright,
         "reparar-playwright": comando_reparar_playwright,
         "auditar-base": comando_auditar_base,
-        "reconstruir-base": comando_reconstruir_base,
+        "reconstruir-base": lambda: comando_reconstruir_base(args.dry_run),
+        "restaurar-catalogo-valido": lambda: comando_restaurar_catalogo_valido(args.dry_run),
         "diagnosticar-afiliado": comando_diagnosticar_afiliado,
         "gerar-afiliados": comando_gerar_afiliados,
         "diagnosticar-compartilhar": lambda: comando_diagnosticar_compartilhar(args.argumentos),

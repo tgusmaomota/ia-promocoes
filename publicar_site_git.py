@@ -1,8 +1,10 @@
 import argparse
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
+from catalogo_integridade import avaliar_catalogo, registrar_catalogo_aprovado
 from gerar_site import SITE_DIR, gerar_site, validar_site_publico
 from banco import registrar_evento_sistema
 
@@ -49,24 +51,43 @@ def branch_atual():
 
 
 def copiar_site_para_dist(gerar=True):
-    if gerar:
-        gerar_site()
-    erros = validar_site_publico()
-    if erros:
-        raise RuntimeError("Deploy bloqueado: validação do site falhou: " + "; ".join(erros[:5]))
-    DIST_DIR.mkdir(parents=True, exist_ok=True)
+    # O dist_site é a referência do último catálogo pronto para deploy. Uma
+    # geração menor ou inconsistente jamais deve substituí-lo silenciosamente.
+    with tempfile.TemporaryDirectory(prefix="promogg_pre_deploy_") as temporario:
+        copia_site = Path(temporario) / "site"
+        if SITE_DIR.exists():
+            shutil.copytree(SITE_DIR, copia_site)
 
-    for item in SITE_DIR.iterdir():
-        destino = DIST_DIR / item.name
-        if item.is_dir():
-            if destino.exists():
-                shutil.rmtree(destino)
-            shutil.copytree(item, destino)
-        else:
-            shutil.copy2(item, destino)
+        def restaurar_site_anterior():
+            if not copia_site.exists():
+                return
+            if SITE_DIR.exists():
+                shutil.rmtree(SITE_DIR)
+            shutil.copytree(copia_site, SITE_DIR)
 
-    CNAME_PATH.write_text(f"{DOMINIO}\n", encoding="utf-8")
-    return DIST_DIR.resolve()
+        if gerar:
+            gerar_site()
+        integridade_catalogo = avaliar_catalogo(SITE_DIR)
+        if not integridade_catalogo["aprovado"]:
+            restaurar_site_anterior()
+            raise RuntimeError("Deploy bloqueado: catálogo degradado: " + "; ".join(integridade_catalogo["erros"][:5]))
+        erros = validar_site_publico()
+        if erros:
+            restaurar_site_anterior()
+            raise RuntimeError("Deploy bloqueado: validação do site falhou: " + "; ".join(erros[:5]))
+        DIST_DIR.mkdir(parents=True, exist_ok=True)
+
+        for item in SITE_DIR.iterdir():
+            destino = DIST_DIR / item.name
+            if item.is_dir():
+                if destino.exists():
+                    shutil.rmtree(destino)
+                shutil.copytree(item, destino)
+            else:
+                shutil.copy2(item, destino)
+
+        CNAME_PATH.write_text(f"{DOMINIO}\n", encoding="utf-8")
+        return DIST_DIR.resolve()
 
 
 def subir_site(mensagem="Atualiza site IA-Promocoes", reutilizar_site=False):
@@ -97,6 +118,7 @@ def subir_site(mensagem="Atualiza site IA-Promocoes", reutilizar_site=False):
         "deploy_github", "github_pages", "concluido", "Deploy enviado ao GitHub Pages",
         f"branch={branch} commit_criado={commit_criado}",
     )
+    registrar_catalogo_aprovado(SITE_DIR)
     return {"destino": str(destino), "dominio": DOMINIO, "branch": branch, "commit_criado": commit_criado}
 
 
