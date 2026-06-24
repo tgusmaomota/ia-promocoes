@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-06-24T11:24:47",
+  "gerado_em": "2026-06-24T12:41:36",
   "produtos": [
     {
       "item_id": "MLB51163340",
@@ -1178,13 +1178,13 @@
       "menor_preco": 69.9,
       "maior_preco": 69.9,
       "preco_medio": 69.9,
-      "categoria": "Suplementos Alimentares",
+      "categoria": "ofertas",
       "categoria_caminho": "Saúde > Suplementos Alimentares",
-      "desconto_percentual": 56.29,
+      "desconto_percentual": 56.0,
       "economia_valor": 90.0,
       "produto_url": "produto/MLB25929487/creatina-monohidratada-pura-1kg-dark-lab-unidade-sem-sabor/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_848860-MLA99964507641_112025-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:39"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_848860-MLA99964507641_112025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:30"
     },
     {
       "item_id": "MLB57723340",
@@ -1523,13 +1523,13 @@
       "menor_preco": 39.9,
       "maior_preco": 39.9,
       "preco_medio": 39.9,
-      "categoria": "Suplementos Alimentares",
+      "categoria": "ofertas",
       "categoria_caminho": "Saúde > Suplementos Alimentares",
-      "desconto_percentual": 49.43,
+      "desconto_percentual": 49.0,
       "economia_valor": 39.0,
       "produto_url": "produto/MLB19506691/creatina-monohidratada-em-pote-300g-100-pura-dark-lab/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_716663-MLA99599672360_122025-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:41"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_716663-MLA99599672360_122025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:32"
     },
     {
       "item_id": "MLB51165965",
@@ -1555,11 +1555,11 @@
       "preco_medio": 126.7,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 23.0,
       "economia_valor": null,
       "produto_url": "produto/MLB109669643208/jogo-de-toalhas-karsten-100-algodao-floral-grossa-4-pecas/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_628822-MLB110553974441_042026-AB-jogo-de-toalhas-karsten-100-algodo-floral-grossa-4-pecas.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:42"
+      "ultima_atualizacao": "2026-06-24 12:37:29"
     },
     {
       "item_id": "MLB19762752",
@@ -2854,17 +2854,17 @@
     {
       "item_id": "MLB38618868",
       "titulo": "Kit 2 Cobertor Mantinha Microfibra Casal Manta Macia Diversas Cores Lisa Sortida",
-      "preco_atual": 43.9,
-      "menor_preco": 43.9,
+      "preco_atual": 29.09,
+      "menor_preco": 29.09,
       "maior_preco": 43.9,
-      "preco_medio": 43.9,
-      "categoria": "Cobertor",
+      "preco_medio": 36.495,
+      "categoria": "ofertas",
       "categoria_caminho": "Casa, Móveis e Decoração > Têxteis de Casa e Decoração > Roupa de Cama > Cobertor",
-      "desconto_percentual": 25.47,
+      "desconto_percentual": 27.0,
       "economia_valor": 15.0,
       "produto_url": "produto/MLB38618868/kit-2-cobertor-mantinha-microfibra-casal-manta-macia-diversas-cores-lisa-sortida/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_802073-MLA100073102841_122025-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:30:07"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_847762-MLA99632345474_122025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:31"
     },
     {
       "item_id": "MLB49495989",
@@ -7414,17 +7414,17 @@
     {
       "item_id": "MLB32717965",
       "titulo": "Conj de Panelas 8 Peças Ceramic Life Smart Plus Vanilla - Brinox",
-      "preco_atual": 1099.99,
-      "menor_preco": 1099.99,
+      "preco_atual": 589.0,
+      "menor_preco": 589.0,
       "maior_preco": 1099.99,
-      "preco_medio": 1099.99,
-      "categoria": "Panelas e Frigideiras",
+      "preco_medio": 844.495,
+      "categoria": "ofertas",
       "categoria_caminho": "Casa, Móveis e Decoração > Cozinha > Cozimento > Panelas e Frigideiras",
-      "desconto_percentual": 48.0,
+      "desconto_percentual": 46.0,
       "economia_valor": null,
       "produto_url": "produto/MLB32717965/conj-de-panelas-8-pecas-ceramic-life-smart-plus-vanilla-brinox/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_926181-MLA106965198532_022026-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:27:36"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_926181-MLA106965198532_022026-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:29"
     },
     {
       "item_id": "MLB62998911",
@@ -8393,13 +8393,13 @@
       "menor_preco": 46.77,
       "maior_preco": 46.77,
       "preco_medio": 46.77,
-      "categoria": "Suplementos Alimentares",
+      "categoria": "ofertas",
       "categoria_caminho": "Saúde > Suplementos Alimentares",
-      "desconto_percentual": 47.9,
+      "desconto_percentual": 47.0,
       "economia_valor": 43.0,
       "produto_url": "produto/MLB58579835/nac-600mg-formula-exclusiva-com-maxima-concentracao-e-pureza-n-acetil-l-cisteina-60-capsul/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_628799-MLA105714524195_012026-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:30"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_628799-MLA105714524195_012026-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:29"
     },
     {
       "item_id": "MLB39156440",
@@ -8485,11 +8485,11 @@
       "preco_medio": 29.9,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 40.0,
       "economia_valor": null,
       "produto_url": "produto/MLB112706258071/camisa-gola-polo-feminina-basica-algodao-social-uniforme/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_965881-MLB112707298569_062026-AB-camisa-gola-polo-feminina-basica-algodo-social-uniforme.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:32"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_699989-MLB112317770412_062026-AB-camisa-gola-polo-feminina-basica-algodo-social-uniforme.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:29"
     },
     {
       "item_id": "MLB96292389413",
@@ -8560,11 +8560,11 @@
       "preco_medio": 60.7,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 44.0,
       "economia_valor": null,
       "produto_url": "produto/MLB108875633353/calca-skinny-preta-rasgada-masculina-jeans-c-elastano-lycra/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_795719-MLB108102615694_032026-AB-calca-skinny-preta-rasgada-masculina-jeans-c-elastano-lycra.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:34"
+      "ultima_atualizacao": "2026-06-24 12:37:32"
     },
     {
       "item_id": "MLB89374143383",
@@ -8575,11 +8575,11 @@
       "preco_medio": 94.9,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 32.0,
       "economia_valor": null,
       "produto_url": "produto/MLB89374143383/jogo-toalhas-banho-grossas-macias-algodao-4pc-absorventes/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_785463-MLB89373964059_082025-AB-jogo-toalhas-banho-grossas-macias-algodo-4pc-absorventes.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:34"
+      "ultima_atualizacao": "2026-06-24 12:37:30"
     },
     {
       "item_id": "MLB6664766808",
@@ -8632,14 +8632,14 @@
       "preco_atual": 48.65,
       "menor_preco": 48.65,
       "maior_preco": 48.77,
-      "preco_medio": 48.71,
-      "categoria": "Suplementos Alimentares",
+      "preco_medio": 48.69,
+      "categoria": "ofertas",
       "categoria_caminho": "Saúde > Suplementos Alimentares",
-      "desconto_percentual": 45.81,
+      "desconto_percentual": 45.0,
       "economia_valor": 41.12,
       "produto_url": "produto/MLB62162205/vitamina-d3-k2-menaquinona-7-formula-com-maxima-concentracao-e-biodisponibilidade-60-capsu/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_977019-MLA100790399283_122025-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:35"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_977019-MLA100790399283_122025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:30"
     },
     {
       "item_id": "MLB93930023177",
@@ -8764,17 +8764,17 @@
     {
       "item_id": "MLB779362",
       "titulo": "Sofá Veneza 2,40m Retrátil Reclinável Grafite Usb Porta Copo Grafite",
-      "preco_atual": 1444.0,
-      "menor_preco": 1444.0,
+      "preco_atual": 954.5,
+      "menor_preco": 954.5,
       "maior_preco": 1444.0,
-      "preco_medio": 1444.0,
+      "preco_medio": 1199.25,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 51.0,
       "economia_valor": null,
       "produto_url": "produto/MLB779362/sofa-veneza-2-40m-retratil-reclinavel-grafite-usb-porta-copo-grafite/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_952142-MLB95484341326_102025-AB.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:27"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_925178-MLB108295231698_032026-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:29"
     },
     {
       "item_id": "MLB19542141",
@@ -8974,17 +8974,17 @@
     {
       "item_id": "MLB110630239438",
       "titulo": "Mochila Viagem Feminina Masculina Para Notebook Executiva",
-      "preco_atual": 113.0,
-      "menor_preco": 113.0,
+      "preco_atual": 112.1,
+      "menor_preco": 112.1,
       "maior_preco": 113.0,
-      "preco_medio": 113.0,
+      "preco_medio": 112.55,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 61.0,
       "economia_valor": null,
       "produto_url": "produto/MLB110630239438/mochila-viagem-feminina-masculina-para-notebook-executiva/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_986467-MLB112482124811_052026-AB-mochila-viagem-feminina-masculina-para-notebook-executiva.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:19"
+      "ultima_atualizacao": "2026-06-24 12:37:31"
     },
     {
       "item_id": "MLB112810074435",
@@ -9064,17 +9064,17 @@
     {
       "item_id": "MLB61105291",
       "titulo": "Ez Silver Essence - Eau De Parfum 100ml Exclusivo",
-      "preco_atual": 37.83,
-      "menor_preco": 37.83,
+      "preco_atual": 33.47,
+      "menor_preco": 33.47,
       "maior_preco": 39.0,
-      "preco_medio": 38.415,
-      "categoria": "Perfumes",
+      "preco_medio": 36.766666666666666,
+      "categoria": "ofertas",
       "categoria_caminho": "Beleza e Cuidado Pessoal > Perfumes",
-      "desconto_percentual": 45.09,
+      "desconto_percentual": 51.0,
       "economia_valor": 31.07,
       "produto_url": "produto/MLB61105291/ez-silver-essence-eau-de-parfum-100ml-exclusivo/",
-      "imagem_url": "https://http2.mlstatic.com/D_NQ_NP_601521-MLA95794149872_102025-O.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:21"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_601521-MLA95794149872_102025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:31"
     },
     {
       "item_id": "MLB105511107400",
@@ -9115,11 +9115,11 @@
       "preco_medio": 33.3,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 33.0,
       "economia_valor": null,
       "produto_url": "produto/MLB98393158897/blusas-camisa-feminina-protecao-uv-academia-treino-caminhada/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_634342-MLB98393158897_112025-AB-blusas-camisa-feminina-proteco-uv-academia-treino-caminhada.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:22"
+      "ultima_atualizacao": "2026-06-24 12:37:31"
     },
     {
       "item_id": "MLB111287768550",
@@ -9259,17 +9259,17 @@
     {
       "item_id": "MLB29614932",
       "titulo": "Cortina 3,00x2,80 Metros Blackout Blecaute Palha Corta Luz Em Tecido Grosso Para Quarto E Sala Casa Laura Enxovais",
-      "preco_atual": 73.62,
-      "menor_preco": 73.62,
+      "preco_atual": 72.9,
+      "menor_preco": 72.9,
       "maior_preco": 73.62,
-      "preco_medio": 73.62,
+      "preco_medio": 73.26,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 47.0,
       "economia_valor": null,
       "produto_url": "produto/MLB29614932/cortina-3-00x2-80-metros-blackout-blecaute-palha-corta-luz-em-tecido-grosso-para-quarto-e/",
-      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_750197-MLA99506070940_112025-AB.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:25"
+      "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_861103-MLA95710413002_102025-AB.webp",
+      "ultima_atualizacao": "2026-06-24 12:37:32"
     },
     {
       "item_id": "MLB111112711213",
@@ -9310,11 +9310,11 @@
       "preco_medio": 65.76,
       "categoria": "ofertas",
       "categoria_caminho": "ofertas",
-      "desconto_percentual": null,
+      "desconto_percentual": 16.0,
       "economia_valor": null,
       "produto_url": "produto/MLB83623356128/4-conjunto-catraca-amarracao-cinta-preta-4-6-metros-800kg/",
       "imagem_url": "https://http2.mlstatic.com/D_Q_NP_2X_993915-MLB100361444451_122025-AB-4-conjunto-catraca-amarraco-cinta-preta-46-metros-800kg.webp",
-      "ultima_atualizacao": "2026-06-20 22:26:26"
+      "ultima_atualizacao": "2026-06-24 12:37:31"
     },
     {
       "item_id": "MLB60204100",
