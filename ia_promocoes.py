@@ -672,13 +672,24 @@ def comando_supervisor(dry_run=False):
     print(f"Rejeitadas: {resultado['contagens']['rejeitadas']}")
     print(f"Playwright: {resultado['playwright']['modo']} - {resultado['playwright']['motivo']}")
     print(f"Problemas ML detectados: {len(resultado['problemas_ml'])}")
+    print(f"Classificação ML: {resultado.get('classificacao_ml', {}).get('modo', 'n/d')}")
     print(f"Alertas enviados/simulados: {len(resultado['alertas'])}")
+    if resultado.get("avisos"):
+        print("Avisos não bloqueantes:")
+        for aviso in resultado["avisos"]:
+            print(f"- {aviso['tipo']}: {aviso['mensagem']}")
     if resultado["bloqueios"]:
-        print("Bloqueios:")
+        print("Bloqueios operacionais:")
         for bloqueio in resultado["bloqueios"]:
             print(f"- {bloqueio}")
     else:
-        print("Sem bloqueios.")
+        print("Sem bloqueios operacionais.")
+    if resultado.get("bloqueios_publicacao"):
+        print("Bloqueios de publicação:")
+        for bloqueio in resultado["bloqueios_publicacao"]:
+            print(f"- {bloqueio}")
+    else:
+        print("Sem bloqueios de publicação.")
     print("Relatório: RELATORIO_SUPERVISOR_AUTOMATICO.md")
     return 0 if dry_run or resultado["status_final"] == "ok" else 1
 
