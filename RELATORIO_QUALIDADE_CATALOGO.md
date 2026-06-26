@@ -1,6 +1,6 @@
 # Relatório de Qualidade do Catálogo
 
-- Gerado em: 2026-06-26 20:18:59
+- Gerado em: 2026-06-26 20:24:03
 - Indicador final: **APROVADO COM RESSALVAS NÃO BLOQUEANTES**
 
 ## Links afiliados
