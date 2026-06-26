@@ -14,13 +14,44 @@ from ia_revisora import listar_revisoes_pendentes, registrar_feedback as registr
 from estado_sistema import obter_estado_sistema
 from gerador_afiliados_oficial import produtos_sem_afiliado
 from alertas_telegram import ultimo_alerta
+from painel_remoto import config_painel
 
 
 st.set_page_config(page_title="Promogg | Controle de ofertas", layout="wide")
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] { background: #102a36; }
+section[data-testid="stSidebar"] * { color: #f4f8f7; }
+.block-container { padding-top: 1.6rem; padding-bottom: 3rem; }
+div[data-testid="stMetric"] {
+  background: #ffffff;
+  border: 1px solid #d9e4e8;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 8px 24px rgba(16,42,54,.06);
+}
+.stButton > button, .stDownloadButton > button { border-radius: 10px; font-weight: 700; }
+.promogg-safe-box {
+  padding: 14px 16px;
+  border: 1px solid #d9e4e8;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f4f8f7, #ffffff);
+}
+</style>
+""", unsafe_allow_html=True)
 if Path("site/logo.png").exists():
     st.image("site/logo.png", width=150)
 st.title("Controle de ofertas")
 st.caption("Aprovação, edição e publicação usam o SQLite como fonte de verdade.")
+
+cfg_painel = config_painel()
+with st.sidebar:
+    st.header("Painel remoto")
+    st.caption("Use somente via Cloudflare Tunnel + Cloudflare Access.")
+    st.metric("Domínio", cfg_painel["dominio"])
+    st.metric("Auto deploy", "sim" if cfg_painel["auto_deploy"] else "não")
+    st.metric("Admin emails", "configurado" if cfg_painel["admin_emails"] else "pendente")
+    st.warning("Não exponha Streamlit diretamente. O serviço local deve ficar em 127.0.0.1.")
 
 inicializar_banco()
 estado_mestre = obter_estado_sistema()
@@ -50,6 +81,10 @@ def executar(comando):
         st.error(resultado.stderr or "Comando encerrou com erro.")
     else:
         st.success("Operação concluída.")
+
+
+def publicar_pos_acao():
+    executar(["ia_promocoes.py", "publicar-alteracoes-painel"])
 
 
 def quantidade(status):
@@ -95,8 +130,8 @@ with tempo_cliques[1]:
 st.divider()
 acoes = st.columns(4)
 with acoes[0]:
-    if st.button("Atualizar site agora", use_container_width=True):
-        executar(["ia_promocoes.py", "gerar-site"])
+    if st.button("Publicar alterações do painel", use_container_width=True):
+        executar(["ia_promocoes.py", "publicar-alteracoes-painel"])
 with acoes[1]:
     if st.button("Publicar 1 no Telegram", use_container_width=True):
         executar(["ia_promocoes.py", "publicar-um"])
@@ -439,6 +474,7 @@ if salvar:
             "observacao_interna": observacao,
         })
         st.success("Oferta salva no SQLite e sincronizada no CSV.")
+        publicar_pos_acao()
         st.rerun()
     except ValueError as erro:
         st.error(str(erro))
@@ -449,6 +485,7 @@ with decisao[0]:
         try:
             aprovar_manual(postagem_id, observacao)
             st.success("Oferta aprovada manualmente.")
+            publicar_pos_acao()
             st.rerun()
         except ValueError as erro:
             st.error(str(erro))
@@ -457,8 +494,22 @@ with decisao[1]:
         try:
             rejeitar_oferta(postagem_id, observacao)
             st.success("Oferta rejeitada.")
+            publicar_pos_acao()
             st.rerun()
         except ValueError as erro:
             st.error(str(erro))
+
+st.subheader("Ocultar/restaurar com segurança")
+st.caption("Ocultar não apaga fisicamente: preserva histórico, registra auditoria e remove do site/Telegram.")
+confirmacao_admin = st.text_input("Digite CONFIRMAR para ocultar/restaurar esta oferta", key=f"confirmacao_admin_{postagem_id}")
+admin_cols = st.columns(2)
+with admin_cols[0]:
+    if st.button("Ocultar do site", use_container_width=True, disabled=confirmacao_admin != "CONFIRMAR"):
+        executar(["ia_promocoes.py", "ocultar-oferta", str(postagem_id)])
+        st.rerun()
+with admin_cols[1]:
+    if st.button("Restaurar oferta", use_container_width=True, disabled=confirmacao_admin != "CONFIRMAR"):
+        executar(["ia_promocoes.py", "restaurar-oferta", str(postagem_id)])
+        st.rerun()
 
 st.caption(f"Produtos coletados no banco: {dados['produtos']} | Fila aprovada: {dados['fila_pendente']}")

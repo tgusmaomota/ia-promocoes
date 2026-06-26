@@ -12,7 +12,8 @@ from difflib import SequenceMatcher
 DB_PATH = "banco.db"
 PLATAFORMAS = ["mercado_livre"]
 STATUS_APROVADOS = ("aprovado_auto", "aprovado_manual")
-STATUS_CONTROLE = (*STATUS_APROVADOS, "pendente_revisao", "rejeitado", "publicado")
+STATUS_ADMIN_OCULTOS = ("oculto_admin", "removido_painel")
+STATUS_CONTROLE = (*STATUS_APROVADOS, "pendente_revisao", "rejeitado", "publicado", *STATUS_ADMIN_OCULTOS)
 
 
 COLUNAS_PRODUTOS_HISTORICO = {
