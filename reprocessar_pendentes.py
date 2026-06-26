@@ -33,7 +33,7 @@ def _pendentes_elegiveis():
             WHERE postagens.status = 'pendente_revisao'
               AND postagens.plataforma = 'mercado_livre'
               AND produtos.plataforma = 'mercado_livre'
-              AND produtos.status NOT IN ('indisponivel', 'erro')
+              AND produtos.status NOT IN ('indisponivel', 'erro', 'duplicado_oculto')
               AND produtos.preco_atual > 0
               AND postagens.link_afiliado LIKE 'https://meli.la/%'
             ORDER BY postagens.id

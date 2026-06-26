@@ -14,6 +14,7 @@ from banco import (
     registrar_feedback_assistente,
     registrar_pergunta_assistente,
 )
+from metricas_historico import metricas_item
 
 
 load_dotenv()
@@ -144,6 +145,7 @@ def calcular_estatisticas(item_id):
         dados["data_menor_preco"] = menor["data_verificacao"] if menor else None
     dados["historico"] = obter_historico(dados["item_id"])
     dados["memoria"] = obter_memoria(dados["item_id"])
+    dados["metricas_historico"] = metricas_item(dados["item_id"])
     return dados
 
 
@@ -192,7 +194,9 @@ def _resposta_produto(produto):
         f"Preço médio: {moeda(dados['preco_medio'])}",
         f"Data do menor preço: {dados['data_menor_preco'] or 'não tenho histórico suficiente'}",
         f"Última atualização: {dados['ultima_verificacao'] or 'não tenho histórico suficiente'}",
-        f"Tendência: {_tendencia(dados['variacao_preco'])}",
+        f"Origem do preço: {dados['metricas_historico'].get('origem_preco') or 'não registrada'}",
+        f"Confiabilidade do histórico: {dados['metricas_historico'].get('confiabilidade', 0)}/100",
+        f"Tendência: {dados['metricas_historico'].get('tendencia') or _tendencia(dados['variacao_preco'])}",
         f"Recomendação: {recomendacao['recomendacao']}. {recomendacao['motivo']}",
     ])
     return {"texto": texto, "produtos": [dados], "recomendacao": recomendacao}
@@ -203,7 +207,7 @@ def _resposta_categorias():
         categorias = [dict(row) for row in conn.execute(
             """
             SELECT COALESCE(NULLIF(categoria_nome, ''), categoria, 'ofertas') AS categoria, COUNT(*) AS total
-            FROM produtos WHERE status != 'indisponivel'
+            FROM produtos WHERE status NOT IN ('indisponivel', 'duplicado_oculto')
             GROUP BY categoria ORDER BY total DESC, categoria ASC LIMIT 10
             """
         ).fetchall()]
@@ -216,7 +220,7 @@ def _resposta_menores():
         produtos = [dict(row) for row in conn.execute(
             """
             SELECT item_id, titulo, preco_atual, menor_preco FROM produtos
-            WHERE menor_preco IS NOT NULL AND preco_atual <= menor_preco AND status != 'indisponivel'
+            WHERE menor_preco IS NOT NULL AND preco_atual <= menor_preco AND status NOT IN ('indisponivel', 'duplicado_oculto')
             ORDER BY preco_atual ASC LIMIT 20
             """
         ).fetchall()]

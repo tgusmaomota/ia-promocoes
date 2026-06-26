@@ -1,11 +1,11 @@
 # Relatório de Restauração de Catálogo - Promogg
 
-- Gerado em: 2026-06-20 22:51:07
+- Gerado em: 2026-06-26 07:40:09
 - Modo: restauração
-- Origem: git ec974a23da617e55580f82886848ed50e2a81629
-- Ofertas da origem: 622
-- Páginas da origem: 622
-- Backup do estado anterior: backups/restauracao_catalogo/20260620_225105
+- Origem: backup backups/reconstrucao_base/20260626_072700
+- Ofertas da origem: 632
+- Páginas da origem: 632
+- Backup do estado anterior: backups/restauracao_catalogo/20260626_074006
 
 ## Arquivos restaurados
 - site

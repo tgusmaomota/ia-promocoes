@@ -378,10 +378,17 @@ def comando_coletar():
 
 def comando_coletar_confiavel(visual=False):
     from coleta_confiavel import coletar_confiavel
+    from playwright_perfil import LoginNecessario
 
     preparar_base()
     try:
         resultado = coletar_confiavel(visual=visual)
+    except LoginNecessario as erro:
+        print(f"Coleta pausada: {erro}")
+        print("Checkpoint preservado em .coleta_confiavel_checkpoint.json.")
+        print("Rode: python3 ia_promocoes.py login-mercadolivre")
+        print("Depois retome com: python3 ia_promocoes.py retomar-coleta")
+        return 1
     except Exception as erro:
         print(f"Coleta confiável interrompida: {erro}")
         return 1
@@ -425,6 +432,81 @@ def comando_login_mercadolivre():
         return 0
     print("Login não confirmado. Tente novamente e confira se entrou na conta antes de pressionar Enter.")
     return 1
+
+
+def comando_pausar_playwright():
+    from operacao_sistema import criar_backup_emergencia
+    from playwright_perfil import pausar_playwright_seguro
+
+    preparar_base()
+    backup = criar_backup_emergencia()
+    _parar_servico("scheduler", PID_FILE)
+    resultado = pausar_playwright_seguro()
+    print("Playwright pausado com segurança.")
+    print(f"Backup pré-pausa: {backup}")
+    print(f"Estado mestre: {resultado['estado']}")
+    print(f"Processos Chrome for Testing encerrados: {len(resultado['processos_encerrados'])}")
+    print(f"Locks temporários removidos: {len(resultado['locks_removidos'])}")
+    print(f"perfil_mercadolivre preservado: {'sim' if resultado['perfil_preservado'] else 'não encontrado'}")
+    print(f"Checkpoint de coleta preservado: {'sim' if resultado['checkpoint_preservado'] else 'não havia checkpoint'}")
+    print("Cookies e sessão não foram apagados. Site, Telegram, deploy, curadoria, score e histórico não foram alterados.")
+    return 0
+
+
+def comando_testar_playwright_sessao():
+    from playwright_perfil import verificar_login_mercadolivre
+
+    try:
+        resultado = verificar_login_mercadolivre(visual=False)
+    except Exception as erro:
+        print(f"Teste de sessão falhou: {erro}")
+        print("Banco, coleta, afiliados, Telegram e deploy não foram alterados.")
+        return 1
+    print(f"Perfil: {resultado['perfil']}")
+    print(f"Logado Mercado Livre: {'sim' if resultado['logado'] else 'não'}")
+    print(f"Motivo: {resultado['motivo']}")
+    print("Banco, coleta, afiliados, Telegram e deploy não foram alterados.")
+    if not resultado["logado"]:
+        print("Orientação: rode python3 ia_promocoes.py login-mercadolivre")
+    return 0 if resultado["logado"] else 1
+
+
+def comando_retomar_coleta(visual=False):
+    from coleta_confiavel import CHECKPOINT, coletar_confiavel
+    from operacao_sistema import criar_backup_emergencia
+    from playwright_perfil import LoginNecessario, verificar_login_mercadolivre
+
+    preparar_base()
+    sessao = verificar_login_mercadolivre(visual=False)
+    if not sessao["logado"]:
+        print(f"Retomada bloqueada: {sessao['motivo']}")
+        print("Rode: python3 ia_promocoes.py login-mercadolivre")
+        print("Banco, Telegram e deploy não foram alterados.")
+        return 1
+    backup = criar_backup_emergencia()
+    try:
+        resultado = coletar_confiavel(visual=visual, retomar=True)
+    except LoginNecessario as erro:
+        print(f"Coleta pausada: {erro}")
+        print(f"Backup pré-retomada: {backup}")
+        print("Checkpoint preservado em .coleta_confiavel_checkpoint.json.")
+        print("Rode: python3 ia_promocoes.py login-mercadolivre")
+        return 1
+    except Exception as erro:
+        print(f"Retomada interrompida: {erro}")
+        print(f"Backup pré-retomada: {backup}")
+        print(f"Checkpoint: {'preservado' if CHECKPOINT.exists() else 'limpo/concluído'}")
+        return 1
+    print("Retomada de coleta concluída.")
+    print(f"Backup pré-retomada: {backup}")
+    print(f"Encontrados: {resultado['encontrados']}")
+    print(f"Completos: {resultado['completos']}")
+    print(f"Salvos/atualizados: {resultado['salvos']}")
+    print(f"Com meli.la: {resultado['afiliados']}")
+    print(f"Falhas: {len(resultado['falhas'])}")
+    print(f"Checkpoint: {'preservado' if CHECKPOINT.exists() else 'limpo/concluído'}")
+    print("Telegram e deploy não foram acionados.")
+    return 0 if not resultado["falhas"] else 1
 
 
 def _executar_teste_captura(url, comparar=False):
@@ -501,6 +583,79 @@ def comando_reprocessar_pendentes(dry_run=False):
     print("Relatório: RELATORIO_REPROCESSAMENTO_PENDENTES.md")
     print("Telegram e deploy não foram acionados.")
     return 0
+
+
+def comando_curadoria_automatica(dry_run=False):
+    from curadoria_automatica import executar_curadoria_automatica
+
+    resultado = executar_curadoria_automatica(dry_run=dry_run)
+    modo = "dry-run" if dry_run else "execução real"
+    percentual_pendente = (resultado["pendentes"] / resultado["total"] * 100) if resultado["total"] else 0
+    print(f"Curadoria automática ({modo})")
+    print(f"Total analisado: {resultado['total']}")
+    print(f"Aprovados automaticamente: {resultado['aprovados_auto']}")
+    print(f"Rejeitados automaticamente: {resultado['rejeitados']}")
+    print(f"Mantidos pendentes: {resultado['pendentes']} ({percentual_pendente:.1f}%)")
+    print(f"Pendentes no painel: {resultado['pendentes_antes']} -> {resultado['pendentes_depois']}")
+    print(f"Pendentes estimados após aplicar: {resultado.get('pendentes_estimados_pos_aplicacao', resultado['pendentes'])}")
+    if resultado.get("backup"):
+        print(f"Backup: {resultado['backup']}")
+    print("Telegram, deploy, ONLINE e geração de site não foram acionados.")
+    print("Relatório: RELATORIO_CURADORIA_AUTOMATICA.md")
+    return 0
+
+
+def comando_ciclo_automatico(dry_run=False, publicar=False):
+    from ciclo_automatico import executar_ciclo_automatico
+
+    resultado = executar_ciclo_automatico(dry_run=dry_run, publicar=publicar)
+    modo = "dry-run" if dry_run else "execução real"
+    print(f"Ciclo automático ({modo})")
+    print(f"Publicar solicitado: {publicar}")
+    print(f"Coletadas: {resultado['coleta'].get('coletadas', 0)}")
+    print(f"Atualizadas: {resultado['precos'].get('atualizadas', 0)}")
+    print(f"Com histórico: {resultado['banco']['historico_registros']}")
+    print(f"Com queda: {resultado['banco']['produtos_com_queda']}")
+    print(f"No menor preço: {resultado['banco']['produtos_no_menor_preco']}")
+    print(f"Com meli.la: {resultado['banco']['produtos_com_meli_la']}")
+    print(f"Aprovadas automaticamente: {resultado['curadoria']['aprovados_auto']}")
+    print(f"Rejeitadas automaticamente: {resultado['curadoria']['rejeitados']}")
+    print(f"Pendentes restantes estimados: {resultado['curadoria'].get('pendentes_estimados_pos_aplicacao', resultado['curadoria']['pendentes'])}")
+    print(f"Publicáveis estimadas: {resultado['publicaveis_estimadas']}")
+    print(f"Telegram simulado: {'ok' if resultado['telegram']['ok'] else 'bloqueado'} - {resultado['telegram']['motivo']}")
+    if resultado["bloqueios"]:
+        print("Bloqueios para publicar:")
+        for bloqueio in resultado["bloqueios"]:
+            print(f"- {bloqueio}")
+    else:
+        print("Sem bloqueios para publicação.")
+    print(f"Seguro rodar ciclo-automatico: {'sim' if resultado['seguro_ciclo'] else 'não'}")
+    print(f"Seguro rodar ciclo-automatico --publicar: {'sim' if resultado['seguro_publicar'] else 'não'}")
+    print("Relatórios: RELATORIO_CICLO_AUTOMATICO.md, RELATORIO_SCORE_ADAPTATIVO.md")
+    return 0 if resultado["seguro_ciclo"] else 1
+
+
+def comando_preparar_publicacao(dry_run=False):
+    from homologacao_publicacao import preparar_publicacao
+
+    resultado = preparar_publicacao(dry_run=dry_run)
+    modo = "dry-run" if dry_run else "execução real"
+    print(f"Preparar publicação ({modo})")
+    print(f"site/: {resultado['depois']['site']['ofertas']} ofertas / {resultado['depois']['site']['paginas']} páginas")
+    print(f"dist_site/: {resultado['depois']['dist_site']['ofertas']} ofertas / {resultado['depois']['dist_site']['paginas']} páginas")
+    print(f"Ressalvas bloqueantes: {len(resultado['qualidade'].get('ressalvas_bloqueantes', {}))}")
+    print(f"Ressalvas informativas: {len(resultado['qualidade'].get('ressalvas_informativas', {}))}")
+    print(f"Git permitido: {len(resultado['git']['permitidas'])}")
+    print(f"Git bloqueante: {len(resultado['git']['bloqueantes'])}")
+    if resultado["bloqueios"]:
+        print("Bloqueios restantes:")
+        for bloqueio in resultado["bloqueios"]:
+            print(f"- {bloqueio}")
+    else:
+        print("Nenhum bloqueio restante.")
+    print("Nenhum push, deploy, Telegram real ou ONLINE foi executado.")
+    print("Relatório: RELATORIO_HOMOLOGACAO_PUBLICACAO_AUTOMATICA.md")
+    return 0 if resultado["aprovado"] or dry_run else 1
 
 
 def comando_simular_score():
@@ -612,20 +767,25 @@ COMANDOS_PROMOGG = {
         "offline": "Para serviços automatizados com preservação dos dados.", "status": "Mostra estado, serviços e eventos recentes.",
         "iniciar": "Inicia o worker local de produção.", "producao": "Inicia o worker de produção.", "parar": "Solicita parada segura do worker.", "reiniciar": "Reinicia o worker preservando banco e histórico.",
     },
-    "Site": {"gerar-site": "Gera o site estático local.", "validar": "Valida banco, site, SEO, segurança e assistentes.", "servir-site": "Abre o site local para teste.", "subir-site": "Valida e envia o site ao GitHub Pages.", "publicar-site": "Prepara dist_site sem fazer push.", "publicar": "Valida e publica quando o estado permite."},
+    "Site": {"gerar-site": "Gera o site estático local.", "preparar-publicacao": "Reconstrói dist_site a partir de site validado sem push; use --dry-run.", "validar": "Valida banco, site, SEO, segurança e assistentes.", "servir-site": "Abre o site local para teste.", "subir-site": "Valida e envia o site ao GitHub Pages.", "publicar-site": "Prepara dist_site sem fazer push.", "publicar": "Valida e publica quando o estado permite."},
     "Coleta": {"coletar": "Coleta normal com modo configurado.", "coletar-confiavel": "Coleta lenta com checkpoint por produto.", "testar-coleta-api": "Compara API e Playwright sem persistir.", "testar-captura-produto": "Diagnostica a captura híbrida sem persistir.", "comparar-captura": "Compara captura legada e híbrida sem persistir."},
     "Afiliados": {"gerar-afiliados": "Gera links oficiais meli.la pendentes.", "diagnosticar-afiliado": "Resume a saúde dos links afiliados.", "diagnosticar-compartilhar": "Inspeciona o botão oficial sem alterar dados.", "testar-afiliado": "Testa geração de meli.la sem persistir."},
-    "Curadoria": {"reprocessar-pendentes": "Reaplica a curadoria aos pendentes.", "reprocessar-pendentes-enriquecido": "Simula ou aplica curadoria com sinais públicos.", "simular-score": "Compara cenários de score sem alterar banco.", "limpar-titulos": "Saneia títulos com backup.", "calibrar-curadoria": "Aplica calibração segura com backup."},
+    "Curadoria": {"ciclo-automatico": "Orquestra coleta, afiliados, curadoria, site, validação e publicação segura; use --dry-run.", "curadoria-automatica": "Decide pendentes/novos com score enriquecido; use --dry-run primeiro.", "reprocessar-pendentes": "Reaplica a curadoria aos pendentes.", "reprocessar-pendentes-enriquecido": "Simula ou aplica curadoria com sinais públicos.", "simular-score": "Compara cenários de score sem alterar banco.", "limpar-titulos": "Saneia títulos com backup.", "calibrar-curadoria": "Aplica calibração segura com backup."},
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
+    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
 
 # Recuperação local do SQLite a partir do catálogo público restaurado; não coleta,
 # não publica e mantém a proteção já existente em gerar-site.
 COMANDOS_PROMOGG["Monitoramento"]["recuperar-banco-catalogo"] = "Recupera elegibilidade do banco pelo catálogo restaurado; use --dry-run primeiro."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["meli-auditar-api"] = "Audita API Mercado Livre, 401 e refresh automático sem exibir tokens."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["corrigir-categorias-vazias"] = "Corrige categorias vazias/genéricas com fontes seguras; use --dry-run."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["auditar-duplicados"] = "Audita item_id duplicados e escolhe o registro mais íntegro sem apagar."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["corrigir-duplicados"] = "Oculta duplicados não escolhidos como duplicado_oculto; use --dry-run."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["reprocessar-afiliados-falhos"] = "Reprocessa apenas links meli.la falhos/pendentes; use --dry-run."
 
 
 def comando_comandos():
@@ -742,6 +902,99 @@ def comando_auditar_base():
     return 0
 
 
+def comando_auditar_sistema():
+    from auditoria_sistema import auditar_sistema
+
+    dados = auditar_sistema()
+    codigo = dados["codigo"]
+    banco = dados["banco"]
+    catalogo = dados["catalogo"]
+    print("Auditoria geral Promogg")
+    print(f"Arquivos Python: {codigo['total_arquivos']} | linhas: {codigo['total_linhas']}")
+    print(f"SQLite integrity_check: {banco['integridade']}")
+    print(f"Histórico de preços: {banco['contagens'].get('historico_precos', 0)} registros")
+    print(f"Catálogo site/: {catalogo['site']['ofertas']} ofertas | proteção: {'OK' if catalogo['protecao']['aprovado'] else 'BLOQUEADA'}")
+    print(f"Candidatos à remoção/quarentena: {len(codigo['candidatos_remocao'])}")
+    print(f"Relatório: {dados['relatorio']}")
+    print("Nenhum deploy, Telegram real, ONLINE, coleta, exclusão ou limpeza de perfil foi executado.")
+    return 0 if banco["integridade"] == "ok" else 1
+
+
+def comando_meli_auditar_api():
+    from correcoes_pos_reconstrucao import meli_auditar_api
+
+    resultado = meli_auditar_api()
+    print("Auditoria API Mercado Livre")
+    print(f"OAuth local configurado: {'sim' if resultado['oauth_local'] else 'não'}")
+    print(f"/users/me: {'ok' if resultado.get('users_me', {}).get('ok') else 'falhou'}")
+    print(f"Item: {'ok' if resultado.get('item', {}).get('ok') else 'falhou'}")
+    print(f"Categoria: {'ok' if resultado.get('categoria', {}).get('ok') else 'não testada/falhou'}")
+    print(f"Refresh automático: {resultado.get('refresh_automatico')}")
+    print("Tokens não foram exibidos. Catálogo, Telegram e deploy não foram alterados.")
+    print("Relatório: RELATORIO_CORRECOES_POS_RECONSTRUCAO.md")
+    return 0 if resultado.get("users_me", {}).get("ok") or resultado.get("item", {}).get("ok") else 1
+
+
+def comando_corrigir_categorias_vazias(dry_run=False):
+    from correcoes_pos_reconstrucao import corrigir_categorias_vazias
+
+    resultado = corrigir_categorias_vazias(dry_run=dry_run)
+    print(f"Modo: {'dry-run' if dry_run else 'execução real'}")
+    print(f"Categorias vazias: {resultado['antes']['categorias_vazias']} -> {resultado['depois']['categorias_vazias']}")
+    print(f"Categorias genéricas: {resultado['antes']['categorias_genericas']} -> {resultado['depois']['categorias_genericas']}")
+    print(f"Correções {'simuladas' if dry_run else 'aplicadas'}: {len(resultado['alteracoes'])}")
+    print("Relatório: RELATORIO_CORRECOES_POS_RECONSTRUCAO.md")
+    return 0
+
+
+def comando_auditar_duplicados_pos():
+    from correcoes_pos_reconstrucao import auditar_duplicados
+
+    resultado = auditar_duplicados()
+    print(f"Grupos duplicados ativos: {resultado['total']}")
+    for grupo in resultado["grupos"][:20]:
+        escolhido = grupo["escolhido"]
+        print(f"- {grupo['item_id']}: registros={len(group_produtos := grupo['produtos'])} escolhido={escolhido['id'] if escolhido else '-'}")
+        for produto in group_produtos:
+            meli = "sim" if str(produto.get("link_afiliado") or "").startswith("https://meli.la/") else "não"
+            print(f"  - id={produto['id']} status={produto['status']} post={produto['status_postagem'] or '-'} preço={produto['preco_atual']} meli.la={meli} score={produto['score_integridade']} título={produto['titulo'][:80]}")
+    print("Nenhuma linha foi apagada ou ocultada.")
+    print("Relatório: RELATORIO_CORRECOES_POS_RECONSTRUCAO.md")
+    return 0
+
+
+def comando_corrigir_duplicados(dry_run=False):
+    from correcoes_pos_reconstrucao import corrigir_duplicados
+
+    resultado = corrigir_duplicados(dry_run=dry_run)
+    print(f"Modo: {'dry-run' if dry_run else 'execução real'}")
+    print(f"Duplicados: {resultado['antes']['duplicados']} -> {resultado['depois']['duplicados']}")
+    print(f"Registros para ocultar/ocultados: {len(resultado['ocultar'])}")
+    print("Histórico preservado; nenhuma linha foi excluída.")
+    print("Relatório: RELATORIO_CORRECOES_POS_RECONSTRUCAO.md")
+    return 0
+
+
+def comando_reprocessar_afiliados_falhos(dry_run=False):
+    from correcoes_pos_reconstrucao import reprocessar_afiliados_falhos
+    from playwright_perfil import LoginNecessario
+
+    try:
+        resultado = reprocessar_afiliados_falhos(dry_run=dry_run)
+    except LoginNecessario as erro:
+        print(f"Reprocessamento pausado: {erro}")
+        print("Checkpoint preservado em .afiliados_checkpoint.json. Rode login-mercadolivre.")
+        return 1
+    res = resultado["resultado"]
+    print(f"Modo: {'dry-run' if dry_run else 'execução real'}")
+    print(f"Afiliados falhos/pendentes: {resultado['antes']['afiliados_falhos']} -> {resultado['depois']['afiliados_falhos']}")
+    print(f"Pendentes analisados: {res.get('pendentes', len(resultado['pendentes']))}")
+    print(f"Gerados: {res.get('gerados', 0)} | Falhas: {res.get('falhas', 0)}")
+    print("Telegram e deploy não foram acionados.")
+    print("Relatório: RELATORIO_CORRECOES_POS_RECONSTRUCAO.md")
+    return 0 if dry_run or not res.get("falhas") else 1
+
+
 def comando_diagnosticar_afiliado():
     from auditoria_afiliados import imprimir_diagnostico
 
@@ -752,10 +1005,17 @@ def comando_diagnosticar_afiliado():
 def comando_gerar_afiliados():
     from fila_postagens import gerar_fila_de_produtos
     from gerador_afiliados_oficial import gerar_links_afiliados
+    from playwright_perfil import LoginNecessario
 
     preparar_base()
     try:
         resultado = gerar_links_afiliados()
+    except LoginNecessario as erro:
+        print(f"Geração de afiliados pausada: {erro}")
+        print("Checkpoint preservado em .afiliados_checkpoint.json.")
+        print("Rode: python3 ia_promocoes.py login-mercadolivre")
+        print("Links meli.la existentes, Telegram e deploy não foram alterados.")
+        return 1
     except Exception as erro:
         print(f"Não foi possível gerar links afiliados: {erro}")
         return 1
@@ -1425,6 +1685,8 @@ def main():
             "testar-captura-produto",
             "comparar-captura",
             "limpar-titulos",
+            "ciclo-automatico",
+            "curadoria-automatica",
             "reprocessar-pendentes",
             "simular-score",
             "atualizar-categorias",
@@ -1437,6 +1699,7 @@ def main():
             "recuperar-banco-catalogo",
             "corrigir-paginas-produto",
             "gerar-site",
+            "preparar-publicacao",
             "validar",
             "servir-site",
             "publicar-site",
@@ -1460,13 +1723,22 @@ def main():
             "limpar-seguro",
             "mapa",
             "login-mercadolivre",
+            "pausar-playwright",
+            "retomar-coleta",
+            "testar-playwright-sessao",
             "meli-auth",
+            "meli-auditar-api",
             "meli-testar-token",
             "meli-refresh-token",
             "testar-coleta-api",
             "diagnosticar-playwright",
             "reparar-playwright",
             "auditar-base",
+            "auditar-sistema",
+            "corrigir-categorias-vazias",
+            "auditar-duplicados",
+            "corrigir-duplicados",
+            "reprocessar-afiliados-falhos",
             "reconstruir-base",
             "restaurar-catalogo-valido",
             "diagnosticar-afiliado",
@@ -1478,6 +1750,7 @@ def main():
     parser.add_argument("argumentos", nargs="*")
     parser.add_argument("--visual", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--publicar", action="store_true")
     parser.add_argument("--somente-leitura", action="store_true")
     args = parser.parse_args()
 
@@ -1503,6 +1776,8 @@ def main():
         "testar-captura-produto": lambda: comando_testar_captura_produto(args.argumentos),
         "comparar-captura": lambda: comando_testar_captura_produto(args.argumentos, comparar=True),
         "limpar-titulos": comando_limpar_titulos,
+        "ciclo-automatico": lambda: comando_ciclo_automatico(args.dry_run, args.publicar),
+        "curadoria-automatica": lambda: comando_curadoria_automatica(args.dry_run),
         "reprocessar-pendentes": lambda: comando_reprocessar_pendentes(args.dry_run),
         "simular-score": comando_simular_score,
         "atualizar-categorias": comando_atualizar_categorias,
@@ -1515,6 +1790,7 @@ def main():
         "recuperar-banco-catalogo": lambda: comando_recuperar_banco_catalogo(args.dry_run),
         "corrigir-paginas-produto": comando_corrigir_paginas_produto,
         "gerar-site": comando_gerar_site,
+        "preparar-publicacao": lambda: comando_preparar_publicacao(args.dry_run),
         "validar": comando_validar_somente_leitura if args.somente_leitura else comando_validar,
         "servir-site": comando_servir_site,
         "publicar-site": comando_publicar_site,
@@ -1538,13 +1814,22 @@ def main():
         "limpar-seguro": comando_limpar_seguro,
         "mapa": comando_mapa,
         "login-mercadolivre": comando_login_mercadolivre,
+        "pausar-playwright": comando_pausar_playwright,
+        "retomar-coleta": lambda: comando_retomar_coleta(args.visual),
+        "testar-playwright-sessao": comando_testar_playwright_sessao,
         "meli-auth": comando_meli_auth,
+        "meli-auditar-api": comando_meli_auditar_api,
         "meli-testar-token": comando_meli_testar_token,
         "meli-refresh-token": comando_meli_refresh_token,
         "testar-coleta-api": lambda: comando_testar_coleta_api("playwright" in args.argumentos),
         "diagnosticar-playwright": comando_diagnosticar_playwright,
         "reparar-playwright": comando_reparar_playwright,
         "auditar-base": comando_auditar_base,
+        "auditar-sistema": comando_auditar_sistema,
+        "corrigir-categorias-vazias": lambda: comando_corrigir_categorias_vazias(args.dry_run),
+        "auditar-duplicados": comando_auditar_duplicados_pos,
+        "corrigir-duplicados": lambda: comando_corrigir_duplicados(args.dry_run),
+        "reprocessar-afiliados-falhos": lambda: comando_reprocessar_afiliados_falhos(args.dry_run),
         "reconstruir-base": lambda: comando_reconstruir_base(args.dry_run),
         "restaurar-catalogo-valido": lambda: comando_restaurar_catalogo_valido(args.dry_run),
         "diagnosticar-afiliado": comando_diagnosticar_afiliado,

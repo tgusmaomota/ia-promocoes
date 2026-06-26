@@ -1,19 +1,79 @@
 """Geração de links oficiais meli.la pelo botão Compartilhar do Mercado Livre."""
 
+import json
+import os
+import random
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
-from banco import atualizar_link_afiliado_oficial, conectar, inicializar_banco, registrar_log
+from banco import atualizar_link_afiliado_oficial, conectar, inicializar_banco, registrar_evento_sistema, registrar_log
 from gerador_link_mercadolivre import link_afiliado_valido
-from playwright_perfil import PERFIL_PRINCIPAL, PERFIL_RESERVA
+from playwright_perfil import (
+    PERFIL_PRINCIPAL,
+    PERFIL_RESERVA,
+    LoginNecessario,
+    abrir_contexto_persistente,
+    login_necessario_na_pagina,
+)
 
 
 MELI_LINK_RE = re.compile(r"https://meli\.la/[A-Za-z0-9]+")
 PASTA_DIAGNOSTICO = Path("logs") / "afiliados"
+CHECKPOINT_AFILIADOS = Path(".afiliados_checkpoint.json")
+
+
+def _agora():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _salvar_checkpoint(**dados):
+    CHECKPOINT_AFILIADOS.write_text(
+        json.dumps({"atualizado_em": _agora(), **dados}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def _carregar_checkpoint():
+    try:
+        return json.loads(CHECKPOINT_AFILIADOS.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _limpar_checkpoint():
+    CHECKPOINT_AFILIADOS.unlink(missing_ok=True)
+
+
+def _config_float(nome, padrao):
+    try:
+        return float(os.getenv(nome, str(padrao)).replace(",", "."))
+    except (TypeError, ValueError):
+        return float(padrao)
+
+
+def _config_int(nome, padrao, minimo=1, maximo=100):
+    try:
+        valor = int(os.getenv(nome, str(padrao)))
+    except (TypeError, ValueError):
+        valor = int(padrao)
+    return max(minimo, min(maximo, valor))
+
+
+def _pausa_produto():
+    minimo = _config_float("PLAYWRIGHT_PAUSA_MIN", 1.5)
+    maximo = max(minimo, _config_float("PLAYWRIGHT_PAUSA_MAX", 4.0))
+    time.sleep(random.uniform(minimo, maximo))
+
+
+def _pausa_lote():
+    minimo = _config_float("PLAYWRIGHT_PAUSA_LOTE_MIN", 20)
+    maximo = max(minimo, _config_float("PLAYWRIGHT_PAUSA_LOTE_MAX", 45))
+    time.sleep(random.uniform(minimo, maximo))
 
 
 def produtos_sem_afiliado(limite=None):
@@ -22,7 +82,7 @@ def produtos_sem_afiliado(limite=None):
         SELECT id, item_id, titulo, link_original
         FROM produtos
         WHERE plataforma = 'mercado_livre'
-          AND status NOT IN ('indisponivel', 'erro')
+          AND status NOT IN ('indisponivel', 'erro', 'duplicado_oculto')
           AND TRIM(COALESCE(link_afiliado, '')) = ''
           AND TRIM(COALESCE(link_original, '')) <> ''
         ORDER BY id
@@ -99,7 +159,7 @@ def _botao_oficial(pagina):
 def _aguardar_botao_oficial(pagina):
     try:
         pagina.locator('button[data-testid="generate_link_button"]').first.wait_for(
-            state="visible", timeout=8000
+            state="visible", timeout=15000
         )
     except Exception:
         pass
@@ -136,6 +196,8 @@ def diagnosticar_compartilhar(permalink, clicar=False):
             pagina.set_default_timeout(12000)
             pagina.goto(permalink, wait_until="domcontentloaded", timeout=45000)
             pagina.wait_for_timeout(1800)
+            if login_necessario_na_pagina(pagina):
+                raise LoginNecessario("sessão Mercado Livre não autenticada")
             antes = _screenshot(pagina, permalink, "antes_clique")
             botao, estrategia, caixa = _aguardar_botao_oficial(pagina)
             if not botao:
@@ -166,6 +228,8 @@ def gerar_link_oficial_na_pagina(pagina, permalink="", navegar=True):
     if navegar:
         pagina.goto(permalink, wait_until="domcontentloaded", timeout=45000)
         pagina.wait_for_timeout(1800)
+    if login_necessario_na_pagina(pagina):
+        raise LoginNecessario("sessão Mercado Livre não autenticada")
     _screenshot(pagina, permalink, "antes_clique")
     botao, estrategia, _ = _aguardar_botao_oficial(pagina)
     if not botao:
@@ -175,9 +239,15 @@ def gerar_link_oficial_na_pagina(pagina, permalink="", navegar=True):
     if estrategia != "data-testid":
         registrar_log("afiliados", f"Fallback de Compartilhar usado para {permalink}", nivel="warning")
     botao.click()
-    pagina.wait_for_timeout(1200)
+    pagina.wait_for_timeout(2200)
     _screenshot(pagina, permalink, "depois_clique")
     link = _extrair_meli_la(pagina)
+    if not link:
+        for espera in (2500, 4000):
+            pagina.wait_for_timeout(espera)
+            link = _extrair_meli_la(pagina)
+            if link:
+                break
     if link:
         _screenshot(pagina, permalink, "link_encontrado")
     return link
@@ -189,42 +259,69 @@ def _gerar_em_pagina(pagina, permalink):
 
 def gerar_links_afiliados(limite=None):
     pendentes = produtos_sem_afiliado(limite)
+    return gerar_links_afiliados_para(pendentes)
+
+
+def gerar_links_afiliados_para(pendentes):
+    pendentes = [dict(item) for item in (pendentes or [])]
     resultado = {"pendentes": len(pendentes), "gerados": 0, "falhas": 0, "itens": []}
     if not pendentes:
+        _limpar_checkpoint()
         return resultado
 
-    perfis = [PERFIL_PRINCIPAL] + ([PERFIL_RESERVA] if PERFIL_RESERVA.exists() else [])
-    ultimo_erro = None
-    for perfil in perfis:
+    checkpoint = _carregar_checkpoint()
+    item_checkpoint = str(checkpoint.get("item_id") or "").strip()
+    if item_checkpoint:
+        posicao = next((i for i, item in enumerate(pendentes) if item["item_id"] == item_checkpoint), 0)
+        pendentes = pendentes[posicao:]
+
+    tamanho_lote = _config_int("PLAYWRIGHT_LOTE_TAMANHO", 25, minimo=1, maximo=30)
+    perfis = (PERFIL_PRINCIPAL, PERFIL_RESERVA)
+    with sync_playwright() as playwright:
+        navegador = None
+        processados_lote = 0
         try:
-            with sync_playwright() as playwright:
-                navegador = playwright.chromium.launch_persistent_context(
-                    user_data_dir=str(perfil), headless=False
-                )
-                try:
-                    for produto in pendentes:
-                        pagina = navegador.new_page()
-                        pagina.set_default_timeout(12000)
-                        try:
-                            link = _gerar_em_pagina(pagina, produto["link_original"])
-                            if not link:
-                                raise RuntimeError("Portal não retornou link meli.la")
-                            atualizar_link_afiliado_oficial(produto["id"], link)
-                            resultado["gerados"] += 1
-                            resultado["itens"].append({"item_id": produto["item_id"], "status": "gerado"})
-                        except Exception as erro:
-                            resultado["falhas"] += 1
-                            resultado["itens"].append({"item_id": produto["item_id"], "status": "falhou"})
-                            registrar_log("afiliados", f"Falha ao gerar meli.la para {produto['item_id']}: {erro}", nivel="warning")
-                        finally:
-                            try:
-                                pagina.close()
-                            except Exception:
-                                pass
-                    return resultado
-                finally:
+            for indice, produto in enumerate(pendentes):
+                if navegador is None:
+                    navegador = abrir_contexto_persistente(playwright, visual=True, perfis=perfis)
+                    processados_lote = 0
+                if processados_lote >= tamanho_lote:
                     navegador.close()
-        except Exception as erro:
-            ultimo_erro = erro
-            continue
-    raise RuntimeError(f"Não foi possível abrir perfil para gerar links afiliados: {ultimo_erro}")
+                    navegador = None
+                    _salvar_checkpoint(indice=indice, item_id=produto["item_id"], url=produto["link_original"], etapa="pausa_lote", motivo="limite_de_lote")
+                    _pausa_lote()
+                    navegador = abrir_contexto_persistente(playwright, visual=True, perfis=perfis)
+                    processados_lote = 0
+
+                _salvar_checkpoint(indice=indice, item_id=produto["item_id"], url=produto["link_original"], etapa="gerando_meli_la", motivo="andamento")
+                pagina = navegador.new_page()
+                pagina.set_default_timeout(12000)
+                try:
+                    link = _gerar_em_pagina(pagina, produto["link_original"])
+                    if not link:
+                        raise RuntimeError("Portal não retornou link meli.la após espera estendida")
+                    atualizar_link_afiliado_oficial(produto["id"], link)
+                    resultado["gerados"] += 1
+                    resultado["itens"].append({"item_id": produto["item_id"], "status": "gerado"})
+                    processados_lote += 1
+                    _salvar_checkpoint(indice=indice + 1, item_id=produto["item_id"], url=produto["link_original"], etapa="salvo", motivo="andamento")
+                    _pausa_produto()
+                except LoginNecessario as erro:
+                    _salvar_checkpoint(indice=indice, item_id=produto["item_id"], url=produto["link_original"], etapa="login_necessario", motivo=str(erro))
+                    registrar_evento_sistema("playwright", "mercado_livre", "login_necessario", "Login Mercado Livre necessário para afiliados", str(erro))
+                    registrar_log("afiliados", "Login necessário; geração de afiliados pausada com checkpoint preservado.", nivel="warning")
+                    raise
+                except Exception as erro:
+                    resultado["falhas"] += 1
+                    resultado["itens"].append({"item_id": produto["item_id"], "status": "falhou"})
+                    registrar_log("afiliados", f"Falha ao gerar meli.la para {produto['item_id']}: {erro}", nivel="warning")
+                finally:
+                    try:
+                        pagina.close()
+                    except Exception:
+                        pass
+            _limpar_checkpoint()
+            return resultado
+        finally:
+            if navegador:
+                navegador.close()

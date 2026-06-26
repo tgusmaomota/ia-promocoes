@@ -18,6 +18,10 @@ class ErroMercadoLivre(RuntimeError):
     pass
 
 
+class ErroAutenticacaoMercadoLivre(ErroMercadoLivre):
+    pass
+
+
 def item_id_valido(item_id):
     return bool(ITEM_ID_RE.fullmatch(str(item_id or "").strip()))
 
@@ -33,7 +37,18 @@ def _cabecalhos():
     return cabecalhos
 
 
-def _get_json(url, timeout, params=None):
+def _refresh_uma_vez():
+    try:
+        from meli_oauth import renovar_tokens
+
+        renovar_tokens()
+        load_dotenv(override=True)
+        return True
+    except Exception:
+        return False
+
+
+def _get_json(url, timeout, params=None, _refresh_tentado=False):
     cabecalhos = _cabecalhos()
     token = os.getenv("MELI_ACCESS_TOKEN", "").strip()
     try:
@@ -43,6 +58,10 @@ def _get_json(url, timeout, params=None):
 
     if resposta.status_code == 404:
         return None
+    if resposta.status_code == 401:
+        if not _refresh_tentado and _refresh_uma_vez():
+            return _get_json(url, timeout, params=params, _refresh_tentado=True)
+        raise ErroAutenticacaoMercadoLivre("API respondeu HTTP 401 após tentativa de refresh")
     if resposta.status_code != 200:
         detalhe = ""
         if resposta.status_code == 403 and not token:

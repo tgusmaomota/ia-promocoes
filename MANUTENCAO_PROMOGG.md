@@ -17,6 +17,36 @@
 - Produtos indevidamente indisponíveis: execute primeiro `recuperar-indisponiveis --dry-run`.
 - Recuperação de arquivos: consulte `python3 ia_promocoes.py restaurar`.
 
+## Playwright Mercado Livre com pausa e retomada
+
+Fluxo recomendado quando a sessão começa a ficar instável:
+
+```bash
+python3 ia_promocoes.py pausar-playwright
+python3 ia_promocoes.py login-mercadolivre
+python3 ia_promocoes.py testar-playwright-sessao
+python3 ia_promocoes.py retomar-coleta
+python3 ia_promocoes.py validar --somente-leitura
+```
+
+Parâmetros de ritmo humano no `.env`:
+
+```env
+PLAYWRIGHT_LOTE_TAMANHO=25
+PLAYWRIGHT_PAUSA_MIN=1.5
+PLAYWRIGHT_PAUSA_MAX=4.0
+PLAYWRIGHT_PAUSA_LOTE_MIN=20
+PLAYWRIGHT_PAUSA_LOTE_MAX=45
+```
+
+Garantias desses comandos:
+
+- `login-mercadolivre` só abre o navegador, espera login manual e preserva `perfil_mercadolivre`.
+- `testar-playwright-sessao` apenas confirma a sessão; não coleta, não gera afiliado e não altera banco.
+- `retomar-coleta` usa `.coleta_confiavel_checkpoint.json`, evita repetir itens já salvos e não aciona Telegram/deploy.
+- Se houver logout, a coleta ou afiliados pausam com `login_necessario`, fecham o navegador e preservam o checkpoint.
+- `pausar-playwright` coloca o sistema em `MANUTENCAO`, para o scheduler local, fecha Chrome for Testing, remove locks temporários e não apaga cookies.
+
 ## Quarentena
 
 Arquivos só podem ser movidos para `quarentena_remocao/` após auditoria e validação. Esta limpeza não removeu arquivos porque os candidatos existentes não eram inequívocos.

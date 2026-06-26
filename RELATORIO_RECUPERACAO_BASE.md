@@ -1,9 +1,9 @@
 # Relatório de Recuperação da Base - Promogg
 
-- Data/hora: 2026-06-24 12:41:27
+- Data/hora: 2026-06-26 08:14:56
 - Resultado: homologado localmente
 - Modo: execução
-- Backup: backups/reconstrucao_base/20260624_122600
+- Backup: backups/reconstrucao_base/20260626_074013
 
 ## Proteções aplicadas
 - A fila global de postagens não é executada durante a reconstrução.
@@ -12,17 +12,17 @@
 - O catálogo novo precisa respeitar mínimo, páginas, links e queda máxima.
 
 ## Base antes/depois
-- Produtos: 875 -> 900
-- Histórico de preços: 3544 -> 3588
-- Novas ofertas coletadas: 25
-- Itens atualizados: 19
+- Produtos: 984 -> 1023
+- Histórico de preços: 6129 -> 6192
+- Novas ofertas coletadas: 39
+- Itens atualizados: 24
 - Linhas-base de histórico criadas: 0
 - Fila global executada: não
 
 ## Catálogo
-- Referência: 622 ofertas
-- Candidato: 622 ofertas
-- Páginas candidatas: 622
+- Referência: 632 ofertas
+- Candidato: 632 ofertas
+- Páginas candidatas: 632
 - Queda: 0.00%
 - Bloqueios: nenhum
 

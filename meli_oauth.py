@@ -80,6 +80,7 @@ def _salvar_tokens(dados):
         raise ErroOAuthMercadoLivre(f"Resposta OAuth não incluiu tokens. Resposta sanitizada: {_resposta_sanitizada(dados)}")
     set_key(ENV_PATH, "MELI_ACCESS_TOKEN", access_token)
     set_key(ENV_PATH, "MELI_REFRESH_TOKEN", refresh_token)
+    load_dotenv(ENV_PATH, override=True)
 
 
 def trocar_codigo(code):
@@ -99,7 +100,8 @@ def trocar_codigo(code):
     return testar_token()
 
 
-def refresh_token():
+def renovar_tokens():
+    """Renova tokens e recarrega o .env sem exibir credenciais."""
     config = _configuracao()
     if not config["refresh_token"]:
         raise ErroOAuthMercadoLivre("MELI_REFRESH_TOKEN ausente no .env.")
@@ -114,6 +116,11 @@ def refresh_token():
     except ValueError as erro:
         raise ErroOAuthMercadoLivre("OAuth retornou conteúdo inválido ao renovar o token.") from erro
     _salvar_tokens(dados)
+    return {"renovado": True, "client_id": _client_id_parcial(config["client_id"])}
+
+
+def refresh_token():
+    renovar_tokens()
     return testar_token()
 
 

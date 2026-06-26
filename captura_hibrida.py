@@ -9,19 +9,14 @@ from dotenv import load_dotenv
 
 from enriquecimento_pagina_ml import extrair_sinais_comerciais
 from gerador_link_mercadolivre import link_afiliado_valido
+from item_utils import extrair_item_id
 from mercadolivre_api import ErroMercadoLivre, consultar_item, item_id_valido
+from playwright_perfil import LoginNecessario, login_necessario_na_pagina
 from saneamento_ofertas import sanear_titulo
 
 
 load_dotenv(override=True)
 _CACHE_API = {}
-
-
-def _extrair_item_id(valor):
-    import re
-
-    encontrado = re.search(r"MLB\d+", str(valor or ""), re.I)
-    return encontrado.group(0).upper() if encontrado else ""
 
 
 def _extrair_preco(texto):
@@ -112,7 +107,7 @@ def capturar_produto_hibrido(pagina, candidato, visual=False, gerar_afiliado=Tru
     inicio_total = time.monotonic()
     tempos, fontes = {}, ["listagem"]
     permalink = str(candidato.get("permalink") or candidato.get("link_original") or "").strip()
-    dados = {"item_id": str(candidato.get("item_id") or _extrair_item_id(permalink)).upper(), "titulo": str(candidato.get("titulo") or "").strip(), "preco_atual": float(candidato.get("preco") or candidato.get("preco_atual") or 0), "imagem": str(candidato.get("imagem") or "").strip(), "link_original": permalink}
+    dados = {"item_id": str(candidato.get("item_id") or extrair_item_id(permalink)).upper(), "titulo": str(candidato.get("titulo") or "").strip(), "preco_atual": float(candidato.get("preco") or candidato.get("preco_atual") or 0), "imagem": str(candidato.get("imagem") or "").strip(), "link_original": permalink}
     api = _api(dados["item_id"], tempos, fontes)
     if api:
         dados.update({"titulo": api.get("titulo") or dados["titulo"], "preco_atual": api.get("preco") or dados["preco_atual"], "imagem": api.get("imagem_url") or dados["imagem"], "categoria_id": api.get("categoria_id", ""), "categoria_nome": api.get("categoria_nome", ""), "disponivel": bool(api.get("disponivel")), "origem_categoria": "api_oficial" if api.get("categoria_nome") else ""})
@@ -120,6 +115,8 @@ def capturar_produto_hibrido(pagina, candidato, visual=False, gerar_afiliado=Tru
     inicio_pagina = time.monotonic()
     pagina.goto(permalink, wait_until="domcontentloaded", timeout=45000)
     pagina.wait_for_timeout(2200 if visual else 900)
+    if login_necessario_na_pagina(pagina):
+        raise LoginNecessario("sessão Mercado Livre não autenticada na captura híbrida")
     tempos["pagina_produto"] = round((time.monotonic() - inicio_pagina) * 1000)
     fontes.append("playwright_pagina")
     dados["item_id"] = extrair_item_id(pagina.url) or extrair_item_id(pagina.content()) or dados["item_id"]

@@ -111,7 +111,7 @@ def listar_ofertas(deduplicar=True):
             JOIN produtos ON produtos.id = postagens.produto_id
             WHERE postagens.plataforma = 'mercado_livre'
               AND postagens.status IN ('aprovado_auto', 'aprovado_manual', 'publicado')
-              AND produtos.status NOT IN ('indisponivel', 'erro')
+              AND produtos.status NOT IN ('indisponivel', 'erro', 'duplicado_oculto')
             ORDER BY CASE postagens.status
                 WHEN 'aprovado_manual' THEN 0
                 WHEN 'aprovado_auto' THEN 1

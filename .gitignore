@@ -32,6 +32,7 @@ logs/
 perfil_mercadolivre/
 perfil_mercadolivre_backup/
 .coleta_confiavel_checkpoint.json
+.afiliados_checkpoint.json
 perfil_shopee/
 playwright-report/
 test-results/

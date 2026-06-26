@@ -70,7 +70,7 @@ def resumo_precos():
             SELECT COALESCE(NULLIF(categoria_nome, ''), categoria, 'ofertas') AS categoria,
                    COUNT(*) AS total
             FROM produtos
-            WHERE status != 'indisponivel'
+            WHERE status NOT IN ('indisponivel', 'duplicado_oculto')
             GROUP BY categoria
             ORDER BY total DESC, categoria ASC LIMIT 10
             """

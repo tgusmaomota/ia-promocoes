@@ -2,7 +2,7 @@
 
 import json
 import os
-import re
+import random
 import time
 from datetime import datetime
 from pathlib import Path
@@ -10,14 +10,21 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
-from agente_ofertas import extrair_item_id, extrair_preco, identificar_tipo_promocao, montar_urls_ofertas
+from agente_ofertas import extrair_preco, identificar_tipo_promocao, montar_urls_ofertas
 from analisador_promocao import analisar_produto
 from banco import conectar, registrar_log, salvar_ou_atualizar_produto_api
 from fila_postagens import gerar_fila_de_produtos
 from gerador_afiliados_oficial import gerar_link_oficial_na_pagina
 from gerador_link_mercadolivre import link_afiliado_valido
+from item_utils import extrair_item_id
 from mercadolivre_api import ErroMercadoLivre, consultar_item, item_id_valido
-from playwright_perfil import PERFIL_PRINCIPAL, PERFIL_RESERVA
+from playwright_perfil import (
+    PERFIL_PRINCIPAL,
+    PERFIL_RESERVA,
+    LoginNecessario,
+    abrir_contexto_persistente,
+    login_necessario_na_pagina,
+)
 from saneamento_ofertas import sanear_titulo
 from enriquecimento_pagina_ml import extrair_sinais_comerciais
 from captura_hibrida import captura_hibrida_ativa, capturar_produto_hibrido
@@ -94,6 +101,8 @@ def _detalhar_produto_legado(pagina, candidato, visual=False):
     permalink = str(candidato["permalink"]).strip()
     pagina.goto(permalink, wait_until="domcontentloaded", timeout=45000)
     pagina.wait_for_timeout(2500 if visual else 1200)
+    if login_necessario_na_pagina(pagina):
+        raise LoginNecessario("sessão Mercado Livre não autenticada na página do produto")
     url_atual = pagina.url
     item_id = extrair_item_id(url_atual) or extrair_item_id(pagina.content())
     titulo = _titulo_pagina(pagina) or candidato["titulo"]
@@ -191,15 +200,31 @@ def _candidatos_da_pagina(pagina):
     return candidatos
 
 
-def _abrir_contexto(playwright, visual):
-    for perfil in (PERFIL_PRINCIPAL, PERFIL_RESERVA):
-        if not perfil.exists():
-            continue
-        try:
-            return playwright.chromium.launch_persistent_context(user_data_dir=str(perfil), headless=not visual)
-        except Exception:
-            continue
-    raise RuntimeError("Não foi possível abrir um perfil Playwright disponível")
+def _config_float(nome, padrao):
+    try:
+        return float(os.getenv(nome, str(padrao)).replace(",", "."))
+    except (TypeError, ValueError):
+        return float(padrao)
+
+
+def _config_int(nome, padrao, minimo=1, maximo=100):
+    try:
+        valor = int(os.getenv(nome, str(padrao)))
+    except (TypeError, ValueError):
+        valor = int(padrao)
+    return max(minimo, min(maximo, valor))
+
+
+def _pausa_produto():
+    minimo = _config_float("PLAYWRIGHT_PAUSA_MIN", 1.5)
+    maximo = max(minimo, _config_float("PLAYWRIGHT_PAUSA_MAX", 4.0))
+    time.sleep(random.uniform(minimo, maximo))
+
+
+def _pausa_lote():
+    minimo = _config_float("PLAYWRIGHT_PAUSA_LOTE_MIN", 20)
+    maximo = max(minimo, _config_float("PLAYWRIGHT_PAUSA_LOTE_MAX", 45))
+    time.sleep(random.uniform(minimo, maximo))
 
 
 def _relatorio(resultado):
@@ -223,7 +248,7 @@ def _relatorio(resultado):
 
 
 def coletar_confiavel(visual=False, retomar=True):
-    """Executa coleta lenta com checkpoint e duas tentativas por produto."""
+    """Executa coleta lenta em lotes, com checkpoint e retomada segura."""
     inicio = time.time()
     resultado = {
         "inicio": _agora(), "inicio_epoch": inicio, "encontrados": 0, "completos": 0,
@@ -234,18 +259,32 @@ def coletar_confiavel(visual=False, retomar=True):
     pagina_inicial = int(checkpoint.get("pagina", 1))
     indice_inicial = int(checkpoint.get("indice", 0))
 
+    tamanho_lote = _config_int("PLAYWRIGHT_LOTE_TAMANHO", 25, minimo=1, maximo=30)
+    processados_lote = 0
+
     with sync_playwright() as playwright:
-        navegador = _abrir_contexto(playwright, visual)
+        navegador = None
+        lista = None
         try:
-            lista = navegador.new_page()
-            lista.set_default_timeout(12000)
             for numero, url in enumerate(montar_urls_ofertas(), start=1):
                 if numero < pagina_inicial:
                     continue
+                if navegador is None:
+                    navegador = abrir_contexto_persistente(playwright, visual=visual)
+                    lista = navegador.new_page()
+                    lista.set_default_timeout(12000)
                 try:
+                    _salvar_checkpoint(pagina=numero, indice=0, item_id="", url=url, etapa="listando", motivo="andamento")
                     lista.goto(url, wait_until="domcontentloaded", timeout=45000)
                     lista.wait_for_timeout(3500 if visual else 1500)
+                    if login_necessario_na_pagina(lista):
+                        raise LoginNecessario("sessão Mercado Livre não autenticada na listagem")
                     candidatos = _candidatos_da_pagina(lista)
+                except LoginNecessario as erro:
+                    _salvar_checkpoint(pagina=numero, indice=0, item_id="", url=url, etapa="login_necessario", motivo=str(erro))
+                    registrar_evento_sistema("playwright", "mercado_livre", "login_necessario", "Login Mercado Livre necessário", str(erro))
+                    registrar_log("coleta_confiavel", "Login necessário; coleta pausada com checkpoint preservado.", nivel="warning")
+                    raise
                 except Exception as erro:
                     resultado["falhas"].append(f"página {numero}: {erro}")
                     continue
@@ -254,16 +293,33 @@ def coletar_confiavel(visual=False, retomar=True):
                 for indice, candidato in enumerate(candidatos):
                     if indice < inicio_indice:
                         continue
-                    _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], etapa="iniciando")
+                    if processados_lote >= tamanho_lote:
+                        navegador.close()
+                        navegador = None
+                        lista = None
+                        processados_lote = 0
+                        _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], url=candidato["permalink"], etapa="pausa_lote", motivo="limite_de_lote")
+                        _pausa_lote()
+                        navegador = abrir_contexto_persistente(playwright, visual=visual)
+                        lista = navegador.new_page()
+                        lista.set_default_timeout(12000)
+
+                    _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], url=candidato["permalink"], etapa="iniciando", motivo="andamento")
                     produto = None
                     erro_final = None
                     for tentativa in range(1, 3):
                         pagina_produto = navegador.new_page()
                         pagina_produto.set_default_timeout(12000)
                         try:
-                            _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], etapa=f"tentativa_{tentativa}")
+                            _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], url=candidato["permalink"], etapa=f"tentativa_{tentativa}", motivo="andamento")
                             produto = _detalhar_produto(pagina_produto, candidato, visual)
+                            if login_necessario_na_pagina(pagina_produto):
+                                raise LoginNecessario("sessão Mercado Livre não autenticada após abrir produto")
                             break
+                        except LoginNecessario as erro:
+                            _salvar_checkpoint(pagina=numero, indice=indice, item_id=candidato["item_id"], url=candidato["permalink"], etapa="login_necessario", motivo=str(erro))
+                            registrar_evento_sistema("playwright", "mercado_livre", "login_necessario", "Login Mercado Livre necessário", str(erro))
+                            raise
                         except Exception as erro:
                             erro_final = erro
                         finally:
@@ -276,6 +332,7 @@ def coletar_confiavel(visual=False, retomar=True):
                     salvo = salvar_ou_atualizar_produto_api(produto)
                     resultado["salvos"] += 1
                     resultado["afiliados"] += 1
+                    processados_lote += 1
                     with conectar() as conn:
                         linha = conn.execute("SELECT * FROM produtos WHERE id = ?", (salvo["produto_id"],)).fetchone()
                     fila = gerar_fila_de_produtos([dict(linha)])
@@ -289,9 +346,11 @@ def coletar_confiavel(visual=False, retomar=True):
                         resultado["pendentes"] += 1
                     elif postagem and postagem["status"] == "rejeitado":
                         resultado["rejeitados"] += 1
-                    _salvar_checkpoint(pagina=numero, indice=indice + 1, item_id=produto["item_id"], etapa="salvo")
+                    _salvar_checkpoint(pagina=numero, indice=indice + 1, item_id=produto["item_id"], url=candidato["permalink"], etapa="salvo", motivo="andamento")
+                    _pausa_produto()
             _limpar_checkpoint()
         finally:
-            navegador.close()
+            if navegador:
+                navegador.close()
     _relatorio(resultado)
     return resultado

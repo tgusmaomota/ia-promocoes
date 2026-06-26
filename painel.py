@@ -104,13 +104,36 @@ with acoes[3]:
     if st.button("Rodar coleta", use_container_width=True):
         executar(["ia_promocoes.py", "coletar"])
 
-reprocessamento = st.columns(2)
+reprocessamento = st.columns(4)
 with reprocessamento[0]:
-    if st.button("Simular reprocessamento", use_container_width=True):
-        executar(["ia_promocoes.py", "reprocessar-pendentes", "--dry-run"])
+    if st.button("Simular ciclo automático", use_container_width=True):
+        executar(["ia_promocoes.py", "ciclo-automatico", "--dry-run"])
 with reprocessamento[1]:
-    if st.button("Reprocessar pendentes", use_container_width=True):
+    if st.button("Rodar ciclo automático seguro", use_container_width=True):
+        executar(["ia_promocoes.py", "ciclo-automatico"])
+with reprocessamento[2]:
+    if st.button("Simular curadoria automática", use_container_width=True):
+        executar(["ia_promocoes.py", "curadoria-automatica", "--dry-run"])
+with reprocessamento[3]:
+    if st.button("Aplicar curadoria automática", use_container_width=True):
+        executar(["ia_promocoes.py", "curadoria-automatica"])
+
+legado = st.columns(2)
+with legado[0]:
+    if st.button("Simular reprocessamento legado", use_container_width=True):
+        executar(["ia_promocoes.py", "reprocessar-pendentes", "--dry-run"])
+with legado[1]:
+    if st.button("Reprocessar legado", use_container_width=True):
         executar(["ia_promocoes.py", "reprocessar-pendentes"])
+
+with st.expander("Relatórios da automação e score", expanded=False):
+    for caminho in ("RELATORIO_CICLO_AUTOMATICO.md", "RELATORIO_SCORE_ADAPTATIVO.md", "RELATORIO_CURADORIA_AUTOMATICA.md"):
+        path = Path(caminho)
+        if path.exists():
+            st.markdown(f"### {caminho}")
+            st.text(path.read_text(encoding="utf-8")[:5000])
+        else:
+            st.info(f"{caminho} ainda não foi gerado.")
 
 st.subheader("Filas de aprovação")
 with st.expander("Produtos sem afiliado", expanded=False):
@@ -148,7 +171,7 @@ for aba, status_aba in zip(abas[:5], [
         else:
             st.dataframe(itens[[coluna for coluna in [
                 "id", "titulo", "preco", "categoria", "aprovado_por",
-                "score_curadoria", "categoria_caminho", "desconto_percentual", "economia_valor",
+                "score_curadoria", "motivo", "categoria_caminho", "desconto_percentual", "economia_valor",
                 "selo_mais_vendido", "selo_loja_oficial", "avaliacao", "quantidade_vendida",
                 "aprovado_em", "data_criacao", "data_publicacao",
             ] if coluna in itens]], use_container_width=True)

@@ -121,25 +121,42 @@ def gerar_fila_de_produtos(produtos=None):
     rejeitados = 0
 
     for produto in produtos:
-        analise = analisar_produto(produto)
-        status_promocao = "aprovado_auto" if analise["aprovado"] else "pendente_revisao"
+        from curadoria_automatica import avaliar_oferta
+
+        analise_curadoria = avaliar_oferta(produto)
+        analise = {
+            "score": analise_curadoria["score"],
+            "desconto": analise_curadoria["desconto"],
+            "motivo": analise_curadoria["motivo"],
+            "aprovado": analise_curadoria["decisao"] == "aprovado_auto",
+        }
+        status_promocao = analise_curadoria["decisao"]
         promocao_id = salvar_promocao(
             produto["id"],
             analise["desconto"],
             analise["score"],
             status_promocao,
-            analise["motivo"],
+            f"curadoria_automatica_v2: {analise['motivo']}",
         )
 
         texto = gerar_texto_post(produto, analise)
 
-        if not analise["aprovado"]:
+        if status_promocao == "pendente_revisao":
             criar_postagem(
                 produto["id"], promocao_id, produto, texto,
                 status="pendente_revisao", motivo=analise["motivo"],
             )
             rejeitados += 1
             registrar_log("fila", f"Pendente para revisão score={analise['score']}: {produto['titulo']}", dados=analise["motivo"])
+            continue
+
+        if status_promocao == "rejeitado":
+            criar_postagem(
+                produto["id"], promocao_id, produto, texto,
+                status="rejeitado", motivo=analise["motivo"],
+            )
+            rejeitados += 1
+            registrar_log("fila", f"Rejeitado por curadoria automática score={analise['score']}: {produto['titulo']}", dados=analise["motivo"])
             continue
 
         if not link_afiliado_valido(produto):
