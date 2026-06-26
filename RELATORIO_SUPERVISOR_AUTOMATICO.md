@@ -1,7 +1,7 @@
 # Relatório do Supervisor Automático
 
-- Gerado em: 2026-06-26 13:12:40
-- Modo: execução real
+- Gerado em: 2026-06-26 13:15:36
+- Modo: dry-run
 
 ## Configuração
 - PROMOGG_SUPERVISOR_PUBLICAR: False
@@ -20,20 +20,20 @@
 - Rejeitadas: 137
 
 ## Alertas enviados/simulados
-- intervencao_humana_necessaria: cooldown ativo | dry_run=False
-- telegram_ofertas_bloqueado: cooldown ativo | dry_run=False
-- ciclo_concluido: cooldown ativo | dry_run=False
+- intervencao_humana_necessaria: cooldown ativo | dry_run=True
+- telegram_ofertas_bloqueado: cooldown ativo | dry_run=True
+- ciclo_concluido: cooldown ativo | dry_run=True
 
 ## Bloqueios
 - nenhum
 
 ## Bloqueios de publicação
-- Git possui alterações bloqueantes para publicação
 - PROMOGG_SUPERVISOR_PUBLICAR=false
 
 ## Avisos não bloqueantes
 - api_busca_403_fallback: API busca ML em 403, usando fallback Playwright.
 - playwright_login_evento_resolvido: Evento anterior de login necessário não bloqueia: perfil Playwright está disponível/logado.
+- playwright_nao_verificado_dry_run: Playwright não verificado no dry-run; perfil existe e não está bloqueado.
 
 ## Status Mercado Livre
 - Problemas detectados: 2
@@ -42,14 +42,14 @@
 - Categoria: não testada/falhou
 - Modo ML: degradado_nao_bloqueante
 - Bloqueantes ML: 0
-- Avisos ML: 2
+- Avisos ML: 3
 - api_401_403: API Mercado Livre respondeu HTTP 403; fallback/degradação pode ser necessária.
 - playwright_logout: Playwright/Mercado Livre registrou login necessário.
 
 ## Status Playwright
 - OK: True
-- Modo: normal
-- Motivo: sessão validada via venv/bin/python
+- Modo: nao_verificado_em_dry_run
+- Motivo: perfil existe e não está bloqueado
 
 ## Status catálogo
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES

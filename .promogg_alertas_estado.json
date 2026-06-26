@@ -127,6 +127,14 @@
       "dry_run": false,
       "enviado": false,
       "motivo": "cooldown ativo"
+    },
+    {
+      "quando": "2026-06-26T13:15:41",
+      "tipo": "intervencao_humana_necessaria",
+      "mensagem": "[ALERTA PROMOGG] API busca ML em 403, usando fallback Playwright.",
+      "dry_run": false,
+      "enviado": false,
+      "motivo": "cooldown ativo"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Relatório de Curadoria Automática
 
-- Gerado em: 2026-06-26 13:14:26
+- Gerado em: 2026-06-26 13:15:40
 - Modo: dry-run
 - Backup: não aplicável
 - Pendentes antes: 1

@@ -1,6 +1,6 @@
 # Relatório do Ciclo Automático
 
-- Gerado em: 2026-06-26 13:14:26
+- Gerado em: 2026-06-26 13:15:41
 - Modo: dry-run
 - Publicar solicitado: False
 - Backup: não aplicável
@@ -24,8 +24,8 @@
 - site/: 751 ofertas, 751 páginas
 - dist_site/: 751 ofertas, 751 páginas
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES
-- Git permitido: 11
-- Git bloqueante: 3
+- Git permitido: 6
+- Git bloqueante: 0
 
 ## Telegram simulado
 - OK: True
@@ -34,7 +34,6 @@
 
 ## Bloqueios
 - publicação real exige --publicar
-- Git possui alterações bloqueantes fora dos artefatos permitidos
 
 ## Status final
 - Seguro para `ciclo-automatico`: True
