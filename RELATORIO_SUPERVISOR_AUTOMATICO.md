@@ -1,18 +1,18 @@
 # Relatório do Supervisor Automático
 
-- Gerado em: 2026-06-26 13:15:36
+- Gerado em: 2026-06-26 13:57:49
 - Modo: dry-run
 
 ## Configuração
-- PROMOGG_SUPERVISOR_PUBLICAR: False
+- PROMOGG_SUPERVISOR_PUBLICAR: True
 - PROMOGG_SUPERVISOR_TELEGRAM_ALERTAS: True
 - PROMOGG_SUPERVISOR_INTERVALO_MINUTOS: 60
 - PROMOGG_SUPERVISOR_MAX_ERROS_SEGUIDOS: 3
 - PROMOGG_SUPERVISOR_ALERTA_COOLDOWN_MINUTOS: 60
 
 ## Último ciclo
-- Status final: ok
-- Modo atual: degradado_nao_bloqueante
+- Status final: bloqueado
+- Modo atual: degradado
 - Ofertas públicas: 751
 - Páginas: 751
 - Pendentes: 1
@@ -21,14 +21,15 @@
 
 ## Alertas enviados/simulados
 - intervencao_humana_necessaria: cooldown ativo | dry_run=True
-- telegram_ofertas_bloqueado: cooldown ativo | dry_run=True
-- ciclo_concluido: cooldown ativo | dry_run=True
+- login_mercado_livre_necessario: simulado | dry_run=True
+- deploy_bloqueado: simulado | dry_run=True
 
 ## Bloqueios
-- nenhum
+- Mercado Livre/API/Playwright em modo degradado bloqueante
 
 ## Bloqueios de publicação
-- PROMOGG_SUPERVISOR_PUBLICAR=false
+- Git possui alterações bloqueantes para publicação
+- ciclo-automatico --publicar ainda não está homologado pelas travas de segurança
 
 ## Avisos não bloqueantes
 - api_busca_403_fallback: API busca ML em 403, usando fallback Playwright.
@@ -37,11 +38,11 @@
 
 ## Status Mercado Livre
 - Problemas detectados: 2
-- /users/me atual: ok
-- Item atual: ok
+- /users/me atual: não confirmado
+- Item atual: não confirmado
 - Categoria: não testada/falhou
-- Modo ML: degradado_nao_bloqueante
-- Bloqueantes ML: 0
+- Modo ML: degradado
+- Bloqueantes ML: 1
 - Avisos ML: 3
 - api_401_403: API Mercado Livre respondeu HTTP 403; fallback/degradação pode ser necessária.
 - playwright_logout: Playwright/Mercado Livre registrou login necessário.
@@ -55,6 +56,9 @@
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES
 - Ressalvas bloqueantes: 0
 - Ressalvas informativas: 2
+- Segurança publicação: ok
+- Segurança críticos: 0
+- Segurança bloqueantes: 0
 
 ## Recomendação
-Supervisor pronto. Publicação real segue protegida por validação, Git, catálogo, qualidade e PROMOGG_SUPERVISOR_PUBLICAR=true.
+Rode login-mercadolivre e testar-playwright-sessao antes de retomar coleta/afiliados.
