@@ -7,7 +7,7 @@ import struct
 import unicodedata
 import zlib
 from datetime import datetime
-from html import escape
+from html import escape, unescape
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -38,6 +38,33 @@ SEGURANCA_DIR = SITE_DIR / "seguranca"
 OAUTH_CALLBACK_DIR = SITE_DIR / "oauth" / "callback"
 BASE_URL = "https://promogg.com.br"
 ITEM_ID_RE = re.compile(r"^[A-Za-z0-9_-]{4,80}$")
+
+CATEGORIAS_PUBLICAS = (
+    "Eletrônicos", "Celulares", "Informática", "TVs", "Áudio", "Games", "Casa",
+    "Móveis", "Cozinha", "Ferramentas", "Automotivo", "Moda", "Esportes",
+    "Bebês", "Saúde", "Beleza", "Jardim", "Pets", "Outros",
+)
+
+CATEGORIA_REGRAS = (
+    ("Celulares", ("celular", "smartphone", "iphone", "galaxy", "xiaomi", "motorola", "realme", "poco", "redmi")),
+    ("Informática", ("notebook", "computador", "pc", "monitor", "ssd", "memória", "memoria", "teclado", "mouse", "impressora", "roteador", "tablet")),
+    ("TVs", ("tv", "televisor", "smart tv", "televisão", "televisao")),
+    ("Áudio", ("fone", "headset", "caixa de som", "soundbar", "microfone", "alto falante", "bluetooth")),
+    ("Games", ("playstation", "ps4", "ps5", "xbox", "nintendo", "switch", "controle", "joystick", "game")),
+    ("Casa", ("cama", "banho", "toalha", "cobertor", "manta", "organizador", "lixeira", "iluminação", "iluminacao", "tapete", "cortina")),
+    ("Móveis", ("cadeira", "mesa", "sofa", "sofá", "armário", "armario", "guarda roupa", "rack", "estante", "móvel", "movel")),
+    ("Cozinha", ("panela", "cafeteira", "micro-ondas", "microondas", "liquidificador", "batedeira", "air fryer", "cooktop", "forno", "fogão", "fogao", "chaleira", "depurador")),
+    ("Ferramentas", ("furadeira", "parafusadeira", "serra", "esmerilhadeira", "ferramenta", "compressor", "solda", "transformador", "plaina")),
+    ("Automotivo", ("pneu", "moto", "carro", "capacete", "óleo", "oleo", "automotivo", "calibrador", "bateria")),
+    ("Moda", ("tênis", "tenis", "camiseta", "camisa", "calça", "calca", "short", "vestido", "jaqueta", "bota", "cueca", "mochila", "bolsa", "roupão", "roupao")),
+    ("Esportes", ("academia", "fitness", "corrida", "bike", "esportivo", "whey", "creatina", "termogênico", "termogenico", "suplemento")),
+    ("Bebês", ("bebê", "bebe", "infantil", "fralda", "carrinho", "mamadeira")),
+    ("Saúde", ("oxímetro", "oximetro", "irrigador oral", "dental", "saúde", "saude", "medidor")),
+    ("Beleza", ("perfume", "secador", "chapinha", "escova", "beleza", "cabelo", "barbeador")),
+    ("Jardim", ("jardim", "mangueira", "irrigação", "irrigacao", "varal de luzes")),
+    ("Pets", ("pet", "cachorro", "gato", "cães", "caes", "caminha")),
+    ("Eletrônicos", ("câmera", "camera", "aspirador robô", "robo", "robô", "relógio", "relogio", "smartwatch", "nobreak", "carregador", "eletrônico", "eletronico")),
+)
 
 
 def formatar_preco(valor):
@@ -79,6 +106,30 @@ def slug_publico(texto, limite=90):
     texto = "".join(caractere for caractere in texto if not unicodedata.combining(caractere))
     texto = re.sub(r"[^a-z0-9]+", "-", texto)
     return texto.strip("-")[:limite].strip("-") or "oferta"
+
+
+def texto_busca(texto):
+    texto = unicodedata.normalize("NFKD", str(texto or "").casefold())
+    return "".join(caractere for caractere in texto if not unicodedata.combining(caractere))
+
+
+def normalizar_categoria_publica(*valores):
+    """Converte categoria/título/caminho em uma categoria pública principal.
+
+    A normalização evita publicar marcas, modelos e subcategorias muito
+    específicas como se fossem navegação principal do site.
+    """
+    combinado = " ".join(str(valor or "") for valor in valores if str(valor or "").strip())
+    chave = texto_busca(combinado)
+    if not chave or chave in {"ofertas", "oferta", "sem categoria", "outros"}:
+        return "Outros"
+    for categoria, termos in CATEGORIA_REGRAS:
+        if any(texto_busca(termo) in chave for termo in termos):
+            return categoria
+    for categoria in CATEGORIAS_PUBLICAS:
+        if texto_busca(categoria) in chave:
+            return categoria
+    return "Outros"
 
 
 def url_produto(item_id, titulo=""):
@@ -127,13 +178,18 @@ def listar_ofertas(deduplicar=True):
         oferta = dict(row)
         link = str(oferta.get("link_afiliado") or "").strip()
         preco = preco_publico_valido(oferta.get("preco"))
-        titulo = str(oferta.get("titulo") or "").strip()
+        titulo = unescape(str(oferta.get("titulo") or "")).strip()
         item_id = item_id_publico(oferta.get("item_id"))
         if not link_afiliado_valido(link) or link in links_usados or preco is None or not titulo or not item_id:
             continue
 
         links_usados.add(link)
-        categoria = str(oferta.get("categoria") or "ofertas").strip() or "ofertas"
+        categoria_original = unescape(str(oferta.get("categoria") or "ofertas")).strip() or "ofertas"
+        categoria = normalizar_categoria_publica(
+            categoria_original,
+            oferta.get("categoria_caminho"),
+            titulo,
+        )
         try:
             variacao_preco = float(oferta.get("variacao_preco") or 0)
         except (TypeError, ValueError):
@@ -154,7 +210,8 @@ def listar_ofertas(deduplicar=True):
             "variacao_preco": variacao_preco,
             "destaque_menor_preco": bool(oferta.get("destaque_menor_preco")),
             "categoria": categoria,
-            "categoria_caminho": str(oferta.get("categoria_caminho") or categoria).strip() or categoria,
+            "categoria_original": categoria_original if categoria_original != categoria else "",
+            "categoria_caminho": str(oferta.get("categoria_caminho") or categoria_original or categoria).strip() or categoria,
             "selo_mais_vendido": bool(oferta.get("selo_mais_vendido")),
             "selo_loja_oficial": bool(oferta.get("selo_loja_oficial")),
             "link": link,
@@ -331,14 +388,45 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .hero-copy { max-width: 620px; margin-bottom: 26px; color: #d4f1ed; font-size: 1.08rem; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
-.content { padding: 34px 0 56px; }
+.content { padding: 38px 0 58px; }
+.content-compact { padding-bottom: 18px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
 .section-heading h2 { margin: 0; font-size: 1.55rem; }
 .offer-count { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+.hero::after {
+    position: absolute;
+    inset: auto -120px -180px auto;
+    width: 420px;
+    height: 420px;
+    content: "";
+    background: radial-gradient(circle, rgba(255, 189, 48, 0.34), rgba(255, 189, 48, 0));
+    pointer-events: none;
+}
+.hero-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 760px;
+    margin-top: 28px;
+}
+.hero-metrics div {
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+}
+.hero-metrics strong { display: block; color: #fff; font-family: Outfit, Arial, sans-serif; font-size: 1.35rem; }
+.hero-metrics span { color: #d4f1ed; font-size: 0.8rem; }
+
 .filters {
     display: grid;
-    grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(150px, 1fr));
+    grid-template-columns: minmax(220px, 2fr) repeat(5, minmax(130px, 1fr));
     gap: 12px;
     padding: 16px;
     margin-bottom: 24px;
@@ -359,8 +447,36 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     border: 1px solid #b9c9cf;
     border-radius: 6px;
 }
+.field-actions { align-self: end; }
+.button-muted { padding: 10px 14px; color: var(--teal-dark); background: #eef8f6; border: 1px solid var(--line); }
+.button-muted:hover { background: #dff3f0; }
 
-.offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.deal-rails { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.deal-rail {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.deal-rail header { padding: 16px 16px 4px; }
+.deal-rail h3 { margin-bottom: 4px; font-size: 1.02rem; }
+.deal-rail p { margin: 0; color: var(--muted); font-size: 0.82rem; }
+.deal-list { display: grid; gap: 0; padding: 8px 0 10px; }
+.deal-mini {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 10px;
+    padding: 9px 16px;
+    color: inherit;
+    text-decoration: none;
+}
+.deal-mini:hover { background: #f2faf8; }
+.deal-mini img { width: 54px; height: 54px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.deal-mini strong { display: -webkit-box; overflow: hidden; color: var(--ink); font-size: 0.86rem; line-height: 1.25; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.deal-mini span { display: block; margin-top: 3px; color: var(--teal-dark); font-size: 0.8rem; font-weight: 700; }
+
+.offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 
 .offer-card {
     min-width: 0;
@@ -371,9 +487,11 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     flex-direction: column;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 14px;
     box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
+.offer-card:hover { transform: translateY(-3px); border-color: #a7d8d1; box-shadow: 0 14px 34px rgba(16, 42, 54, 0.12); }
 
 .offer-media { width: 100%; aspect-ratio: 16 / 10; display: grid; place-items: center; overflow: hidden; background: #e7f4f1; }
 .offer-media img { width: 100%; height: 100%; display: block; object-fit: contain; background: #fff; }
@@ -381,17 +499,33 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .card-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 18px 13px; }
 .marketplace { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.78rem; font-weight: 700; }
 .marketplace::before { width: 18px; height: 18px; display: grid; place-items: center; content: "ML"; color: var(--ink); background: var(--sun); border-radius: 50%; font-size: 0.58rem; }
-.tag { max-width: 58%; overflow: hidden; padding: 3px 7px; color: var(--teal-dark); background: #dff3f0; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.offer-card h3 { margin: 0 18px 12px; font-size: 1.05rem; line-height: 1.3; }
+.tag { max-width: 58%; overflow: hidden; padding: 3px 7px; color: var(--teal-dark); background: #dff3f0; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 18px 12px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; }
+.badge-discount { color: #7d2b1f; background: #ffe0d9; }
+.badge-record { color: #075a43; background: #dff3e8; }
+.badge-safe { color: var(--teal-dark); background: #dff3f0; }
+.offer-card h2, .offer-card h3 {
+    min-height: 2.72em;
+    margin: 0 18px 12px;
+    overflow: hidden;
+    display: -webkit-box;
+    font-size: 1.05rem;
+    line-height: 1.36;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.offer-card h2 a { color: inherit; text-decoration: none; }
 .updated { margin: 0 18px 15px; color: var(--muted); font-size: 0.78rem; }
 .price-label { margin: auto 18px 2px; color: var(--muted); font-size: 0.76rem; font-weight: 700; text-transform: uppercase; }
 .price { margin: 0 18px 15px; color: var(--teal-dark); font-family: Outfit, Arial, sans-serif; font-size: 1.65rem; font-weight: 700; line-height: 1.1; }
 .price-history { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; margin: -4px 18px 15px; color: var(--muted); font-size: 0.76rem; }
 .price-history strong { color: var(--ink); font-size: 0.82rem; }
+.price-history .history-note { grid-column: 1 / -1; }
 .variation-down { color: #087443; font-weight: 700; }
 .variation-up { color: #b53d31; font-weight: 700; }
 .variation-stable { color: var(--muted); font-weight: 700; }
-.record-badge { display: inline-flex; width: fit-content; margin: -3px 18px 12px; padding: 4px 7px; color: #075a43; background: #dff3e8; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
+.record-badge { display: inline-flex; width: fit-content; margin: -3px 18px 12px; padding: 4px 7px; color: #075a43; background: #dff3e8; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
 .offer-card .button { width: calc(100% - 36px); margin: 0 18px 18px; }
 .details-link { margin: -8px 18px 16px; color: var(--teal-dark); font-size: 0.86rem; font-weight: 700; text-align: center; }
 
@@ -402,14 +536,14 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .detail-page { padding: 34px 0 56px; }
 .breadcrumb { display: inline-block; margin-bottom: 22px; color: var(--teal-dark); font-weight: 700; text-decoration: none; }
 .product-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr); gap: 34px; align-items: start; }
-.product-image { aspect-ratio: 1 / 1; display: grid; place-items: center; overflow: hidden; background: #e7f4f1; border-radius: 8px; }
+.product-image { aspect-ratio: 1 / 1; display: grid; place-items: center; overflow: hidden; background: #e7f4f1; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
 .product-image img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
 .product-info h1 { margin-bottom: 14px; font-size: 2rem; line-height: 1.12; }
 .product-category { display: inline-flex; margin-bottom: 16px; padding: 4px 8px; color: var(--teal-dark); background: #dff3f0; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
 .product-price { margin-bottom: 18px; color: var(--teal-dark); font-family: Outfit, Arial, sans-serif; font-size: 2.25rem; font-weight: 700; }
 .detail-updated { color: var(--muted); font-size: 0.85rem; }
 .price-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 22px 0; }
-.price-summary div { padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.price-summary div { padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
 .price-summary span { display: block; color: var(--muted); font-size: 0.74rem; font-weight: 700; }
 .price-summary strong { display: block; margin-top: 4px; font-size: 0.96rem; }
 .detail-notice { color: var(--muted); font-size: 0.84rem; }
@@ -433,7 +567,21 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .trust-section { padding-top: 12px; padding-bottom: 34px; }
 .trust-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .trust-grid h2 { font-size: 1.05rem; margin-bottom: 6px; }.trust-grid p { color: var(--muted); margin: 0; }
-.assistant { max-width: 780px; }.assistant form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin: 24px 0 12px; }.assistant label { grid-column: 1 / -1; font-weight: 700; }.assistant input { min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; }.suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }.suggestions button { padding: 8px 10px; border: 1px solid var(--line); background: #fff; border-radius: 5px; color: var(--teal-dark); font-weight: 700; }
+.assistant-panel { background: linear-gradient(135deg, #102a36, #006d77); color: #fff; }
+.assistant-layout { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr); gap: 26px; align-items: center; }
+.assistant-panel .hero-copy { color: #d4f1ed; }
+.assistant-card { display: grid; gap: 10px; padding: 18px; color: var(--ink); background: #fff; border-radius: 14px; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18); }
+.assistant-card label, .assistant label { font-weight: 700; }
+.assistant-card input, .assistant input { min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+.assistant-answer { min-height: 82px; padding: 12px; color: var(--muted); background: #f4f8f7; border: 1px solid var(--line); border-radius: 10px; font-size: 0.92rem; }
+.product-ai { margin-top: 34px; color: var(--ink); background: #fff; box-shadow: var(--shadow); }
+.product-ai h2 { margin-bottom: 8px; font-size: 1.25rem; }
+.product-ai p + p { margin-top: 8px; }
+.related-grid { margin-top: 16px; }
+.related-card { min-height: 0; }
+.related-card .price { margin-top: auto; font-size: 1.18rem; }
+.assistant { max-width: 780px; }.assistant form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin: 24px 0 12px; }.assistant label { grid-column: 1 / -1; }.suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }.suggestions button { padding: 8px 10px; border: 1px solid var(--line); background: #fff; border-radius: 999px; color: var(--teal-dark); font-weight: 700; cursor: pointer; }
+.back-to-top { position: fixed; right: 18px; bottom: 18px; z-index: 6; width: 44px; height: 44px; border-radius: 50%; box-shadow: var(--shadow); }
 
 .disclosure { padding: 28px 0; background: #e7f4f1; }
 .disclosure-inner { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
@@ -453,7 +601,9 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .field:first-child { grid-column: 1 / -1; }
     .offer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .deal-rails { grid-template-columns: 1fr; }
     .product-detail { grid-template-columns: 1fr; }
+    .assistant-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
@@ -468,7 +618,7 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     .hero-actions .button { width: 100%; }
     .section-heading { display: block; }
     .offer-count { margin-top: 4px; }
-    .filters, .offer-grid { grid-template-columns: 1fr; }
+    .filters, .offer-grid, .hero-metrics { grid-template-columns: 1fr; }
     .field:first-child { grid-column: auto; }
     .offer-card { min-height: 230px; }
     .price-summary { grid-template-columns: 1fr; }
@@ -489,6 +639,7 @@ const elements = {
     category: document.querySelector("#category"),
     status: document.querySelector("#status"),
     sort: document.querySelector("#sort"),
+    clear: document.querySelector("#clear-filters"),
     generatedAt: document.querySelector("#generated-at"),
     telegramLinks: document.querySelectorAll("[data-telegram-link]")
 };
@@ -555,6 +706,27 @@ function criarCard(oferta) {
     categoria.title = `${nomeCategoria} · ${nomeStatus}`;
     categoria.textContent = `${nomeCategoria} · ${nomeStatus}`;
     topo.append(plataforma, categoria);
+    const badges = document.createElement("div");
+    badges.className = "badges";
+    const descontoBadge = Number(oferta.desconto_percentual) || 0;
+    const economiaBadge = Number(oferta.economia_valor) || 0;
+    const variacaoBadge = Number(oferta.variacao_preco) || 0;
+    const badgeSeguro = document.createElement("span");
+    badgeSeguro.className = "badge badge-safe";
+    badgeSeguro.textContent = "Link seguro meli.la";
+    badges.append(badgeSeguro);
+    if (descontoBadge > 0) {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-discount";
+        badge.textContent = `${descontoBadge.toFixed(0)}% OFF`;
+        badges.append(badge);
+    }
+    if (oferta.destaque_menor_preco || variacaoBadge < 0) {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-record";
+        badge.textContent = oferta.destaque_menor_preco ? "Menor preço" : "Preço caiu";
+        badges.append(badge);
+    }
 
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
@@ -599,6 +771,60 @@ function criarCard(oferta) {
 
     card.append(topo, titulo, atualizado, label, preco, promocao, historico, destaque, link);
     return card;
+}
+
+function criarMiniOferta(oferta, rotulo) {
+    const link = document.createElement("a");
+    link.className = "deal-mini";
+    link.href = textoSeguro(oferta.produto_url);
+    link.addEventListener("click", () => registrarClique(oferta, "trilho_oferta"));
+    const img = document.createElement("img");
+    const url = imagemPublica(oferta.imagem_url);
+    img.alt = textoSeguro(oferta.titulo) || "Oferta";
+    img.loading = "lazy";
+    if (url) img.src = url;
+    const box = document.createElement("div");
+    const titulo = document.createElement("strong");
+    titulo.textContent = textoSeguro(oferta.titulo) || "Oferta";
+    const meta = document.createElement("span");
+    meta.textContent = rotulo || formatarPreco(oferta.preco, oferta.preco_formatado);
+    box.append(titulo, meta);
+    link.append(img, box);
+    return link;
+}
+
+function criarTrilho(titulo, subtitulo, ofertas, rotulo) {
+    const trilho = document.createElement("section");
+    trilho.className = "deal-rail";
+    const cabecalho = document.createElement("header");
+    const h = document.createElement("h3");
+    h.textContent = titulo;
+    const p = document.createElement("p");
+    p.textContent = subtitulo;
+    cabecalho.append(h, p);
+    const lista = document.createElement("div");
+    lista.className = "deal-list";
+    ofertas.slice(0, 4).forEach((oferta) => lista.append(criarMiniOferta(oferta, rotulo(oferta))));
+    trilho.append(cabecalho, lista);
+    return trilho;
+}
+
+function renderizarDestaques() {
+    if (!elements.dealRails) return;
+    const ofertas = [...state.ofertas];
+    const maioresDescontos = [...ofertas].sort((a, b) => (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0));
+    const menorPrecoHistorico = ofertas.filter((o) => o.destaque_menor_preco).sort((a, b) => scoreCustoBeneficio(b) - scoreCustoBeneficio(a));
+    const recentes = [...ofertas].sort((a, b) => (normalizarData(b.ultima_verificacao || b.data_publicacao)?.getTime() || 0) - (normalizarData(a.ultima_verificacao || a.data_publicacao)?.getTime() || 0));
+    elements.dealRails.replaceChildren(
+        criarTrilho("Maiores descontos", "Produtos com maior percentual público de desconto.", maioresDescontos, (o) => `${(Number(o.desconto_percentual) || 0).toFixed(0)}% OFF · ${formatarPreco(o.preco, o.preco_formatado)}`),
+        criarTrilho("Menor preço histórico", "Ofertas no menor preço já visto pelo Promogg.", menorPrecoHistorico.length ? menorPrecoHistorico : maioresDescontos, (o) => `${formatarPreco(o.preco, o.preco_formatado)} agora`),
+        criarTrilho("Recém verificadas", "Atualizações mais recentes do catálogo público.", recentes, (o) => formatarData(o.ultima_verificacao || o.data_publicacao))
+    );
+}
+
+function atualizarMetricas() {
+    if (elements.metricTotal) elements.metricTotal.textContent = String(state.ofertas.length);
+    if (elements.metricRecords) elements.metricRecords.textContent = String(state.ofertas.filter((o) => o.destaque_menor_preco).length);
 }
 
 function exibirFeedback(titulo, mensagem) {
@@ -688,11 +914,20 @@ const elements = {
     count: document.querySelector("#offer-count"),
     search: document.querySelector("#search"),
     category: document.querySelector("#category"),
+    discount: document.querySelector("#discount"),
+    record: document.querySelector("#record"),
     sort: document.querySelector("#sort"),
+    clear: document.querySelector("#clear-filters"),
     generatedAt: document.querySelector("#generated-at"),
     previous: document.querySelector("#previous-page"),
     next: document.querySelector("#next-page"),
     pageIndicator: document.querySelector("#page-indicator"),
+    dealRails: document.querySelector("#deal-rails"),
+    metricTotal: document.querySelector("#metric-total"),
+    metricRecords: document.querySelector("#metric-records"),
+    quickForm: document.querySelector("#quick-assistant-form"),
+    quickQuestion: document.querySelector("#quick-question"),
+    quickAnswer: document.querySelector("#quick-assistant-answer"),
     analyticsUrl: document.body.dataset.analyticsUrl.trim(),
     telegramLinks: document.querySelectorAll("[data-telegram-link]")
 };
@@ -717,6 +952,10 @@ function textoSeguro(valor) {
     return String(valor || "").trim();
 }
 
+function normalizarTexto(valor) {
+    return textoSeguro(valor).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+}
+
 function imagemPublica(url) {
     try {
         const imagem = new URL(textoSeguro(url));
@@ -726,21 +965,74 @@ function imagemPublica(url) {
     }
 }
 
-function preencherSelect(select, valores, textoPadrao) {
+function preencherSelect(select, valores, textoPadrao, contagens = {}) {
     select.replaceChildren(new Option(textoPadrao, ""));
-    valores.sort((a, b) => a.localeCompare(b, "pt-BR")).forEach((valor) => select.add(new Option(valor, valor)));
+    valores.sort((a, b) => a.localeCompare(b, "pt-BR")).forEach((valor) => {
+        const total = Number(contagens[valor]) || 0;
+        select.add(new Option(total ? `${valor} (${total})` : valor, valor));
+    });
+}
+
+function scoreCustoBeneficio(oferta) {
+    return (Number(oferta.desconto_percentual) || 0) * 2
+        + (Number(oferta.economia_valor) || 0) / 10
+        + (oferta.destaque_menor_preco ? 35 : 0)
+        + (Number(oferta.variacao_preco) < 0 ? 18 : 0);
+}
+
+function contarCategorias(ofertas) {
+    return ofertas.reduce((acc, oferta) => {
+        const categoria = textoSeguro(oferta.categoria);
+        if (categoria) acc[categoria] = (acc[categoria] || 0) + 1;
+        return acc;
+    }, {});
+}
+
+function aplicarFiltrosDaUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("q")) elements.search.value = params.get("q") || "";
+    if (params.has("categoria")) elements.category.value = params.get("categoria") || "";
+    if (params.has("desconto")) elements.discount.value = params.get("desconto") || "0";
+    if (params.has("historico")) elements.record.value = params.get("historico") || "";
+    if (params.has("ordem")) elements.sort.value = params.get("ordem") || "recentes";
+    const pagina = Number(params.get("pagina") || 1);
+    state.pagina = Number.isFinite(pagina) && pagina > 0 ? pagina : 1;
+}
+
+function atualizarUrlFiltros() {
+    const params = new URLSearchParams();
+    if (textoSeguro(elements.search.value)) params.set("q", textoSeguro(elements.search.value));
+    if (textoSeguro(elements.category.value)) params.set("categoria", textoSeguro(elements.category.value));
+    if (Number(elements.discount?.value || 0) > 0) params.set("desconto", elements.discount.value);
+    if (textoSeguro(elements.record?.value)) params.set("historico", elements.record.value);
+    if (textoSeguro(elements.sort?.value) && elements.sort.value !== "recentes") params.set("ordem", elements.sort.value);
+    if (state.pagina > 1) params.set("pagina", String(state.pagina));
+    const query = params.toString();
+    history.replaceState(null, "", query ? `${location.pathname}?${query}${location.hash}` : `${location.pathname}${location.hash}`);
 }
 
 function ofertasFiltradas() {
-    const busca = elements.search.value.trim().toLocaleLowerCase("pt-BR");
+    const busca = normalizarTexto(elements.search.value);
     const categoria = elements.category.value;
+    const descontoMinimo = Number(elements.discount?.value || 0);
+    const filtroHistorico = elements.record?.value || "";
     const ofertas = state.ofertas.filter((oferta) => {
-        const titulo = textoSeguro(oferta.titulo).toLocaleLowerCase("pt-BR");
-        return (!busca || titulo.includes(busca)) && (!categoria || oferta.categoria === categoria);
+        const titulo = normalizarTexto(oferta.titulo);
+        const categoriaOferta = textoSeguro(oferta.categoria);
+        const categoriaBusca = normalizarTexto(categoriaOferta);
+        const desconto = Number(oferta.desconto_percentual) || 0;
+        const variacao = Number(oferta.variacao_preco) || 0;
+        return (!busca || titulo.includes(busca) || categoriaBusca.includes(busca))
+            && (!categoria || categoriaOferta === categoria)
+            && desconto >= descontoMinimo
+            && (!filtroHistorico || (filtroHistorico === "record" && oferta.destaque_menor_preco) || (filtroHistorico === "queda" && variacao < 0));
     });
     return ofertas.sort((a, b) => {
         if (elements.sort.value === "menor-preco") return Number(a.preco) - Number(b.preco);
         if (elements.sort.value === "maior-preco") return Number(b.preco) - Number(a.preco);
+        if (elements.sort.value === "maior-desconto") return (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0);
+        if (elements.sort.value === "maior-economia") return (Number(b.economia_valor) || 0) - (Number(a.economia_valor) || 0);
+        if (elements.sort.value === "menor-historico") return (Number(a.menor_preco) || Number(a.preco)) - (Number(b.menor_preco) || Number(b.preco));
         return (normalizarData(b.ultima_verificacao || b.data_publicacao)?.getTime() || 0)
             - (normalizarData(a.ultima_verificacao || a.data_publicacao)?.getTime() || 0);
     });
@@ -793,10 +1085,32 @@ function criarCard(oferta) {
     categoria.textContent = textoSeguro(oferta.categoria) || "ofertas";
     categoria.title = categoria.textContent;
     topo.append(plataforma, categoria);
+    const badges = document.createElement("div");
+    badges.className = "badges";
+    const descontoBadge = Number(oferta.desconto_percentual) || 0;
+    const economiaBadge = Number(oferta.economia_valor) || 0;
+    const variacaoBadge = Number(oferta.variacao_preco) || 0;
+    const badgeSeguro = document.createElement("span");
+    badgeSeguro.className = "badge badge-safe";
+    badgeSeguro.textContent = "Link seguro meli.la";
+    badges.append(badgeSeguro);
+    if (descontoBadge > 0) {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-discount";
+        badge.textContent = `${descontoBadge.toFixed(0)}% OFF`;
+        badges.append(badge);
+    }
+    if (oferta.destaque_menor_preco || variacaoBadge < 0) {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-record";
+        badge.textContent = oferta.destaque_menor_preco ? "Menor preço" : "Preço caiu";
+        badges.append(badge);
+    }
     const sinais = document.createElement("p");
     sinais.className = "updated";
     const listaSinais = [];
     if (Number(oferta.desconto_percentual) > 0) listaSinais.push(`${Number(oferta.desconto_percentual).toFixed(0)}% OFF`);
+    if (economiaBadge > 0) listaSinais.push(`Economia ${formatarPreco(economiaBadge)}`);
     if (oferta.selo_mais_vendido) listaSinais.push("Mais vendido");
     if (oferta.selo_loja_oficial) listaSinais.push("Loja oficial");
     sinais.textContent = listaSinais.join(" · ");
@@ -804,6 +1118,7 @@ function criarCard(oferta) {
 
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
+    titulo.title = titulo.textContent;
     const atualizado = document.createElement("p");
     atualizado.className = "updated";
     atualizado.textContent = `Atualizada em ${formatarData(oferta.ultima_verificacao || oferta.data_publicacao)}`;
@@ -821,9 +1136,21 @@ function criarCard(oferta) {
     menorPreco.textContent = formatarPreco(oferta.menor_preco, oferta.menor_preco_formatado);
     const variacao = document.createElement("span");
     const valorVariacao = Number(oferta.variacao_preco) || 0;
+    const precoAtual = Number(oferta.preco) || 0;
+    const menorHistorico = Number(oferta.menor_preco) || precoAtual;
+    const distanciaMenor = precoAtual - menorHistorico;
     variacao.className = valorVariacao < 0 ? "variation-down" : valorVariacao > 0 ? "variation-up" : "variation-stable";
     variacao.textContent = valorVariacao < 0 ? `Caiu ${formatarPreco(Math.abs(valorVariacao))}` : valorVariacao > 0 ? `Subiu ${formatarPreco(valorVariacao)}` : "Sem variação";
-    historico.append(menorLabel, menorPreco, variacao);
+    const notaHistorico = document.createElement("span");
+    notaHistorico.className = "history-note";
+    if (Math.abs(distanciaMenor) < 0.01) {
+        notaHistorico.textContent = "Preço atual igual ao menor histórico registrado.";
+    } else if (distanciaMenor > 0) {
+        notaHistorico.textContent = `${formatarPreco(distanciaMenor)} acima do menor histórico.`;
+    } else {
+        notaHistorico.textContent = "Novo menor preço registrado.";
+    }
+    historico.append(menorLabel, menorPreco, variacao, notaHistorico);
     const destaque = document.createElement("span");
     destaque.className = "record-badge";
     destaque.textContent = "Menor preço já visto";
@@ -833,14 +1160,14 @@ function criarCard(oferta) {
     link.href = textoSeguro(oferta.link);
     link.target = "_blank";
     link.rel = "noopener sponsored";
-    link.textContent = "Ver oferta";
+    link.textContent = "Ver oferta no Mercado Livre";
     link.addEventListener("click", () => registrarClique(oferta, "ver_oferta"));
     const detalhes = document.createElement("a");
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
     detalhes.textContent = "Ver detalhes";
     detalhes.addEventListener("click", () => registrarClique(oferta, "card_oferta"));
-    card.append(criarMidia(oferta), topo, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
+    card.append(criarMidia(oferta), topo, badges, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
     return card;
 }
 
@@ -855,7 +1182,16 @@ function exibirFeedback(titulo, mensagem) {
     elements.grid.replaceChildren(feedback);
 }
 
-function renderizar() {
+function rolarParaOfertas() {
+    const ofertasSection = document.querySelector("#ofertas") || document.querySelector("[data-ofertas]");
+    if (ofertasSection) {
+        ofertasSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
+function renderizar(rolar = false) {
     const ofertas = ofertasFiltradas();
     const totalPaginas = Math.max(1, Math.ceil(ofertas.length / POR_PAGINA));
     state.pagina = Math.min(Math.max(state.pagina, 1), totalPaginas);
@@ -865,17 +1201,62 @@ function renderizar() {
     elements.pageIndicator.textContent = `Página ${state.pagina} de ${totalPaginas}`;
     elements.previous.disabled = state.pagina === 1;
     elements.next.disabled = state.pagina === totalPaginas;
+    atualizarUrlFiltros();
     if (!ofertas.length) {
         exibirFeedback("Nenhuma oferta encontrada", "Ajuste os filtros ou volte mais tarde para ver novas seleções.");
+        if (rolar) rolarParaOfertas();
         return;
     }
     elements.grid.replaceChildren(...pagina.map(criarCard));
+    if (rolar) rolarParaOfertas();
 }
 
 function configurarTelegram() {
     const url = document.body.dataset.telegramUrl.trim();
     if (!/^https:\/\/t\.me\//.test(url)) return;
     elements.telegramLinks.forEach((link) => { link.href = url; link.hidden = false; });
+}
+
+function responderAssistente(pergunta) {
+    const texto = textoSeguro(pergunta).toLocaleLowerCase("pt-BR");
+    if (!state.ofertas.length) return "Ainda não carreguei o catálogo público. Tente novamente em instantes.";
+    const money = (o) => formatarPreco(o.preco, o.preco_formatado);
+    const link = (o) => `${textoSeguro(o.titulo)} — ${money(o)}`;
+    if (texto.includes("menor preço") || texto.includes("mais barato")) {
+        const itens = state.ofertas.filter((o) => o.destaque_menor_preco).slice(0, 5);
+        return itens.length
+            ? `Ofertas no menor preço histórico: ${itens.map(link).join("; ")}.`
+            : "Não encontrei ofertas marcadas como menor preço histórico no catálogo atual.";
+    }
+    if (texto.includes("desconto") || texto.includes("queda")) {
+        const itens = [...state.ofertas].sort((a, b) => (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0)).slice(0, 5);
+        return `Maiores descontos públicos agora: ${itens.map((o) => `${textoSeguro(o.titulo)} (${(Number(o.desconto_percentual) || 0).toFixed(0)}% OFF)`).join("; ")}.`;
+    }
+    if (texto.includes("custo") || texto.includes("vale") || texto.includes("pena") || texto.includes("melhor")) {
+        const itens = [...state.ofertas].sort((a, b) => scoreCustoBeneficio(b) - scoreCustoBeneficio(a)).slice(0, 5);
+        return `Boas candidatas por desconto, economia e histórico: ${itens.map(link).join("; ")}. Compare no Mercado Livre antes de comprar.`;
+    }
+    if (texto.includes("categoria")) {
+        const contagem = {};
+        state.ofertas.forEach((o) => { const c = textoSeguro(o.categoria) || "Ofertas"; contagem[c] = (contagem[c] || 0) + 1; });
+        const [categoria, total] = Object.entries(contagem).sort((a, b) => b[1] - a[1])[0];
+        return `A categoria com mais ofertas agora é ${categoria}, com ${total} oferta(s) públicas.`;
+    }
+    return "Posso responder sobre menor preço histórico, maiores descontos, categorias e custo-benefício usando apenas os dados públicos carregados nesta página.";
+}
+
+function configurarAssistenteRapido() {
+    if (!elements.quickForm || !elements.quickQuestion || !elements.quickAnswer) return;
+    elements.quickForm.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        elements.quickAnswer.textContent = responderAssistente(elements.quickQuestion.value);
+    });
+    document.querySelectorAll("#quick-assistant-form [data-q]").forEach((botao) => {
+        botao.addEventListener("click", () => {
+            elements.quickQuestion.value = botao.dataset.q;
+            elements.quickAnswer.textContent = responderAssistente(botao.dataset.q);
+        });
+    });
 }
 
 async function carregarOfertas() {
@@ -886,8 +1267,12 @@ async function carregarOfertas() {
         const dados = await resposta.json();
         state.ofertas = Array.isArray(dados.ofertas) ? dados.ofertas.filter((oferta) => /^https?:\/\//.test(textoSeguro(oferta.link))) : [];
         state.geradoEm = dados.gerado_em;
-        preencherSelect(elements.category, [...new Set(state.ofertas.map((oferta) => textoSeguro(oferta.categoria)).filter(Boolean))], "Todas as categorias");
+        const categorias = [...new Set(state.ofertas.map((oferta) => textoSeguro(oferta.categoria)).filter(Boolean))];
+        preencherSelect(elements.category, categorias, "Todas as categorias", contarCategorias(state.ofertas));
+        aplicarFiltrosDaUrl();
         elements.generatedAt.textContent = state.geradoEm ? `Lista atualizada em ${formatarData(state.geradoEm)}` : "Lista atualizada";
+        atualizarMetricas();
+        renderizarDestaques();
         renderizar();
     } catch (_) {
         elements.count.textContent = "Ofertas indisponíveis";
@@ -898,13 +1283,24 @@ async function carregarOfertas() {
     }
 }
 
-function filtrarDaPrimeiraPagina() { state.pagina = 1; renderizar(); }
+function filtrarDaPrimeiraPagina() { state.pagina = 1; renderizar(true); }
 elements.search.addEventListener("input", filtrarDaPrimeiraPagina);
-[elements.category, elements.sort].forEach((campo) => campo.addEventListener("change", filtrarDaPrimeiraPagina));
-elements.previous.addEventListener("click", () => { state.pagina -= 1; renderizar(); });
-elements.next.addEventListener("click", () => { state.pagina += 1; renderizar(); });
+[elements.category, elements.discount, elements.record, elements.sort].forEach((campo) => campo?.addEventListener("change", filtrarDaPrimeiraPagina));
+elements.clear?.addEventListener("click", () => {
+    elements.search.value = "";
+    elements.category.value = "";
+    elements.discount.value = "0";
+    elements.record.value = "";
+    elements.sort.value = "recentes";
+    state.pagina = 1;
+    renderizar(true);
+});
+elements.previous.addEventListener("click", () => { state.pagina -= 1; renderizar(true); });
+elements.next.addEventListener("click", () => { state.pagina += 1; renderizar(true); });
 document.querySelector("#refresh").addEventListener("click", () => window.location.reload());
+document.querySelector("#back-to-top")?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 configurarTelegram();
+configurarAssistenteRapido();
 carregarOfertas();
 """, encoding="utf-8")
 
@@ -971,19 +1367,19 @@ def montar_index():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
-    <meta name="description" content="Ofertas do Mercado Livre selecionadas pelo Promogg, com links seguros e atualização frequente.">
+    <meta name="description" content="Ofertas selecionadas do Mercado Livre com histórico de preços, links meli.la seguros, filtros rápidos e assistente Promogg baseado em dados públicos.">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:site_name" content="Promogg">
     <meta property="og:title" content="Promogg | Ofertas selecionadas do Mercado Livre">
-    <meta property="og:description" content="Encontre ofertas selecionadas do Mercado Livre com links seguros.">
+    <meta property="og:description" content="Compare ofertas do Mercado Livre com histórico, menor preço, maiores descontos e links afiliados seguros.">
     <meta property="og:url" content="https://promogg.com.br/">
     <meta property="og:image" content="https://promogg.com.br/og-promogg.svg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Promogg | Ofertas selecionadas do Mercado Livre">
-    <meta name="twitter:description" content="Ofertas selecionadas do Mercado Livre com links seguros.">
+    <meta name="twitter:description" content="Ofertas selecionadas com histórico de preços, filtros inteligentes e assistente Promogg.">
     <meta name="twitter:image" content="https://promogg.com.br/og-promogg.svg">
-    <title>Promogg | Ofertas selecionadas do Mercado Livre</title>
+    <title>Promogg | Ofertas do Mercado Livre com histórico de preços</title>
     <link rel="canonical" href="https://promogg.com.br/">
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -1004,14 +1400,30 @@ __BANNER__
     <main id="inicio">
         <section class="hero" aria-labelledby="titulo-principal">
             <div class="container hero-content">
-                <p class="eyebrow">Promogg seleciona para você</p>
-                <h1 id="titulo-principal">Ofertas do Mercado Livre, em um lugar fácil de acompanhar.</h1>
-                <p class="hero-copy">Ofertas selecionadas com link seguro para você comparar e decidir com tranquilidade.</p>
+                <p class="eyebrow">Ofertas verificadas com histórico</p>
+                <h1 id="titulo-principal">Compre melhor no Mercado Livre com contexto de preço.</h1>
+                <p class="hero-copy">O Promogg organiza ofertas com link meli.la, histórico, menor preço, economia estimada e sinais públicos para você decidir com mais segurança.</p>
                 <div class="hero-actions">
                     <a class="button button-primary" href="#ofertas">Ver ofertas</a>
-                    <a class="button button-secondary" href="assistente/">Consultar preços</a>
+                    <a class="button button-secondary" href="#assistente-promogg">Perguntar ao assistente</a>
                     <a class="button button-telegram" data-telegram-link hidden target="_blank" rel="noopener">Entrar no Telegram</a>
                 </div>
+                <div class="hero-metrics" aria-label="Resumo do catálogo">
+                    <div><strong id="metric-total">—</strong><span>ofertas públicas</span></div>
+                    <div><strong id="metric-records">—</strong><span>no menor preço</span></div>
+                    <div><strong id="metric-secure">meli.la</strong><span>links afiliados seguros</span></div>
+                </div>
+            </div>
+        </section>
+        <section class="content content-compact" aria-labelledby="titulo-destaques">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="titulo-destaques">Melhores sinais agora</h2>
+                        <p class="offer-count">Seleções calculadas a partir do catálogo público atual.</p>
+                    </div>
+                </div>
+                <div class="deal-rails" id="deal-rails" aria-live="polite"></div>
             </div>
         </section>
         <section class="content" id="ofertas" aria-labelledby="titulo-ofertas">
@@ -1026,27 +1438,72 @@ __BANNER__
                 <form class="filters" id="filters" onsubmit="return false" aria-label="Filtrar ofertas">
                     <div class="field">
                         <label for="search">Buscar</label>
-                        <input id="search" type="search" placeholder="O que você está procurando?" autocomplete="off">
+                        <input id="search" type="search" placeholder="O que você está procurando?" autocomplete="off" aria-label="Pesquisar ofertas">
                     </div>
                     <div class="field">
                         <label for="category">Categoria</label>
                         <select id="category"><option value="">Todas as categorias</option></select>
                     </div>
                     <div class="field">
+                        <label for="discount">Desconto mínimo</label>
+                        <select id="discount">
+                            <option value="0">Qualquer desconto</option>
+                            <option value="10">10% ou mais</option>
+                            <option value="20">20% ou mais</option>
+                            <option value="30">30% ou mais</option>
+                            <option value="40">40% ou mais</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="record">Histórico</label>
+                        <select id="record">
+                            <option value="">Todas</option>
+                            <option value="record">No menor preço</option>
+                            <option value="queda">Preço caiu</option>
+                        </select>
+                    </div>
+                    <div class="field">
                         <label for="sort">Ordenar</label>
                         <select id="sort">
                             <option value="recentes">Mais recentes</option>
+                            <option value="maior-desconto">Maior desconto</option>
+                            <option value="maior-economia">Maior economia</option>
                             <option value="menor-preco">Menor preço</option>
                             <option value="maior-preco">Maior preço</option>
-                        </select>
-                    </div>
-                </form>
+	                            <option value="menor-historico">Menor preço histórico</option>
+	                        </select>
+	                    </div>
+	                    <div class="field field-actions">
+	                        <label aria-hidden="true">&nbsp;</label>
+	                        <button class="button button-muted" id="clear-filters" type="button">Limpar filtros</button>
+	                    </div>
+	                </form>
                 <div class="offer-grid" id="offer-grid" aria-live="polite"></div>
                 <nav class="pagination" aria-label="Paginação de ofertas">
                     <button class="button button-secondary" id="previous-page" type="button">Anterior</button>
                     <span class="page-indicator" id="page-indicator" aria-live="polite"></span>
                     <button class="button button-secondary" id="next-page" type="button">Próxima</button>
                 </nav>
+            </div>
+        </section>
+        <section class="content assistant-panel" id="assistente-promogg" aria-labelledby="titulo-assistente-home">
+            <div class="container assistant-layout">
+                <div>
+                    <p class="eyebrow">Assistente Promogg</p>
+                    <h2 id="titulo-assistente-home">Pergunte antes de clicar.</h2>
+                    <p class="hero-copy">Respostas locais baseadas somente no catálogo público, histórico sanitizado e regras transparentes. O site público não chama serviços locais nem endpoints privados.</p>
+                </div>
+                <form id="quick-assistant-form" class="assistant-card">
+                    <label for="quick-question">Sua pergunta</label>
+                    <input id="quick-question" type="search" placeholder="Ex.: Quais ofertas estão no menor preço?">
+                    <div class="suggestions">
+                        <button type="button" data-q="Quais produtos estão no menor preço?">Menor preço</button>
+                        <button type="button" data-q="Quais ofertas têm maior desconto?">Maior desconto</button>
+                        <button type="button" data-q="Quais produtos parecem melhor custo-benefício?">Custo-benefício</button>
+                    </div>
+                    <button class="button button-primary" type="submit">Analisar</button>
+                    <div class="assistant-answer" id="quick-assistant-answer" aria-live="polite">As análises são baseadas em histórico e dados públicos disponíveis. Preços podem mudar no Mercado Livre.</div>
+                </form>
             </div>
         </section>
         <section class="disclosure" aria-labelledby="titulo-afiliado">
@@ -1061,6 +1518,7 @@ __BANNER__
         <section class="content trust-section" aria-label="Como o Promogg funciona"><div class="container trust-grid"><div><h2>Ofertas com contexto</h2><p>Organizamos ofertas públicas, preço atual e histórico para facilitar comparações.</p></div><div><h2>Histórico de preços</h2><p>Quando há verificações suficientes, mostramos menor preço, média e variação.</p></div><div><h2>Transparência</h2><p>Alguns links são afiliados e podem gerar comissão sem alterar o preço para você.</p></div></div></section>
     </main>
     __FOOTER__
+    <button class="button button-secondary back-to-top" id="back-to-top" type="button" aria-label="Voltar ao topo">↑</button>
     <script src="app.js" defer></script>
 </body>
 </html>
@@ -1121,7 +1579,29 @@ def tendencia_preco(variacao):
     return "estável"
 
 
-def montar_pagina_produto(oferta, historico, menor_historico):
+def bloco_relacionados_produto(oferta, relacionados):
+    itens = []
+    for item in relacionados[:4]:
+        imagem = (
+            f'<img src="{escape(item.get("imagem_url") or "", quote=True)}" alt="{escape(item["titulo"])}" loading="lazy">'
+            if item.get("imagem_url") else '<span class="image-fallback">Promogg</span>'
+        )
+        itens.append(
+            f"""<article class="offer-card related-card"><a class="offer-media" href="/{escape(item['produto_url'], quote=True)}">{imagem}</a>
+            <div class="card-topline"><span class="marketplace">Mercado Livre</span><span class="tag">{escape(item['categoria'])}</span></div>
+            <h3>{escape(item['titulo'])}</h3><p class="price">{escape(item['preco_formatado'])}</p>
+            <a class="details-link" href="/{escape(item['produto_url'], quote=True)}">Ver detalhes</a></article>"""
+        )
+    if not itens:
+        return ""
+    return f"""<section class="history-section" aria-labelledby="relacionados-titulo">
+        <h2 id="relacionados-titulo">Produtos relacionados</h2>
+        <p class="detail-notice">Itens da mesma categoria pública para comparar antes de comprar.</p>
+        <div class="offer-grid related-grid">{''.join(itens)}</div>
+    </section>"""
+
+
+def montar_pagina_produto(oferta, historico, menor_historico, relacionados=None):
     titulo = escape(oferta["titulo"])
     descricao = escape(f"{oferta['titulo']} por {oferta['preco_formatado']} no Mercado Livre. Histórico e link seguro no Promogg.", quote=True)
     url = f"{BASE_URL}/{oferta['produto_url']}"
@@ -1141,6 +1621,21 @@ def montar_pagina_produto(oferta, historico, menor_historico):
         detalhes_preco += f'<p class="detail-notice"><s>{escape(formatar_preco(preco_original))}</s></p>'
     if desconto or economia:
         detalhes_preco += f'<p class="record-badge">{escape(f"{desconto:.0f}% OFF" if desconto else "")}{escape(f" · Economize {formatar_preco(economia)}" if economia else "")}</p>'
+    sinais_ia = []
+    if oferta.get("destaque_menor_preco"):
+        sinais_ia.append("está no menor preço histórico registrado pelo Promogg")
+    if variacao < 0:
+        sinais_ia.append(f"caiu {formatar_preco(abs(variacao))} desde a última referência pública")
+    if desconto > 0:
+        sinais_ia.append(f"tem desconto público de {desconto:.0f}%")
+    if economia > 0:
+        sinais_ia.append(f"economia estimada de {formatar_preco(economia)}")
+    analise_ia = "; ".join(sinais_ia) if sinais_ia else "não há sinais históricos suficientes para afirmar que é a melhor oportunidade; compare preço e vendedor no Mercado Livre."
+    bloco_ia = f"""<section class="assistant-answer product-ai" aria-labelledby="analise-titulo">
+        <h2 id="analise-titulo">Análise Promogg</h2>
+        <p>Com base somente no catálogo público e histórico sanitizado, esta oferta {escape(analise_ia)}.</p>
+        <p>Preços podem mudar no Mercado Livre. Use esta análise como apoio, não como garantia.</p>
+    </section>"""
     resumo = [
         ("Menor preço", oferta["menor_preco_formatado"]),
         ("Tendência", tendencia_preco(variacao).capitalize()),
@@ -1168,6 +1663,7 @@ def montar_pagina_produto(oferta, historico, menor_historico):
                 <tbody>{linhas_historico}</tbody>
             </table>
         </section>"""
+    bloco_relacionados = bloco_relacionados_produto(oferta, relacionados or [])
     schema = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -1220,11 +1716,11 @@ def montar_pagina_produto(oferta, historico, menor_historico):
                 {detalhes_preco}
                 <p class="detail-updated">Última atualização: {escape(formatar_data_publica(oferta.get('ultima_verificacao') or oferta.get('data_publicacao')))}</p>
                 <div class="price-summary">{resumo_html}</div>
-                <a class="button button-secondary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored" data-analytics-click="compra_produto" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver oferta no Mercado Livre</a>
+                <a class="button button-primary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored" data-analytics-click="compra_produto" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver oferta no Mercado Livre</a>
                 <p class="detail-notice">O preço e a disponibilidade podem mudar no Mercado Livre.</p>
                 <p class="detail-notice">Este link pode ser afiliado, sem custo extra para você.</p>
             </div>
-        </article>{bloco_historico}
+        </article>{bloco_ia}{bloco_historico}{bloco_relacionados}
     </div></main>
     <footer class="site-footer"><div class="footer-inner"><div><div class="footer-brand">Promogg</div><p class="footer-note">Ofertas selecionadas com links seguros.</p></div></div></footer>
     <script src="../../../analytics.js" defer></script>
@@ -1248,10 +1744,10 @@ def montar_pagina_categoria(categoria, ofertas):
     url = f"{BASE_URL}/{caminho}"
     descricao = f"Ofertas de {categoria} selecionadas pelo Promogg, com preços e links seguros."
     cards = "".join(
-        f"""<article class="offer-card"><a class="offer-image" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">"""
+        f"""<article class="offer-card"><a class="offer-media" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">"""
         + (f'<img src="{escape(oferta["imagem_url"], quote=True)}" alt="{escape(oferta["titulo"])}" loading="lazy">' if oferta.get("imagem_url") else '<span class="image-fallback">Promogg</span>')
-        + f"""</a><div class="offer-body"><h2><a href="/{escape(oferta['produto_url'], quote=True)}">{escape(oferta['titulo'])}</a></h2>
-        <p class="offer-price">{escape(oferta['preco_formatado'])}</p><a class="button button-secondary" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver detalhes</a></div></article>"""
+        + f"""</a><div class="card-topline"><span class="marketplace">Mercado Livre</span><span class="tag">{escape(oferta['categoria'])}</span></div><h2 title="{escape(oferta['titulo'], quote=True)}"><a href="/{escape(oferta['produto_url'], quote=True)}">{escape(oferta['titulo'])}</a></h2>
+        <p class="price">{escape(oferta['preco_formatado'])}</p><a class="button button-secondary" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver detalhes</a></article>"""
         for oferta in ofertas
     )
     return f"""<!DOCTYPE html>
@@ -1351,7 +1847,11 @@ def gerar_paginas_produtos(ofertas):
             destino = SITE_DIR / destino_relativo
             destino.mkdir(parents=True, exist_ok=True)
             pagina = destino / "index.html"
-            pagina.write_text(montar_pagina_produto(oferta, historico, menor_historico), encoding="utf-8")
+            relacionados = [
+                item for item in ofertas
+                if item["_item_id"] != item_id and item.get("categoria") == oferta.get("categoria")
+            ][:4]
+            pagina.write_text(montar_pagina_produto(oferta, historico, menor_historico, relacionados), encoding="utf-8")
             if not pagina.is_file() or pagina.stat().st_size == 0:
                 raise OSError("index.html não foi criado")
             legado = PRODUTOS_DIR / item_id
