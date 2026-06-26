@@ -1,0 +1,20 @@
+{
+  "alertas": [
+    {
+      "quando": "2026-06-26T12:52:22",
+      "tipo": "login_mercado_livre_necessario",
+      "mensagem": "[ALERTA PROMOGG] ⚠️ Promogg precisa de login no Mercado Livre. A automação foi pausada com segurança. Rode: python3 ia_promocoes.py login-mercadolivre Depois: python3 ia_promocoes.py testar-playwright-sessao python3 ia_promocoes.py supervisor",
+      "dry_run": false,
+      "enviado": true,
+      "motivo": "enviado"
+    },
+    {
+      "quando": "2026-06-26T12:52:23",
+      "tipo": "telegram_ofertas_bloqueado",
+      "mensagem": "[ALERTA PROMOGG] Publicação de ofertas/deploy bloqueada: PROMOGG_SUPERVISOR_PUBLICAR=false.",
+      "dry_run": false,
+      "enviado": true,
+      "motivo": "enviado"
+    }
+  ]
+}

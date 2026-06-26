@@ -1,6 +1,6 @@
 # Relatório do Supervisor Automático
 
-- Gerado em: 2026-06-26 12:44:44
+- Gerado em: 2026-06-26 12:55:11
 - Modo: dry-run
 
 ## Configuração
@@ -20,8 +20,8 @@
 - Rejeitadas: 137
 
 ## Alertas enviados/simulados
-- login_mercado_livre_necessario: simulado | dry_run=True
-- telegram_ofertas_bloqueado: simulado | dry_run=True
+- login_mercado_livre_necessario: cooldown ativo | dry_run=True
+- telegram_ofertas_bloqueado: cooldown ativo | dry_run=True
 
 ## Bloqueios
 - Git possui alterações bloqueantes para publicação

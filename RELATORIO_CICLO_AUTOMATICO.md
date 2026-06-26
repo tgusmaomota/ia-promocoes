@@ -1,10 +1,10 @@
 # Relatório do Ciclo Automático
 
-- Gerado em: 2026-06-26 12:44:43
+- Gerado em: 2026-06-26 12:55:11
 - Modo: dry-run
 - Publicar solicitado: False
 - Backup: não aplicável
-- Estado do sistema: MANUTENCAO
+- Estado do sistema: MANUTENCAO_PARCIAL
 
 ## Resumo
 - Coletadas: 0
@@ -24,8 +24,8 @@
 - site/: 751 ofertas, 751 páginas
 - dist_site/: 751 ofertas, 751 páginas
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES
-- Git permitido: 299
-- Git bloqueante: 6
+- Git permitido: 5
+- Git bloqueante: 2
 
 ## Telegram simulado
 - OK: True

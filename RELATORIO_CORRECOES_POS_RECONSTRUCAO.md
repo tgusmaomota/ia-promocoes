@@ -1,6 +1,6 @@
 # Relatório de Correções Pós-Reconstrução
 
-- Atualizado em: 2026-06-26 12:44:39
+- Atualizado em: 2026-06-26 12:56:22
 - Nenhum deploy, Telegram real, ONLINE, coleta agressiva, exclusão de histórico ou limpeza de perfil foi executado.
 
 ## Métricas atuais
@@ -10,7 +10,7 @@
 - Grupos de item_id duplicados ativos: 0
 - Afiliados falhos/pendentes: 75
 - Catálogo site/: 751 ofertas, 751 páginas, links inválidos=0, imagens inválidas=0, preços inválidos=0
-- Catálogo dist_site/: 632 ofertas, 632 páginas
+- Catálogo dist_site/: 751 ofertas, 751 páginas
 
 ## Última ação
 - Ação: meli_auditar_api
