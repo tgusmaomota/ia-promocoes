@@ -14,9 +14,6 @@ const elements = {
     previous: document.querySelector("#previous-page"),
     next: document.querySelector("#next-page"),
     pageIndicator: document.querySelector("#page-indicator"),
-    dealRails: document.querySelector("#deal-rails"),
-    metricTotal: document.querySelector("#metric-total"),
-    metricRecords: document.querySelector("#metric-records"),
     quickForm: document.querySelector("#quick-assistant-form"),
     quickQuestion: document.querySelector("#quick-question"),
     quickAnswer: document.querySelector("#quick-assistant-answer"),
@@ -124,7 +121,6 @@ function ofertasFiltradas() {
         if (elements.sort.value === "maior-preco") return Number(b.preco) - Number(a.preco);
         if (elements.sort.value === "maior-desconto") return (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0);
         if (elements.sort.value === "maior-economia") return (Number(b.economia_valor) || 0) - (Number(a.economia_valor) || 0);
-        if (elements.sort.value === "menor-historico") return (Number(a.menor_preco) || Number(a.preco)) - (Number(b.menor_preco) || Number(b.preco));
         return (normalizarData(b.ultima_verificacao || b.data_publicacao)?.getTime() || 0)
             - (normalizarData(a.ultima_verificacao || a.data_publicacao)?.getTime() || 0);
     });
@@ -180,12 +176,7 @@ function criarCard(oferta) {
     const badges = document.createElement("div");
     badges.className = "badges";
     const descontoBadge = Number(oferta.desconto_percentual) || 0;
-    const economiaBadge = Number(oferta.economia_valor) || 0;
     const variacaoBadge = Number(oferta.variacao_preco) || 0;
-    const badgeSeguro = document.createElement("span");
-    badgeSeguro.className = "badge badge-safe";
-    badgeSeguro.textContent = "Link seguro meli.la";
-    badges.append(badgeSeguro);
     if (descontoBadge > 0) {
         const badge = document.createElement("span");
         badge.className = "badge badge-discount";
@@ -198,22 +189,9 @@ function criarCard(oferta) {
         badge.textContent = oferta.destaque_menor_preco ? "Menor preço" : "Preço caiu";
         badges.append(badge);
     }
-    const sinais = document.createElement("p");
-    sinais.className = "updated";
-    const listaSinais = [];
-    if (Number(oferta.desconto_percentual) > 0) listaSinais.push(`${Number(oferta.desconto_percentual).toFixed(0)}% OFF`);
-    if (economiaBadge > 0) listaSinais.push(`Economia ${formatarPreco(economiaBadge)}`);
-    if (oferta.selo_mais_vendido) listaSinais.push("Mais vendido");
-    if (oferta.selo_loja_oficial) listaSinais.push("Loja oficial");
-    sinais.textContent = listaSinais.join(" · ");
-    sinais.hidden = !sinais.textContent;
-
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
     titulo.title = titulo.textContent;
-    const atualizado = document.createElement("p");
-    atualizado.className = "updated";
-    atualizado.textContent = `Atualizada em ${formatarData(oferta.ultima_verificacao || oferta.data_publicacao)}`;
     const label = document.createElement("p");
     label.className = "price-label";
     label.textContent = "Preço atual";
@@ -232,11 +210,11 @@ function criarCard(oferta) {
     const menorHistorico = Number(oferta.menor_preco) || precoAtual;
     const distanciaMenor = precoAtual - menorHistorico;
     variacao.className = valorVariacao < 0 ? "variation-down" : valorVariacao > 0 ? "variation-up" : "variation-stable";
-    variacao.textContent = valorVariacao < 0 ? `Caiu ${formatarPreco(Math.abs(valorVariacao))}` : valorVariacao > 0 ? `Subiu ${formatarPreco(valorVariacao)}` : "Sem variação";
+    variacao.textContent = valorVariacao < 0 ? `Caiu ${formatarPreco(Math.abs(valorVariacao))}` : oferta.destaque_menor_preco ? "Menor preço" : distanciaMenor > 0 ? "Acima do menor histórico" : "Preço estável";
     const notaHistorico = document.createElement("span");
     notaHistorico.className = "history-note";
     if (Math.abs(distanciaMenor) < 0.01) {
-        notaHistorico.textContent = "Preço atual igual ao menor histórico registrado.";
+        notaHistorico.textContent = "Igual ao menor histórico.";
     } else if (distanciaMenor > 0) {
         notaHistorico.textContent = `${formatarPreco(distanciaMenor)} acima do menor histórico.`;
     } else {
@@ -252,14 +230,14 @@ function criarCard(oferta) {
     link.href = textoSeguro(oferta.link);
     link.target = "_blank";
     link.rel = "noopener sponsored";
-    link.textContent = "Ver oferta no Mercado Livre";
+    link.textContent = "Ver oferta";
     link.addEventListener("click", () => registrarClique(oferta, "ver_oferta"));
     const detalhes = document.createElement("a");
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
-    detalhes.textContent = "Ver detalhes";
+    detalhes.textContent = "Detalhes";
     detalhes.addEventListener("click", () => registrarClique(oferta, "card_oferta"));
-    card.append(criarMidia(oferta), topo, badges, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
+    card.append(criarMidia(oferta), topo, badges, titulo, label, preco, historico, destaque, link, detalhes);
     return card;
 }
 
@@ -363,15 +341,13 @@ async function carregarOfertas() {
         preencherSelect(elements.category, categorias, "Todas as categorias", contarCategorias(state.ofertas));
         aplicarFiltrosDaUrl();
         elements.generatedAt.textContent = state.geradoEm ? `Lista atualizada em ${formatarData(state.geradoEm)}` : "Lista atualizada";
-        atualizarMetricas();
-        renderizarDestaques();
         renderizar();
     } catch (_) {
         elements.count.textContent = "Ofertas indisponíveis";
         elements.pageIndicator.textContent = "";
         elements.previous.disabled = true;
         elements.next.disabled = true;
-        exibirFeedback("Não foi possível carregar as ofertas", "Atualize a página em alguns instantes. O catálogo pode estar sendo atualizado.");
+        exibirFeedback("Estamos atualizando as ofertas", "Tente novamente em instantes.");
     }
 }
 

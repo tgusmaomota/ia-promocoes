@@ -1,6 +1,6 @@
 # Relatório de Score Adaptativo
 
-- Gerado em: 2026-06-26 16:43:18
+- Gerado em: 2026-06-26 16:48:10
 - Fonte: banco local, histórico de preços, dados comerciais coletados e analytics local quando disponível.
 - Aprendizado por clique: aguardando volume público suficiente; nenhum dado foi inventado.
 

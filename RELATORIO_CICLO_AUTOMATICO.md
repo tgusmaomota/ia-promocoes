@@ -1,6 +1,6 @@
 # Relatório do Ciclo Automático
 
-- Gerado em: 2026-06-26 16:43:18
+- Gerado em: 2026-06-26 16:48:10
 - Modo: dry-run
 - Publicar solicitado: True
 - Backup: não aplicável
@@ -24,7 +24,7 @@
 - site/: 751 ofertas, 751 páginas
 - dist_site/: 751 ofertas, 751 páginas
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES
-- Git permitido: 7
+- Git permitido: 17
 - Git bloqueante: 0
 - Segurança publicação: ok
 - Segurança críticos: 0

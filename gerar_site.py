@@ -38,6 +38,7 @@ SEGURANCA_DIR = SITE_DIR / "seguranca"
 OAUTH_CALLBACK_DIR = SITE_DIR / "oauth" / "callback"
 BASE_URL = "https://promogg.com.br"
 ITEM_ID_RE = re.compile(r"^[A-Za-z0-9_-]{4,80}$")
+RELATORIO_CATEGORIAS_PUBLICAS_PATH = Path("RELATORIO_AUDITORIA_CATEGORIAS_PUBLICAS.md")
 
 CATEGORIAS_PUBLICAS = (
     "Eletrônicos", "Celulares", "Informática", "TVs", "Áudio", "Games", "Casa",
@@ -46,24 +47,53 @@ CATEGORIAS_PUBLICAS = (
 )
 
 CATEGORIA_REGRAS = (
-    ("Celulares", ("celular", "smartphone", "iphone", "galaxy", "xiaomi", "motorola", "realme", "poco", "redmi")),
-    ("Informática", ("notebook", "computador", "pc", "monitor", "ssd", "memória", "memoria", "teclado", "mouse", "impressora", "roteador", "tablet")),
-    ("TVs", ("tv", "televisor", "smart tv", "televisão", "televisao")),
-    ("Áudio", ("fone", "headset", "caixa de som", "soundbar", "microfone", "alto falante", "bluetooth")),
+    ("Celulares", ("celular", "smartphone", "iphone", "xiaomi", "motorola", "realme", "poco", "redmi", "moto g", "galaxy a", "galaxy s")),
+    ("Informática", ("notebook", "computador", "pc", "monitor", "ssd", "unidade de estado solido", "unidade de estado sólido", "memória", "memoria", "teclado", "mouse", "impressora", "roteador", "tablet", "galaxy book", "cabo de rede")),
+    ("TVs", ("tv", "televisor", "smart tv", "televisão", "televisao", "fire tv", "roku")),
+    ("Áudio", ("fone", "headset", "caixa de som", "soundbar", "microfone", "alto falante", "caixa amplificada")),
     ("Games", ("playstation", "ps4", "ps5", "xbox", "nintendo", "switch", "controle", "joystick", "game")),
-    ("Casa", ("cama", "banho", "toalha", "cobertor", "manta", "organizador", "lixeira", "iluminação", "iluminacao", "tapete", "cortina")),
+    ("Casa", ("cama", "banho", "toalha", "toalhas", "cobertor", "manta", "organizador", "lixeira", "iluminação", "iluminacao", "tapete", "cortina", "aquecedor", "ar condicionado", "lavadora", "maquina de lavar", "lava louças", "lava loucas", "purificador de agua", "filtro de agua")),
     ("Móveis", ("cadeira", "mesa", "sofa", "sofá", "armário", "armario", "guarda roupa", "rack", "estante", "móvel", "movel")),
-    ("Cozinha", ("panela", "cafeteira", "micro-ondas", "microondas", "liquidificador", "batedeira", "air fryer", "cooktop", "forno", "fogão", "fogao", "chaleira", "depurador")),
-    ("Ferramentas", ("furadeira", "parafusadeira", "serra", "esmerilhadeira", "ferramenta", "compressor", "solda", "transformador", "plaina")),
-    ("Automotivo", ("pneu", "moto", "carro", "capacete", "óleo", "oleo", "automotivo", "calibrador", "bateria")),
-    ("Moda", ("tênis", "tenis", "camiseta", "camisa", "calça", "calca", "short", "vestido", "jaqueta", "bota", "cueca", "mochila", "bolsa", "roupão", "roupao")),
+    ("Cozinha", ("panela", "cafeteira", "micro ondas", "microondas", "liquidificador", "batedeira", "air fryer", "cooktop", "forno", "fogão", "fogao", "chaleira", "depurador", "fritadeira", "sanduicheira", "cuba cozinha")),
+    ("Ferramentas", ("furadeira", "parafusadeira", "serra", "esmerilhadeira", "ferramenta", "compressor", "solda", "transformador", "plaina", "martelete", "roçadeira", "rocadeira", "soprador", "lavadora de alta pressão", "lavadora de alta pressao", "carrinho de mão", "carrinho de mao")),
+    ("Automotivo", ("pneu", "moto", "carro", "capacete", "óleo", "oleo", "automotivo", "calibrador", "bateria", "veicular", "multimidia", "carplay", "mecanico", "mecânico")),
+    ("Moda", ("tênis", "tenis", "camiseta", "camisa", "calça", "calca", "short", "vestido", "jaqueta", "bota", "cueca", "cuecas", "mochila", "bolsa", "roupão", "roupao")),
     ("Esportes", ("academia", "fitness", "corrida", "bike", "esportivo", "whey", "creatina", "termogênico", "termogenico", "suplemento")),
-    ("Bebês", ("bebê", "bebe", "infantil", "fralda", "carrinho", "mamadeira")),
+    ("Bebês", ("bebê", "bebe", "infantil", "criança", "crianca", "recem nascido", "recém nascido", "maternidade", "fralda infantil", "mamadeira", "chupeta", "berço", "berco", "carrinho de bebê", "carrinho de bebe", "bebê conforto", "bebe conforto", "banheira bebê", "banheira bebe", "cadeirinha infantil", "bomba de tirar leite", "leite materno", "babá eletrônica", "baba eletronica")),
     ("Saúde", ("oxímetro", "oximetro", "irrigador oral", "dental", "saúde", "saude", "medidor")),
-    ("Beleza", ("perfume", "secador", "chapinha", "escova", "beleza", "cabelo", "barbeador")),
+    ("Beleza", ("perfume", "secador de cabelo", "chapinha", "escova alisadora", "escova secadora", "beleza", "cabelo", "barbeador", "body splash", "leave in")),
     ("Jardim", ("jardim", "mangueira", "irrigação", "irrigacao", "varal de luzes")),
     ("Pets", ("pet", "cachorro", "gato", "cães", "caes", "caminha")),
     ("Eletrônicos", ("câmera", "camera", "aspirador robô", "robo", "robô", "relógio", "relogio", "smartwatch", "nobreak", "carregador", "eletrônico", "eletronico")),
+)
+
+CATEGORIA_NEGATIVOS = {
+    "Bebês": (
+        "carrinho de mão", "carrinho de mao", "carrinho de carga", "carrinho plataforma",
+        "carrinho mecânico", "carrinho mecanico", "carrinho tipo esteira", "ferramenta",
+        "oficina", "mecânico", "mecanico", "obra", "construção", "construcao",
+        "purificador", "filtro de água", "filtro de agua", "refil filtro", "lavadora",
+        "compressor", "furadeira", "fralda geriatrica", "fralda geriátrica", "adulto",
+    ),
+    "Móveis": ("roçadeira", "rocadeira", "furadeira", "parafusadeira", "pneu", "capacete"),
+    "Beleza": ("secadora de roupa", "extensão eletrica", "extensao eletrica", "mop", "limpeza"),
+    "Moda": ("furadeira", "parafusadeira", "perfume", "ração", "racao"),
+    "Ferramentas": ("perfume", "body splash", "fralda", "mamadeira"),
+    "Celulares": ("notebook", "galaxy book", "tablet"),
+}
+
+CATEGORIA_REDIRECIONAMENTOS = (
+    ("Bebês", ("carrinho de bebê", "carrinho de bebe", "bebê conforto", "bebe conforto", "cadeirinha infantil", "bomba de tirar leite", "leite materno", "mamadeira", "chupeta", "berço", "berco")),
+    ("Ferramentas", ("carrinho de mão", "carrinho de mao", "carrinho de carga", "carrinho plataforma", "carrinho de ferramentas", "furadeira", "parafusadeira", "martelete", "roçadeira", "rocadeira", "maquina de solda", "máquina de solda")),
+    ("Automotivo", ("carrinho mecânico", "carrinho mecanico", "carrinho tipo esteira", "pneu", "automotivo", "veicular", "carplay", "multimidia")),
+    ("Casa", ("purificador de água", "purificador de agua", "filtro de água", "filtro de agua", "refil filtro", "ar condicionado", "lavadora", "maquina de lavar", "máquina de lavar", "lava louças", "lava loucas", "secadora de roupa")),
+    ("Cozinha", ("air fryer", "fritadeira", "liquidificador", "cafeteira", "panela", "cooktop", "microondas", "micro ondas")),
+    ("TVs", ("smart tv", "fire tv", "roku", "streaming stick", "televisor")),
+    ("Áudio", ("fone", "headset", "caixa de som", "soundbar", "microfone", "alto falante", "caixa amplificada")),
+    ("Eletrônicos", ("smartwatch", "relogio", "relógio", "projetor", "camera de seguranca", "câmera de segurança", "camera inteligente", "câmera inteligente")),
+    ("Informática", ("notebook", "galaxy book", "ssd", "unidade de estado solido", "unidade de estado sólido", "impressora", "monitor gamer", "cabo de rede", "roteador")),
+    ("Pets", ("ração", "racao", "pet", "cachorro", "gato", "cães", "caes")),
+    ("Esportes", ("whey", "creatina", "suplemento", "bicicleta spinning", "esteira ergometrica", "esteira ergométrica")),
 )
 
 
@@ -113,21 +143,53 @@ def texto_busca(texto):
     return "".join(caractere for caractere in texto if not unicodedata.combining(caractere))
 
 
+def texto_categoria_busca(texto):
+    texto = texto_busca(texto)
+    texto = re.sub(r"[^a-z0-9]+", " ", texto)
+    return re.sub(r"\s+", " ", texto).strip()
+
+
+def contem_termo_categoria(texto, termo):
+    chave = texto_categoria_busca(texto)
+    termo = texto_categoria_busca(termo)
+    if not chave or not termo:
+        return False
+    padrao = r"(?<![a-z0-9])" + r"\s+".join(re.escape(parte) for parte in termo.split()) + r"(?![a-z0-9])"
+    return re.search(padrao, chave) is not None
+
+
+def contem_algum_termo_categoria(texto, termos):
+    return any(contem_termo_categoria(texto, termo) for termo in termos)
+
+
 def normalizar_categoria_publica(*valores):
     """Converte categoria/título/caminho em uma categoria pública principal.
 
     A normalização evita publicar marcas, modelos e subcategorias muito
     específicas como se fossem navegação principal do site.
     """
-    combinado = " ".join(str(valor or "") for valor in valores if str(valor or "").strip())
-    chave = texto_busca(combinado)
+    partes = [str(valor or "") for valor in valores if str(valor or "").strip()]
+    combinado = " ".join(partes)
+    chave = texto_categoria_busca(combinado)
     if not chave or chave in {"ofertas", "oferta", "sem categoria", "outros"}:
         return "Outros"
+
+    for categoria, termos in CATEGORIA_REDIRECIONAMENTOS:
+        if contem_algum_termo_categoria(chave, termos):
+            negativos = CATEGORIA_NEGATIVOS.get(categoria, ())
+            if not negativos or not contem_algum_termo_categoria(chave, negativos):
+                return categoria
+
     for categoria, termos in CATEGORIA_REGRAS:
-        if any(texto_busca(termo) in chave for termo in termos):
+        if contem_algum_termo_categoria(chave, termos):
+            if contem_algum_termo_categoria(chave, CATEGORIA_NEGATIVOS.get(categoria, ())):
+                continue
             return categoria
+
     for categoria in CATEGORIAS_PUBLICAS:
-        if texto_busca(categoria) in chave:
+        if contem_termo_categoria(chave, categoria):
+            if contem_algum_termo_categoria(chave, CATEGORIA_NEGATIVOS.get(categoria, ())):
+                continue
             return categoria
     return "Outros"
 
@@ -290,6 +352,7 @@ body {
 button, input, select { font: inherit; }
 
 a { color: inherit; }
+[hidden] { display: none !important; }
 
 .skip-link {
     position: absolute;
@@ -393,6 +456,8 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
 .section-heading h2 { margin: 0; font-size: 1.55rem; }
 .offer-count { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.section-link { color: var(--teal-dark); font-size: .9rem; font-weight: 800; text-decoration: none; }
+.section-link:hover { text-decoration: underline; }
 
 .hero {
     position: relative;
@@ -450,31 +515,6 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
 .field-actions { align-self: end; }
 .button-muted { padding: 10px 14px; color: var(--teal-dark); background: #eef8f6; border: 1px solid var(--line); }
 .button-muted:hover { background: #dff3f0; }
-
-.deal-rails { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.deal-rail {
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-}
-.deal-rail header { padding: 16px 16px 4px; }
-.deal-rail h3 { margin-bottom: 4px; font-size: 1.02rem; }
-.deal-rail p { margin: 0; color: var(--muted); font-size: 0.82rem; }
-.deal-list { display: grid; gap: 0; padding: 8px 0 10px; }
-.deal-mini {
-    display: grid;
-    grid-template-columns: 54px 1fr;
-    gap: 10px;
-    padding: 9px 16px;
-    color: inherit;
-    text-decoration: none;
-}
-.deal-mini:hover { background: #f2faf8; }
-.deal-mini img { width: 54px; height: 54px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
-.deal-mini strong { display: -webkit-box; overflow: hidden; color: var(--ink); font-size: 0.86rem; line-height: 1.25; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.deal-mini span { display: block; margin-top: 3px; color: var(--teal-dark); font-size: 0.8rem; font-weight: 700; }
 
 .offer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 
@@ -601,7 +641,6 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .field:first-child { grid-column: 1 / -1; }
     .offer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .deal-rails { grid-template-columns: 1fr; }
     .product-detail { grid-template-columns: 1fr; }
     .assistant-layout { grid-template-columns: 1fr; }
 }
@@ -625,6 +664,214 @@ h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(2rem, 5vw, 3.6rem);
     .trust-grid { grid-template-columns: 1fr; }.assistant form { grid-template-columns: 1fr; }.assistant form .button { width: 100%; }
     .footer-inner { display: block; }
     .footer-links { justify-content: flex-start; margin-top: 16px; }
+}
+
+/* Revisão UX 2026: vitrine limpa, mobile-first e menos ruído visual. */
+:root {
+    --ink: #17212b;
+    --muted: #647481;
+    --soft: #eef4f6;
+    --line: #dde7eb;
+    --surface: #ffffff;
+    --canvas: #f7fafb;
+    --teal: #0f766e;
+    --teal-dark: #115e59;
+    --accent: #f7b801;
+    --success: #0f8a5f;
+    --danger: #c24132;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow-sm: 0 1px 2px rgba(23, 33, 43, 0.05);
+    --shadow-md: 0 12px 32px rgba(23, 33, 43, 0.08);
+    --shadow-lg: 0 22px 60px rgba(23, 33, 43, 0.12);
+}
+
+body { background: var(--canvas); color: var(--ink); font-size: 16px; }
+.header-inner, .container, .footer-inner { width: min(1180px, calc(100% - 48px)); }
+.site-header { background: rgba(255,255,255,.92); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(221,231,235,.82); }
+.header-inner { min-height: 72px; }
+.brand-logo { width: 136px; }
+.header-actions .button { min-height: 38px; padding: 8px 13px; font-size: .88rem; }
+.system-banner { display: none; }
+
+.button { border-radius: 999px; letter-spacing: -.01em; }
+.button-primary { color: #17212b; background: var(--accent); box-shadow: 0 8px 18px rgba(247,184,1,.24); }
+.button-primary:hover { background: #ffc928; box-shadow: 0 10px 22px rgba(247,184,1,.3); }
+.button-secondary { color: #fff; background: var(--teal); box-shadow: 0 10px 22px rgba(15,118,110,.18); }
+.button-secondary:hover { background: var(--teal-dark); }
+.button-muted { color: var(--teal-dark); background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+
+.hero {
+    padding: 48px 0 34px;
+    color: var(--ink);
+    background:
+        radial-gradient(circle at 86% 18%, rgba(247,184,1,.22), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #f4fbfa 100%);
+    border-bottom: 1px solid var(--line);
+}
+.hero::after { display: none; }
+.hero-content { max-width: 860px; }
+.eyebrow { color: var(--teal-dark); font-size: .78rem; letter-spacing: .08em; }
+h1 { max-width: 850px; font-size: clamp(2.35rem, 5vw, 4.65rem); line-height: .98; letter-spacing: -.055em; }
+.hero-copy { max-width: 650px; color: var(--muted); font-size: clamp(1rem, 1.6vw, 1.18rem); line-height: 1.62; }
+.hero-actions { gap: 10px; }
+.hero-metrics { max-width: 720px; gap: 10px; }
+.hero-metrics div { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); backdrop-filter: none; }
+.hero-metrics strong { color: var(--ink); font-size: 1.25rem; letter-spacing: -.02em; }
+.hero-metrics span { color: var(--muted); }
+
+.content { padding: 42px 0 56px; }
+.content-compact { padding-bottom: 18px; }
+.section-heading { align-items: flex-end; margin-bottom: 16px; }
+.section-heading h2 { font-size: clamp(1.35rem, 2vw, 1.8rem); letter-spacing: -.03em; }
+.offer-count { color: var(--muted); }
+
+.filters {
+    position: relative;
+    grid-template-columns: minmax(260px, 1.65fr) repeat(4, minmax(120px, 1fr)) auto;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 22px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+}
+.field { gap: 5px; }
+.field label { color: #526472; font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; }
+.field input, .field select {
+    min-height: 40px;
+    padding: 8px 11px;
+    border-radius: 999px;
+    border: 1px solid #d5e0e5;
+    background: #fbfdfe;
+    color: var(--ink);
+}
+.field input::placeholder { color: #8c9aa5; }
+.field-actions .button { min-height: 40px; white-space: nowrap; }
+
+.showcase-section { padding-top: 34px; padding-bottom: 22px; }
+.editorial-section { position: relative; }
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+.market-card {
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #e0e8ec;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.market-card:hover { transform: translateY(-2px); border-color: #c8d7dd; box-shadow: var(--shadow-md); }
+.market-card .offer-media { aspect-ratio: 1 / .76; background: #f8fbfb; border-bottom: 1px solid #eef3f5; }
+.market-card .offer-media img { padding: 16px; }
+.market-card-body { display: grid; gap: 7px; padding: 15px; }
+.market-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; color: var(--teal-dark); font-size: .72rem; font-weight: 800; }
+.market-meta > span:first-child { max-width: 54%; overflow: hidden; padding: 5px 9px; background: #e6f5f2; border-radius: 999px; text-overflow: ellipsis; white-space: nowrap; }
+.market-card h3 {
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.36;
+    letter-spacing: -.018em;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.market-card .price { margin: 1px 0 0; font-size: clamp(1.48rem, 2.1vw, 1.9rem); }
+.economy-line { margin: 0; color: var(--success); font-size: .84rem; font-weight: 800; }
+.market-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+.market-actions .button { min-height: 42px; padding: 9px 14px; box-shadow: none; }
+.market-actions .details-link { margin: 0; text-align: right; white-space: nowrap; }
+
+.offer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.offer-card {
+    min-height: 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid #e0e8ec;
+    box-shadow: var(--shadow-sm);
+}
+.offer-card:hover { transform: translateY(-2px); border-color: #c8d7dd; box-shadow: var(--shadow-md); }
+.offer-media { aspect-ratio: 1 / .82; background: #f7fafb; border-bottom: 1px solid #eef3f5; }
+.offer-media img { padding: 14px; }
+.card-topline { margin: 13px 15px 9px; }
+.marketplace { display: none; }
+.tag { max-width: 100%; padding: 5px 9px; color: var(--teal-dark); background: #e6f5f2; font-size: .72rem; }
+.badges { min-height: 24px; margin: 0 15px 8px; }
+.badge { padding: 4px 8px; font-size: .69rem; }
+.badge-safe { display: none; }
+.offer-card h2, .offer-card h3 { min-height: 2.7em; margin: 0 15px 10px; font-size: .98rem; line-height: 1.35; letter-spacing: -.015em; }
+.updated { display: none; }
+.price-label { margin: auto 15px 2px; font-size: .68rem; color: #7c8c96; }
+.price { margin: 0 15px 10px; color: var(--teal-dark); font-size: clamp(1.48rem, 2vw, 1.78rem); letter-spacing: -.04em; }
+.price-history { margin: 0 15px 13px; padding: 10px; grid-template-columns: 1fr auto; background: #f8fbfb; border-radius: var(--radius-sm); font-size: .73rem; }
+.price-history strong { color: var(--ink); font-size: .78rem; }
+.history-note { color: #71818b; }
+.record-badge { margin: 0 15px 12px; padding: 5px 9px; border-radius: 999px; font-size: .72rem; }
+.offer-card .button { width: calc(100% - 30px); min-height: 44px; margin: 0 15px 10px; }
+.details-link { margin: 0 15px 15px; color: #637581; font-size: .82rem; text-decoration: none; }
+.details-link:hover { color: var(--teal-dark); text-decoration: underline; }
+
+.pagination { margin-top: 26px; gap: 10px; }
+.pagination .button { min-width: 112px; }
+.page-indicator { min-width: 118px; }
+.feedback { border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+
+.product-detail { grid-template-columns: minmax(0, .9fr) minmax(330px, .8fr); gap: 42px; padding: 18px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.product-image { background: #f8fbfb; border-radius: 20px; box-shadow: none; }
+.product-image img { padding: 18px; }
+.product-info h1 { font-size: clamp(1.75rem, 3.2vw, 2.55rem); letter-spacing: -.04em; }
+.product-category { border-radius: 999px; background: #e6f5f2; }
+.product-price { margin-bottom: 12px; font-size: clamp(2.1rem, 4vw, 3rem); letter-spacing: -.055em; }
+.product-info .button-primary { width: 100%; min-height: 52px; margin-top: 4px; }
+.price-summary div { border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.history-table { overflow: hidden; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.product-ai { border-radius: var(--radius-lg); }
+
+.assistant-panel { background: #17212b; }
+.assistant-panel .hero-copy { color: #c9d4da; }
+.assistant-card { border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+.disclosure { background: #eef7f5; }
+.trust-grid > div { padding: 18px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.site-footer { background: #111b22; }
+
+@media (max-width: 1080px) {
+    .offer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .market-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .field:first-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 760px) {
+    .header-inner, .container, .footer-inner { width: min(100% - 28px, 1180px); }
+    .site-header { position: static; }
+    .hero { padding: 34px 0 26px; }
+    h1 { font-size: clamp(2.15rem, 12vw, 3.2rem); }
+    .hero-metrics, .filters, .offer-grid, .trust-grid, .market-grid { grid-template-columns: 1fr; }
+    .market-grid { display: flex; gap: 12px; overflow-x: auto; padding: 2px 2px 12px; scroll-snap-type: x proximity; }
+    .market-card { min-width: 86%; scroll-snap-align: start; }
+    .market-actions { grid-template-columns: 1fr; }
+    .market-actions .details-link { text-align: center; }
+    .filters { border-radius: 18px; }
+    .field:first-child { grid-column: auto; }
+    .offer-media { aspect-ratio: 1 / .72; }
+    .offer-card .button { min-height: 48px; }
+    .pagination { display: grid; grid-template-columns: 1fr; }
+    .pagination .button { width: 100%; }
+    .page-indicator { order: -1; min-width: 0; }
+    .product-detail { display: block; padding: 12px; }
+    .product-info { padding: 18px 4px 4px; }
+    .price-summary { grid-template-columns: 1fr; }
+    .assistant-layout { grid-template-columns: 1fr; }
+    .footer-inner { display: block; }
 }
 """, encoding="utf-8")
 
@@ -709,12 +956,7 @@ function criarCard(oferta) {
     const badges = document.createElement("div");
     badges.className = "badges";
     const descontoBadge = Number(oferta.desconto_percentual) || 0;
-    const economiaBadge = Number(oferta.economia_valor) || 0;
     const variacaoBadge = Number(oferta.variacao_preco) || 0;
-    const badgeSeguro = document.createElement("span");
-    badgeSeguro.className = "badge badge-safe";
-    badgeSeguro.textContent = "Link seguro meli.la";
-    badges.append(badgeSeguro);
     if (descontoBadge > 0) {
         const badge = document.createElement("span");
         badge.className = "badge badge-discount";
@@ -727,6 +969,7 @@ function criarCard(oferta) {
         badge.textContent = oferta.destaque_menor_preco ? "Menor preço" : "Preço caiu";
         badges.append(badge);
     }
+    badges.hidden = !badges.children.length;
 
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
@@ -773,60 +1016,6 @@ function criarCard(oferta) {
     return card;
 }
 
-function criarMiniOferta(oferta, rotulo) {
-    const link = document.createElement("a");
-    link.className = "deal-mini";
-    link.href = textoSeguro(oferta.produto_url);
-    link.addEventListener("click", () => registrarClique(oferta, "trilho_oferta"));
-    const img = document.createElement("img");
-    const url = imagemPublica(oferta.imagem_url);
-    img.alt = textoSeguro(oferta.titulo) || "Oferta";
-    img.loading = "lazy";
-    if (url) img.src = url;
-    const box = document.createElement("div");
-    const titulo = document.createElement("strong");
-    titulo.textContent = textoSeguro(oferta.titulo) || "Oferta";
-    const meta = document.createElement("span");
-    meta.textContent = rotulo || formatarPreco(oferta.preco, oferta.preco_formatado);
-    box.append(titulo, meta);
-    link.append(img, box);
-    return link;
-}
-
-function criarTrilho(titulo, subtitulo, ofertas, rotulo) {
-    const trilho = document.createElement("section");
-    trilho.className = "deal-rail";
-    const cabecalho = document.createElement("header");
-    const h = document.createElement("h3");
-    h.textContent = titulo;
-    const p = document.createElement("p");
-    p.textContent = subtitulo;
-    cabecalho.append(h, p);
-    const lista = document.createElement("div");
-    lista.className = "deal-list";
-    ofertas.slice(0, 4).forEach((oferta) => lista.append(criarMiniOferta(oferta, rotulo(oferta))));
-    trilho.append(cabecalho, lista);
-    return trilho;
-}
-
-function renderizarDestaques() {
-    if (!elements.dealRails) return;
-    const ofertas = [...state.ofertas];
-    const maioresDescontos = [...ofertas].sort((a, b) => (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0));
-    const menorPrecoHistorico = ofertas.filter((o) => o.destaque_menor_preco).sort((a, b) => scoreCustoBeneficio(b) - scoreCustoBeneficio(a));
-    const recentes = [...ofertas].sort((a, b) => (normalizarData(b.ultima_verificacao || b.data_publicacao)?.getTime() || 0) - (normalizarData(a.ultima_verificacao || a.data_publicacao)?.getTime() || 0));
-    elements.dealRails.replaceChildren(
-        criarTrilho("Maiores descontos", "Produtos com maior percentual público de desconto.", maioresDescontos, (o) => `${(Number(o.desconto_percentual) || 0).toFixed(0)}% OFF · ${formatarPreco(o.preco, o.preco_formatado)}`),
-        criarTrilho("Menor preço histórico", "Ofertas no menor preço já visto pelo Promogg.", menorPrecoHistorico.length ? menorPrecoHistorico : maioresDescontos, (o) => `${formatarPreco(o.preco, o.preco_formatado)} agora`),
-        criarTrilho("Recém verificadas", "Atualizações mais recentes do catálogo público.", recentes, (o) => formatarData(o.ultima_verificacao || o.data_publicacao))
-    );
-}
-
-function atualizarMetricas() {
-    if (elements.metricTotal) elements.metricTotal.textContent = String(state.ofertas.length);
-    if (elements.metricRecords) elements.metricRecords.textContent = String(state.ofertas.filter((o) => o.destaque_menor_preco).length);
-}
-
 function exibirFeedback(titulo, mensagem) {
     const feedback = document.createElement("section");
     feedback.className = "feedback";
@@ -858,7 +1047,7 @@ function configurarTelegram() {
 }
 
 async function carregarOfertas() {
-    exibirFeedback("Carregando ofertas", "Buscando as ofertas selecionadas para você.");
+    exibirFeedback("Carregando ofertas...", "Organizando o catálogo completo.");
     try {
         const resposta = await fetch("ofertas.json", { cache: "no-store" });
         if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
@@ -871,7 +1060,7 @@ async function carregarOfertas() {
         renderizar();
     } catch (erro) {
         elements.count.textContent = "Ofertas indisponíveis";
-        exibirFeedback("Não foi possível carregar as ofertas", "Atualize a página em alguns instantes. O catálogo pode estar sendo atualizado.");
+        exibirFeedback("Estamos atualizando as ofertas", "Tente novamente em instantes.");
     }
 }
 
@@ -922,9 +1111,6 @@ const elements = {
     previous: document.querySelector("#previous-page"),
     next: document.querySelector("#next-page"),
     pageIndicator: document.querySelector("#page-indicator"),
-    dealRails: document.querySelector("#deal-rails"),
-    metricTotal: document.querySelector("#metric-total"),
-    metricRecords: document.querySelector("#metric-records"),
     quickForm: document.querySelector("#quick-assistant-form"),
     quickQuestion: document.querySelector("#quick-question"),
     quickAnswer: document.querySelector("#quick-assistant-answer"),
@@ -1032,7 +1218,6 @@ function ofertasFiltradas() {
         if (elements.sort.value === "maior-preco") return Number(b.preco) - Number(a.preco);
         if (elements.sort.value === "maior-desconto") return (Number(b.desconto_percentual) || 0) - (Number(a.desconto_percentual) || 0);
         if (elements.sort.value === "maior-economia") return (Number(b.economia_valor) || 0) - (Number(a.economia_valor) || 0);
-        if (elements.sort.value === "menor-historico") return (Number(a.menor_preco) || Number(a.preco)) - (Number(b.menor_preco) || Number(b.preco));
         return (normalizarData(b.ultima_verificacao || b.data_publicacao)?.getTime() || 0)
             - (normalizarData(a.ultima_verificacao || a.data_publicacao)?.getTime() || 0);
     });
@@ -1088,12 +1273,7 @@ function criarCard(oferta) {
     const badges = document.createElement("div");
     badges.className = "badges";
     const descontoBadge = Number(oferta.desconto_percentual) || 0;
-    const economiaBadge = Number(oferta.economia_valor) || 0;
     const variacaoBadge = Number(oferta.variacao_preco) || 0;
-    const badgeSeguro = document.createElement("span");
-    badgeSeguro.className = "badge badge-safe";
-    badgeSeguro.textContent = "Link seguro meli.la";
-    badges.append(badgeSeguro);
     if (descontoBadge > 0) {
         const badge = document.createElement("span");
         badge.className = "badge badge-discount";
@@ -1106,22 +1286,9 @@ function criarCard(oferta) {
         badge.textContent = oferta.destaque_menor_preco ? "Menor preço" : "Preço caiu";
         badges.append(badge);
     }
-    const sinais = document.createElement("p");
-    sinais.className = "updated";
-    const listaSinais = [];
-    if (Number(oferta.desconto_percentual) > 0) listaSinais.push(`${Number(oferta.desconto_percentual).toFixed(0)}% OFF`);
-    if (economiaBadge > 0) listaSinais.push(`Economia ${formatarPreco(economiaBadge)}`);
-    if (oferta.selo_mais_vendido) listaSinais.push("Mais vendido");
-    if (oferta.selo_loja_oficial) listaSinais.push("Loja oficial");
-    sinais.textContent = listaSinais.join(" · ");
-    sinais.hidden = !sinais.textContent;
-
     const titulo = document.createElement("h3");
     titulo.textContent = textoSeguro(oferta.titulo) || "Oferta sem título";
     titulo.title = titulo.textContent;
-    const atualizado = document.createElement("p");
-    atualizado.className = "updated";
-    atualizado.textContent = `Atualizada em ${formatarData(oferta.ultima_verificacao || oferta.data_publicacao)}`;
     const label = document.createElement("p");
     label.className = "price-label";
     label.textContent = "Preço atual";
@@ -1140,11 +1307,11 @@ function criarCard(oferta) {
     const menorHistorico = Number(oferta.menor_preco) || precoAtual;
     const distanciaMenor = precoAtual - menorHistorico;
     variacao.className = valorVariacao < 0 ? "variation-down" : valorVariacao > 0 ? "variation-up" : "variation-stable";
-    variacao.textContent = valorVariacao < 0 ? `Caiu ${formatarPreco(Math.abs(valorVariacao))}` : valorVariacao > 0 ? `Subiu ${formatarPreco(valorVariacao)}` : "Sem variação";
+    variacao.textContent = valorVariacao < 0 ? `Caiu ${formatarPreco(Math.abs(valorVariacao))}` : oferta.destaque_menor_preco ? "Menor preço" : distanciaMenor > 0 ? "Acima do menor histórico" : "Preço estável";
     const notaHistorico = document.createElement("span");
     notaHistorico.className = "history-note";
     if (Math.abs(distanciaMenor) < 0.01) {
-        notaHistorico.textContent = "Preço atual igual ao menor histórico registrado.";
+        notaHistorico.textContent = "Igual ao menor histórico.";
     } else if (distanciaMenor > 0) {
         notaHistorico.textContent = `${formatarPreco(distanciaMenor)} acima do menor histórico.`;
     } else {
@@ -1160,14 +1327,14 @@ function criarCard(oferta) {
     link.href = textoSeguro(oferta.link);
     link.target = "_blank";
     link.rel = "noopener sponsored";
-    link.textContent = "Ver oferta no Mercado Livre";
+    link.textContent = "Ver oferta";
     link.addEventListener("click", () => registrarClique(oferta, "ver_oferta"));
     const detalhes = document.createElement("a");
     detalhes.className = "details-link";
     detalhes.href = textoSeguro(oferta.produto_url);
-    detalhes.textContent = "Ver detalhes";
+    detalhes.textContent = "Detalhes";
     detalhes.addEventListener("click", () => registrarClique(oferta, "card_oferta"));
-    card.append(criarMidia(oferta), topo, badges, titulo, sinais, atualizado, label, preco, historico, destaque, link, detalhes);
+    card.append(criarMidia(oferta), topo, badges, titulo, label, preco, historico, destaque, link, detalhes);
     return card;
 }
 
@@ -1271,15 +1438,13 @@ async function carregarOfertas() {
         preencherSelect(elements.category, categorias, "Todas as categorias", contarCategorias(state.ofertas));
         aplicarFiltrosDaUrl();
         elements.generatedAt.textContent = state.geradoEm ? `Lista atualizada em ${formatarData(state.geradoEm)}` : "Lista atualizada";
-        atualizarMetricas();
-        renderizarDestaques();
         renderizar();
     } catch (_) {
         elements.count.textContent = "Ofertas indisponíveis";
         elements.pageIndicator.textContent = "";
         elements.previous.disabled = true;
         elements.next.disabled = true;
-        exibirFeedback("Não foi possível carregar as ofertas", "Atualize a página em alguns instantes. O catálogo pode estar sendo atualizado.");
+        exibirFeedback("Estamos atualizando as ofertas", "Tente novamente em instantes.");
     }
 }
 
@@ -1354,13 +1519,157 @@ def rodape_publico(ultima_atualizacao):
     return f"""<footer class="site-footer"><div class="footer-inner"><div><img src="/logo.svg" class="brand-logo" alt="PROMOGG"><p class="footer-note">Ofertas selecionadas com links seguros. Preços e disponibilidade podem mudar no Mercado Livre.</p><p class="footer-updated">Última atualização: {escape(ultima_atualizacao)}</p></div><nav class="footer-links" aria-label="Links institucionais"><a class="footer-link" href="/sobre/">Sobre</a><a class="footer-link" href="/seguranca/">Segurança</a><a class="footer-link" href="/sobre/#afiliados">Política de Afiliados</a><a class="footer-link" data-telegram-link hidden target="_blank" rel="noopener">Telegram</a></nav></div></footer>"""
 
 
-def montar_index():
+def score_vitrine(oferta):
+    try:
+        desconto = float(oferta.get("desconto_percentual") or 0)
+    except (TypeError, ValueError):
+        desconto = 0
+    try:
+        economia = float(oferta.get("economia_valor") or 0)
+    except (TypeError, ValueError):
+        economia = 0
+    try:
+        variacao = float(oferta.get("variacao_preco") or 0)
+    except (TypeError, ValueError):
+        variacao = 0
+    return (desconto * 2) + (economia / 10) + (35 if oferta.get("destaque_menor_preco") else 0) + (18 if variacao < 0 else 0)
+
+
+def _numero_oferta(oferta, campo, padrao=0.0):
+    try:
+        return float(oferta.get(campo) or padrao)
+    except (TypeError, ValueError):
+        return padrao
+
+
+def _normalizar_assinatura(texto):
+    texto = unicodedata.normalize("NFKD", str(texto or "").lower())
+    texto = "".join(ch for ch in texto if not unicodedata.combining(ch))
+    termos_ruidosos = {
+        "com", "para", "por", "sem", "kit", "novo", "original", "produto", "mercado",
+        "livre", "unidade", "unidades", "preto", "branco", "azul", "vermelho", "promo",
+        "oferta", "modelo", "marca", "premium", "plus", "pro", "max",
+    }
+    termos = [
+        termo for termo in re.findall(r"[a-z0-9]{2,}", texto)
+        if termo not in termos_ruidosos
+    ]
+    return " ".join(termos[:5]) or texto[:40]
+
+
+def _oferta_elegivel_vitrine(oferta):
+    return bool(
+        oferta.get("imagem_url")
+        and oferta.get("link")
+        and oferta.get("produto_url")
+        and oferta.get("titulo")
+        and _numero_oferta(oferta, "preco") > 0
+    )
+
+
+def _score_editorial(oferta):
+    desconto = _numero_oferta(oferta, "desconto_percentual")
+    economia = _numero_oferta(oferta, "economia_valor")
+    variacao = _numero_oferta(oferta, "variacao_preco")
+    preco = _numero_oferta(oferta, "preco")
+    categoria = str(oferta.get("categoria") or "")
+    categorias_desejo = {"Celulares", "Informática", "TVs", "Áudio", "Games", "Casa", "Cozinha", "Ferramentas", "Moda", "Beleza"}
+    score = 0.0
+    score += min(desconto, 70) * 1.25
+    score += min(economia / 12, 45)
+    score += 34 if oferta.get("destaque_menor_preco") else 0
+    score += min(abs(variacao) / 8, 20) if variacao < 0 else 0
+    score += 13 if oferta.get("selo_mais_vendido") else 0
+    score += 9 if oferta.get("selo_loja_oficial") else 0
+    score += 7 if categoria in categorias_desejo else 0
+    if 40 <= preco <= 3500:
+        score += 8
+    elif preco > 8000:
+        score -= 12
+    return score
+
+
+def _selecionar_diverso(ofertas, limite, categorias_max=2, excluir_assinaturas=None):
+    selecionadas = []
+    categorias = {}
+    assinaturas = set(excluir_assinaturas or set())
+    for oferta in sorted([o for o in ofertas if _oferta_elegivel_vitrine(o)], key=_score_editorial, reverse=True):
+        categoria = str(oferta.get("categoria") or "Outros")
+        assinatura = _normalizar_assinatura(oferta.get("titulo"))
+        if assinatura in assinaturas:
+            continue
+        if categorias.get(categoria, 0) >= categorias_max:
+            continue
+        selecionadas.append(oferta)
+        categorias[categoria] = categorias.get(categoria, 0) + 1
+        assinaturas.add(assinatura)
+        if len(selecionadas) >= limite:
+            break
+    return selecionadas
+
+
+def _rotulo_economia(oferta):
+    desconto = _numero_oferta(oferta, "desconto_percentual")
+    economia = _numero_oferta(oferta, "economia_valor")
+    if economia > 0:
+        return f"Economize {formatar_preco(economia)}"
+    if desconto > 0:
+        return f"{desconto:.0f}% OFF"
+    if oferta.get("destaque_menor_preco"):
+        return "Menor preço registrado"
+    return "Oferta selecionada"
+
+
+def card_vitrine_estatico(oferta, destaque=False, origem="vitrine_home"):
+    desconto = _numero_oferta(oferta, "desconto_percentual")
+    imagem = (
+        f'<img src="{escape(oferta["imagem_url"], quote=True)}" alt="{escape(oferta["titulo"])}" loading="lazy">'
+        if oferta.get("imagem_url") else '<span class="image-fallback">Promogg</span>'
+    )
+    badge = f'<span class="badge badge-discount">{desconto:.0f}% OFF</span>' if desconto > 0 else '<span class="badge badge-record">Escolha Promogg</span>'
+    return f"""<article class="market-card">
+        <a class="offer-media" href="{escape(oferta['produto_url'], quote=True)}" aria-label="Detalhes de {escape(oferta['titulo'], quote=True)}">{imagem}</a>
+        <div class="market-card-body">
+            <div class="market-meta"><span>{escape(oferta.get('categoria') or 'Oferta')}</span>{badge}</div>
+            <h3 title="{escape(oferta['titulo'], quote=True)}">{escape(oferta['titulo'])}</h3>
+            <p class="price">{escape(oferta['preco_formatado'])}</p>
+            <p class="economy-line">{escape(_rotulo_economia(oferta))}</p>
+            <div class="market-actions">
+                <a class="button button-primary" href="{escape(oferta['link'], quote=True)}" target="_blank" rel="noopener sponsored" data-analytics-click="{escape(origem, quote=True)}" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver oferta</a>
+                <a class="details-link" href="{escape(oferta['produto_url'], quote=True)}">Detalhes</a>
+            </div>
+        </div>
+    </article>"""
+
+
+def montar_ofertas_imperdiveis(ofertas):
+    imperdiveis = _selecionar_diverso(ofertas, 10, categorias_max=3)
+    if len(imperdiveis) < 8:
+        return ""
+    cards = "".join(card_vitrine_estatico(oferta, origem="ofertas_imperdiveis") for oferta in imperdiveis)
+    return f"""<section class="content content-compact showcase-section editorial-section" id="ofertas-imperdiveis" aria-labelledby="titulo-imperdiveis">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="titulo-imperdiveis">Ofertas imperdíveis de hoje</h2>
+                        <p class="offer-count">Selecionamos oportunidades com bom desconto, economia e histórico de preço.</p>
+                    </div>
+                    <a class="section-link" href="#ofertas">Ver todas as ofertas</a>
+                </div>
+                <div class="market-grid" aria-live="polite">{cards}</div>
+            </div>
+        </section>"""
+
+
+def montar_index(ofertas=None):
     estado = obter_estado_sistema()
     if estado["estado"] == OFFLINE:
         return montar_pagina_offline(estado)
     banner = ""
-    if estado["estado"] == MANUTENCAO:
+    if estado["estado"] == MANUTENCAO and os.getenv("PROMOGG_EXIBIR_BANNER_MANUTENCAO", "").strip().lower() in {"1", "true", "sim", "yes"}:
         banner = '<div class="system-banner" role="status">Estamos realizando melhorias internas. Algumas informações podem estar temporariamente desatualizadas.</div>'
+    ofertas = ofertas or []
+    imperdiveis_html = montar_ofertas_imperdiveis(ofertas)
     pagina = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1400,38 +1709,23 @@ __BANNER__
     <main id="inicio">
         <section class="hero" aria-labelledby="titulo-principal">
             <div class="container hero-content">
-                <p class="eyebrow">Ofertas verificadas com histórico</p>
-                <h1 id="titulo-principal">Compre melhor no Mercado Livre com contexto de preço.</h1>
-                <p class="hero-copy">O Promogg organiza ofertas com link meli.la, histórico, menor preço, economia estimada e sinais públicos para você decidir com mais segurança.</p>
+                <p class="eyebrow">Ofertas selecionadas com contexto</p>
+                <h1 id="titulo-principal">Ofertas do Mercado Livre com histórico de preços.</h1>
+                <p class="hero-copy">Compare descontos, veja quedas reais e compre com mais confiança.</p>
                 <div class="hero-actions">
-                    <a class="button button-primary" href="#ofertas">Ver ofertas</a>
-                    <a class="button button-secondary" href="#assistente-promogg">Perguntar ao assistente</a>
+                    <a class="button button-primary" href="#ofertas-imperdiveis">Ver ofertas imperdíveis</a>
+                    <a class="button button-secondary" href="#ofertas">Ver catálogo</a>
                     <a class="button button-telegram" data-telegram-link hidden target="_blank" rel="noopener">Entrar no Telegram</a>
                 </div>
-                <div class="hero-metrics" aria-label="Resumo do catálogo">
-                    <div><strong id="metric-total">—</strong><span>ofertas públicas</span></div>
-                    <div><strong id="metric-records">—</strong><span>no menor preço</span></div>
-                    <div><strong id="metric-secure">meli.la</strong><span>links afiliados seguros</span></div>
-                </div>
             </div>
         </section>
-        <section class="content content-compact" aria-labelledby="titulo-destaques">
-            <div class="container">
-                <div class="section-heading">
-                    <div>
-                        <h2 id="titulo-destaques">Melhores sinais agora</h2>
-                        <p class="offer-count">Seleções calculadas a partir do catálogo público atual.</p>
-                    </div>
-                </div>
-                <div class="deal-rails" id="deal-rails" aria-live="polite"></div>
-            </div>
-        </section>
+        __OFERTAS_IMPERDIVEIS__
         <section class="content" id="ofertas" aria-labelledby="titulo-ofertas">
             <div class="container">
                 <div class="section-heading">
                     <div>
-                        <h2 id="titulo-ofertas">Ofertas em destaque</h2>
-                        <p class="offer-count" id="offer-count" aria-live="polite">Carregando ofertas</p>
+                        <h2 id="titulo-ofertas">Catálogo de ofertas</h2>
+                        <p class="offer-count" id="offer-count" aria-live="polite">Use a busca e os filtros para encontrar outras oportunidades.</p>
                     </div>
                     <p class="offer-count" id="generated-at"></p>
                 </div>
@@ -1445,7 +1739,7 @@ __BANNER__
                         <select id="category"><option value="">Todas as categorias</option></select>
                     </div>
                     <div class="field">
-                        <label for="discount">Desconto mínimo</label>
+	                        <label for="discount">Desconto</label>
                         <select id="discount">
                             <option value="0">Qualquer desconto</option>
                             <option value="10">10% ou mais</option>
@@ -1465,12 +1759,11 @@ __BANNER__
                     <div class="field">
                         <label for="sort">Ordenar</label>
                         <select id="sort">
-                            <option value="recentes">Mais recentes</option>
+                            <option value="recentes">Recentes</option>
                             <option value="maior-desconto">Maior desconto</option>
                             <option value="maior-economia">Maior economia</option>
                             <option value="menor-preco">Menor preço</option>
                             <option value="maior-preco">Maior preço</option>
-	                            <option value="menor-historico">Menor preço histórico</option>
 	                        </select>
 	                    </div>
 	                    <div class="field field-actions">
@@ -1490,8 +1783,8 @@ __BANNER__
             <div class="container assistant-layout">
                 <div>
                     <p class="eyebrow">Assistente Promogg</p>
-                    <h2 id="titulo-assistente-home">Pergunte antes de clicar.</h2>
-                    <p class="hero-copy">Respostas locais baseadas somente no catálogo público, histórico sanitizado e regras transparentes. O site público não chama serviços locais nem endpoints privados.</p>
+                    <h2 id="titulo-assistente-home">Dúvidas rápidas sobre as ofertas.</h2>
+                    <p class="hero-copy">O assistente usa apenas os dados públicos carregados nesta página: preço, histórico e categoria.</p>
                 </div>
                 <form id="quick-assistant-form" class="assistant-card">
                     <label for="quick-question">Sua pergunta</label>
@@ -1502,7 +1795,7 @@ __BANNER__
                         <button type="button" data-q="Quais produtos parecem melhor custo-benefício?">Custo-benefício</button>
                     </div>
                     <button class="button button-primary" type="submit">Analisar</button>
-                    <div class="assistant-answer" id="quick-assistant-answer" aria-live="polite">As análises são baseadas em histórico e dados públicos disponíveis. Preços podem mudar no Mercado Livre.</div>
+	                    <div class="assistant-answer" id="quick-assistant-answer" aria-live="polite">Pergunte sobre menor preço, desconto ou custo-benefício.</div>
                 </form>
             </div>
         </section>
@@ -1511,11 +1804,11 @@ __BANNER__
                 <div class="disclosure-badge" aria-hidden="true">i</div>
                 <div>
                     <h2 id="titulo-afiliado">Sobre os links</h2>
-                    <p>Alguns links são afiliados. Isso ajuda a manter o Promogg sem custo extra para você.</p>
+	                    <p>Alguns links são afiliados. Você não paga a mais por isso.</p>
                 </div>
             </div>
         </section>
-        <section class="content trust-section" aria-label="Como o Promogg funciona"><div class="container trust-grid"><div><h2>Ofertas com contexto</h2><p>Organizamos ofertas públicas, preço atual e histórico para facilitar comparações.</p></div><div><h2>Histórico de preços</h2><p>Quando há verificações suficientes, mostramos menor preço, média e variação.</p></div><div><h2>Transparência</h2><p>Alguns links são afiliados e podem gerar comissão sem alterar o preço para você.</p></div></div></section>
+        <section class="content trust-section" aria-label="Como o Promogg funciona"><div class="container trust-grid"><div><h2>Compare rápido</h2><p>Cards simples com preço, categoria e sinal de histórico.</p></div><div><h2>Histórico visível</h2><p>Quando existe registro, mostramos menor preço e tendência.</p></div><div><h2>Link transparente</h2><p>Você sai para o Mercado Livre com link seguro e aviso de afiliado.</p></div></div></section>
     </main>
     __FOOTER__
     <button class="button button-secondary back-to-top" id="back-to-top" type="button" aria-label="Voltar ao topo">↑</button>
@@ -1523,7 +1816,13 @@ __BANNER__
 </body>
 </html>
 """
-    return pagina.replace("__ANALYTICS_URL__", escape(analytics_public_url(), quote=True)).replace("__FOOTER__", rodape_publico(datetime.now().strftime("%d/%m/%Y %H:%M"))).replace("__BANNER__", banner)
+    return (
+        pagina
+        .replace("__ANALYTICS_URL__", escape(analytics_public_url(), quote=True))
+        .replace("__FOOTER__", rodape_publico(datetime.now().strftime("%d/%m/%Y %H:%M")))
+        .replace("__BANNER__", banner)
+        .replace("__OFERTAS_IMPERDIVEIS__", imperdiveis_html)
+    )
 
 
 def montar_pagina_offline(estado):
@@ -1710,7 +2009,7 @@ def montar_pagina_produto(oferta, historico, menor_historico, relacionados=None)
         <article class="product-detail">
             <div class="product-image">{imagem_tag}</div>
             <div class="product-info">
-                <span class="product-category">{escape(oferta.get('categoria_caminho') or oferta['categoria'])}</span>
+                <span class="product-category">{escape(oferta['categoria'])}</span>
                 <h1>{titulo}</h1>
                 <p class="product-price">{escape(oferta['preco_formatado'])}</p>
                 {detalhes_preco}
@@ -1747,7 +2046,7 @@ def montar_pagina_categoria(categoria, ofertas):
         f"""<article class="offer-card"><a class="offer-media" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">"""
         + (f'<img src="{escape(oferta["imagem_url"], quote=True)}" alt="{escape(oferta["titulo"])}" loading="lazy">' if oferta.get("imagem_url") else '<span class="image-fallback">Promogg</span>')
         + f"""</a><div class="card-topline"><span class="marketplace">Mercado Livre</span><span class="tag">{escape(oferta['categoria'])}</span></div><h2 title="{escape(oferta['titulo'], quote=True)}"><a href="/{escape(oferta['produto_url'], quote=True)}">{escape(oferta['titulo'])}</a></h2>
-        <p class="price">{escape(oferta['preco_formatado'])}</p><a class="button button-secondary" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Ver detalhes</a></article>"""
+        <p class="price">{escape(oferta['preco_formatado'])}</p><a class="details-link" href="/{escape(oferta['produto_url'], quote=True)}" data-analytics-click="card_oferta" data-item-id="{escape(oferta['item_id'], quote=True)}" data-titulo="{escape(oferta['titulo'], quote=True)}" data-categoria="{escape(oferta['categoria'], quote=True)}">Detalhes</a></article>"""
         for oferta in ofertas
     )
     return f"""<!DOCTYPE html>
@@ -1777,6 +2076,100 @@ def gerar_paginas_categorias(ofertas):
         destino.mkdir(parents=True, exist_ok=True)
         (destino / "index.html").write_text(montar_pagina_categoria(categoria, itens), encoding="utf-8")
     return sorted(por_categoria)
+
+
+ALERTAS_CATEGORIA = (
+    ("Bebês", ("carrinho de mão", "carrinho de mao", "purificador", "filtro de agua", "filtro de água", "carrinho mecanico", "carrinho mecânico", "whey", "creatina", "smart tv", "furadeira", "compressor", "fralda geriatrica", "adulto")),
+    ("Moda", ("furadeira", "parafusadeira", "compressor", "perfume", "ração", "racao")),
+    ("Ferramentas", ("perfume", "body splash", "fralda", "mamadeira", "ração", "racao")),
+    ("Móveis", ("roçadeira", "rocadeira", "furadeira", "pneu", "capacete")),
+    ("Celulares", ("notebook", "galaxy book")),
+    ("Automotivo", ("smartwatch", "whey", "creatina")),
+)
+
+ALERTAS_GLOBAIS_CATEGORIA = (
+    ("pneu", "Automotivo"),
+    ("ração", "Pets"),
+    ("racao", "Pets"),
+    ("furadeira", "Ferramentas"),
+    ("parafusadeira", "Ferramentas"),
+    ("perfume", "Beleza"),
+    ("smart tv", "TVs"),
+    ("carrinho de mão", "Ferramentas"),
+    ("carrinho de mao", "Ferramentas"),
+    ("purificador", "Casa"),
+)
+
+
+def auditar_categorias_publicas(ofertas):
+    grupos = {categoria: [] for categoria in CATEGORIAS_PUBLICAS}
+    for oferta in ofertas:
+        grupos.setdefault(oferta.get("categoria") or "Outros", []).append(oferta)
+
+    linhas = [
+        "# Relatório de auditoria de categorias públicas",
+        "",
+        f"Data: {datetime.now().strftime('%d/%m/%Y %H:%M')}",
+        "",
+        "Escopo: auditoria somente leitura das categorias públicas geradas para o site estático. Banco, histórico, curadoria e status internos não foram alterados.",
+        "",
+        "## Regra aplicada",
+        "",
+        "- classificação por múltiplos sinais: categoria de origem, caminho/breadcrumb e título;",
+        "- correspondência por palavra/frase normalizada, não substring solta;",
+        "- termos negativos por categoria;",
+        "- redirecionamentos explícitos para casos críticos;",
+        "- fallback seguro para `Outros` quando a evidência é insuficiente.",
+        "",
+        "## Correção crítica em Bebês",
+        "",
+        "A palavra `carrinho` isolada deixou de classificar produtos como Bebês. Agora Bebês exige contexto infantil, como `bebê`, `infantil`, `mamadeira`, `fralda infantil`, `berço`, `bebê conforto`, `carrinho de bebê` ou termos equivalentes.",
+        "",
+    ]
+
+    for categoria in CATEGORIAS_PUBLICAS:
+        itens = grupos.get(categoria, [])
+        suspeitos = []
+        for oferta in itens:
+            titulo = oferta.get("titulo", "")
+            motivos = []
+            for categoria_alerta, termos in ALERTAS_CATEGORIA:
+                if categoria == categoria_alerta and contem_algum_termo_categoria(titulo, termos):
+                    motivos.append(f"termo incompatível com {categoria}")
+            for termo, esperada in ALERTAS_GLOBAIS_CATEGORIA:
+                if categoria != esperada and contem_termo_categoria(titulo, termo):
+                    motivos.append(f"`{termo}` sugere {esperada}")
+            if motivos:
+                suspeitos.append((oferta, "; ".join(sorted(set(motivos)))))
+
+        suspeitos_ids = {id(oferta) for oferta, _ in suspeitos}
+        exemplos_corretos = [oferta for oferta in itens if id(oferta) not in suspeitos_ids][:6]
+        linhas.extend([
+            f"## {categoria}",
+            "",
+            f"- Quantidade de ofertas: {len(itens)}",
+            "",
+            "### Exemplos corretos",
+            "",
+        ])
+        if exemplos_corretos:
+            linhas.extend(f"- {oferta['titulo']}" for oferta in exemplos_corretos)
+        else:
+            linhas.append("- Sem exemplos suficientes após a classificação atual.")
+        linhas.extend(["", "### Exemplos suspeitos", ""])
+        if suspeitos:
+            linhas.extend(f"- {oferta['titulo']} — {motivo}" for oferta, motivo in suspeitos[:12])
+        else:
+            linhas.append("- Nenhum alerta óbvio encontrado.")
+        linhas.extend([
+            "",
+            "### Motivo do erro/regra aplicada",
+            "",
+            "- Aplicadas regras positivas, negativas e redirecionamentos por categoria; itens ambíguos permanecem ou caem em `Outros` em vez de forçar categoria errada.",
+            "",
+        ])
+
+    RELATORIO_CATEGORIAS_PUBLICAS_PATH.write_text("\n".join(linhas).rstrip() + "\n", encoding="utf-8")
 
 
 def gerar_sitemap(ofertas, categorias):
@@ -1885,13 +2278,14 @@ def gerar_site():
     escrever_favicon()
     escrever_identidade()
     escrever_imagem_social()
-    INDEX_PATH.write_text(montar_index(), encoding="utf-8")
+    INDEX_PATH.write_text(montar_index(ofertas), encoding="utf-8")
     gerar_paginas_institucionais()
     gerar_pagina_assistente()
     gerar_callback_oauth()
     gerar_sitemap(ofertas, categorias)
     gerar_robots()
     gerar_404(categorias)
+    auditar_categorias_publicas(ofertas)
     registrar_log("site", f"Site público gerado com {len(ofertas)} ofertas e {paginas_produto} páginas de produto em {SITE_DIR}/")
     registrar_log(
         "integridade_catalogo",
