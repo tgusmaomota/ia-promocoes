@@ -1,14 +1,14 @@
 # Relatório de Curadoria Automática
 
-- Gerado em: 2026-06-26 11:59:25
+- Gerado em: 2026-06-26 12:44:43
 - Modo: dry-run
 - Backup: não aplicável
 - Pendentes antes: 1
 - Pendentes depois: 1
 - Pendentes estimados após aplicar: 1
-- Total analisado: 48
+- Total analisado: 13
 - Aprovados automaticamente: 1
-- Rejeitados automaticamente: 46
+- Rejeitados automaticamente: 11
 - Mantidos pendentes: 1
 
 ## Regras usadas
@@ -18,12 +18,12 @@
 - Pesos: integridade=30, preco=30, historico=15, comercial=15, confiabilidade=10.
 
 ## Distribuição de score
-- Menor: 36.4
-- Médio: 43.3
+- Menor: 40.7
+- Médio: 45.3
 - Maior: 61
 
 ## Motivos principais
-- sem meli.la válido: 46
+- sem meli.la válido: 11
 - incerteza real: score 61; sinais insuficientes: 1
 - aprovado automaticamente: score 52.6; desconto real 27%, menor preço histórico: 1
 
@@ -31,14 +31,14 @@
 - #novo MLB64311324 | score=52.6 | Monitor LG Ultragear 27g411a-b 27 ,fhd, 144hz, 1ms (mbr), Nvidia G-sync, Amd Freesync, Hdr10 Preto 127/220v | aprovado automaticamente: score 52.6; desconto real 27%, menor preço histórico
 
 ## Exemplos rejeitados
-- #novo MLB110450509600 | score=45 | Kit 10 Cuecas Boxer Box Masculina Algodão Atacado Polo Fit | sem meli.la válido
-- #novo MLB110309278792 | score=48.6 | Daily T-shirt Insider | sem meli.la válido
-- #novo MLB107423882380 | score=45.6 | Kit 3 Shorts 2 Em 1 Duplo Bolso Para Academia Treino Corrida | sem meli.la válido
-- #novo MLB108664426620 | score=45.6 | Kit 4 Shorts 2 Em 1 Duplo Dryfit Masculino Compressão Térmic | sem meli.la válido
-- #novo MLB111980096054 | score=40.6 | Capa De Chuva Roupa Conjunto Para Motoqueiro Reforçada Kit | sem meli.la válido
-- #novo MLB112255156838 | score=45.6 | Bota Pegada Feminina Confortável Couro Original 282014 | sem meli.la válido
-- #novo MLB109984301767 | score=47.9 | Torneira Bancada De Banheiro Luxo Inox Bica Baixa Lavatório | sem meli.la válido
-- #novo MLB89577951557 | score=47.2 | Profissional Martelete Rompedor Furadeira 1300w Sds Plus | sem meli.la válido
+- #novo MLB60837142 | score=43.7 | Kit Vibrador Concreto 1500w Com Mangote Mangueira 1,45mx35mm Com Acessorios Tvc650 The Black Tools 220v | sem meli.la válido
+- #novo MLB89126587023 | score=43.7 | Autoclave 5 Litros B5 Bless Manicure Podologia Estética | sem meli.la válido
+- #novo MLB96893788270 | score=43.7 | Toalha De Banho Feminina Microfibra Macia E Secagem Rápida | sem meli.la válido
+- #novo MLB61673959 | score=40.7 | Barraca Auto-armável Pop Up Forestdog 4 Pessoas Impermeável 1000mm Verde-escuro-2 | sem meli.la válido
+- #novo MLB61092987 | score=43.7 | Hub Usb C 7 Portas Em 1 Anker Adaptador Multiporta Para Notebook, Hdmi 4k@60hz, Até 85w, 3 Portas Usb-a E Usb-c 3.0,... Prateado | sem meli.la válido
+- #novo MLB100970278151 | score=43.7 | Kit 6 Pares Meias Soquete Cano Curto Algodão Oferta Polo Fit | sem meli.la válido
+- #novo MLB46021350 | score=43.7 | Furadeira Parafusadeira De Impacto 21v Com 2 Baterias Velocidade Ajustável 3/8 10mm Maleta E Acessorios Profissional The Black Tools Amarelo E Preto 127/220v 60hz | sem meli.la válido
+- #novo MLB69793413447 | score=43.7 | Bicicleta Aro 29 Mtb Ksw 21v Shimano Com Freios Hidráulico | sem meli.la válido
 
 ## Exemplos pendentes
 - #446 MLB55027309 | score=61 | Celular Samsung Galaxy A17 5g Com Ia, 128gb, 4gb Ram, Câm De 50mp, Tela De 6.7 , Nfc, Ip54 - Cinza | incerteza real: score 61; sinais insuficientes

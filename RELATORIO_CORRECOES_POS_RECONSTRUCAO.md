@@ -1,27 +1,34 @@
 # Relatório de Correções Pós-Reconstrução
 
-- Atualizado em: 2026-06-26 11:22:29
+- Atualizado em: 2026-06-26 12:44:39
 - Nenhum deploy, Telegram real, ONLINE, coleta agressiva, exclusão de histórico ou limpeza de perfil foi executado.
 
 ## Métricas atuais
 - 401 registrados em logs: 2339
 - Categorias vazias: 0
-- Categorias genéricas `ofertas` sem breadcrumb: 525
+- Categorias genéricas `ofertas` sem breadcrumb: 537
 - Grupos de item_id duplicados ativos: 0
-- Afiliados falhos/pendentes: 67
-- Catálogo site/: 632 ofertas, 632 páginas, links inválidos=0, imagens inválidas=0, preços inválidos=0
-- Catálogo dist_site/: 622 ofertas, 622 páginas
+- Afiliados falhos/pendentes: 75
+- Catálogo site/: 751 ofertas, 751 páginas, links inválidos=0, imagens inválidas=0, preços inválidos=0
+- Catálogo dist_site/: 632 ofertas, 632 páginas
 
 ## Última ação
-- Ação: auditar_duplicados
+- Ação: meli_auditar_api
 - Dry-run: True
 
 ## Antes/depois da última ação
 - 401: 2339 -> 2339
 - Categorias vazias: 0 -> 0
-- Categorias genéricas: 525 -> 525
+- Categorias genéricas: 537 -> 537
 - Duplicados: 0 -> 0
-- Afiliados falhos: 67 -> 67
+- Afiliados falhos: 75 -> 75
+
+## Auditoria Mercado Livre API
+- OAuth local configurado: sim
+- `/users/me`: ok
+- Item: ok
+- Categoria: não testada/falhou
+- Refresh automático: não necessário
 
 ## Arquivos alterados
 - `mercadolivre_api.py`

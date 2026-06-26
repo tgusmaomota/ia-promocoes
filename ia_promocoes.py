@@ -658,6 +658,47 @@ def comando_preparar_publicacao(dry_run=False):
     return 0 if resultado["aprovado"] or dry_run else 1
 
 
+def comando_supervisor(dry_run=False):
+    from supervisor_promogg import executar_supervisor
+
+    resultado = executar_supervisor(dry_run=dry_run)
+    modo = "dry-run" if dry_run else "execução real"
+    print(f"Supervisor ({modo})")
+    print(f"Status final: {resultado['status_final']}")
+    print(f"Modo atual: {resultado['modo_atual']}")
+    print(f"Ofertas públicas: {resultado['catalogo']['ofertas']} | páginas: {resultado['catalogo']['paginas']}")
+    print(f"Pendentes: {resultado['contagens']['pendentes']}")
+    print(f"Aprovadas auto: {resultado['contagens']['aprovadas_auto']}")
+    print(f"Rejeitadas: {resultado['contagens']['rejeitadas']}")
+    print(f"Playwright: {resultado['playwright']['modo']} - {resultado['playwright']['motivo']}")
+    print(f"Problemas ML detectados: {len(resultado['problemas_ml'])}")
+    print(f"Alertas enviados/simulados: {len(resultado['alertas'])}")
+    if resultado["bloqueios"]:
+        print("Bloqueios:")
+        for bloqueio in resultado["bloqueios"]:
+            print(f"- {bloqueio}")
+    else:
+        print("Sem bloqueios.")
+    print("Relatório: RELATORIO_SUPERVISOR_AUTOMATICO.md")
+    return 0 if dry_run or resultado["status_final"] == "ok" else 1
+
+
+def comando_supervisor_loop():
+    from supervisor_promogg import supervisor_loop
+
+    return supervisor_loop()
+
+
+def comando_testar_alerta_telegram(dry_run=True):
+    from alertas_telegram import testar_alerta_telegram
+
+    resultado = testar_alerta_telegram(dry_run=dry_run)
+    print(f"Teste de alerta operacional: {resultado['motivo']}")
+    print(f"Enviado: {'sim' if resultado['enviado'] else 'não'}")
+    print("Nenhuma oferta foi enviada.")
+    return 0 if dry_run or resultado["enviado"] else 1
+
+
 def comando_simular_score():
     from auditoria_score import simular_score
 
@@ -773,7 +814,7 @@ COMANDOS_PROMOGG = {
     "Curadoria": {"ciclo-automatico": "Orquestra coleta, afiliados, curadoria, site, validação e publicação segura; use --dry-run.", "curadoria-automatica": "Decide pendentes/novos com score enriquecido; use --dry-run primeiro.", "reprocessar-pendentes": "Reaplica a curadoria aos pendentes.", "reprocessar-pendentes-enriquecido": "Simula ou aplica curadoria com sinais públicos.", "simular-score": "Compara cenários de score sem alterar banco.", "limpar-titulos": "Saneia títulos com backup.", "calibrar-curadoria": "Aplica calibração segura com backup."},
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
-    "Analytics e Saúde": {"analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
+    "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
     "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
@@ -1676,6 +1717,9 @@ def main():
             "parar",
             "reiniciar",
             "status",
+            "supervisor",
+            "supervisor-loop",
+            "testar-alerta-telegram",
             "comandos",
             "painel",
             "simular",
@@ -1767,6 +1811,9 @@ def main():
         "parar": comando_parar,
         "reiniciar": comando_reiniciar,
         "status": lambda: (imprimir_status() or 0),
+        "supervisor": lambda: comando_supervisor(args.dry_run),
+        "supervisor-loop": comando_supervisor_loop,
+        "testar-alerta-telegram": lambda: comando_testar_alerta_telegram(args.dry_run),
         "comandos": comando_comandos,
         "painel": comando_painel,
         "simular": comando_simular,

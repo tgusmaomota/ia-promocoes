@@ -1,19 +1,19 @@
 # Relatório de Qualidade do Catálogo
 
-- Gerado em: 2026-06-26 11:59:56
+- Gerado em: 2026-06-26 12:44:43
 - Indicador final: **APROVADO COM RESSALVAS NÃO BLOQUEANTES**
 
 ## Links afiliados
-- Total de ofertas: 632
-- Páginas de produto: 632
+- Total de ofertas: 751
+- Páginas de produto: 751
 - Diferença páginas/ofertas: 0
-- Com meli.la válido: 632
+- Com meli.la válido: 751
 - Sem meli.la: 0
 - Links quebrados/formato inválido: 0
 - Links duplicados: 0
 
 ## Imagens
-- URLs válidas: 632
+- URLs válidas: 751
 - Ausentes: 0
 - Formato inválido: 0
 
@@ -21,7 +21,7 @@
 - API oficial: 13
 - Breadcrumb: 482
 - Fallback local: 0
-- Vazias: 306
+- Vazias: 344
 
 ## Preços
 - Inválidos/ausentes: 0
@@ -41,15 +41,15 @@
 - nenhuma
 
 ## Ressalvas informativas
-- categoria_vazia: 306
+- categoria_vazia: 344
 - item_id_duplicado: 33
 
 ## Curadoria
-- Aprovados automaticamente: 665
+- Aprovados automaticamente: 703
 - Aprovados manualmente: 123
 - Publicados: 46
 - Pendentes: 1
-- Rejeitados: 127
+- Rejeitados: 137
 
 ## Recomendação
 - Publicação automática é permitida quando não há ressalvas bloqueantes. Ressalvas informativas devem continuar visíveis, mas não impedem deploy/Telegram por si só.

@@ -5,8 +5,9 @@ from banco import agora, conectar, inicializar_banco, registrar_evento_sistema
 
 ONLINE = "ONLINE"
 MANUTENCAO = "MANUTENCAO"
+MANUTENCAO_PARCIAL = "MANUTENCAO_PARCIAL"
 OFFLINE = "OFFLINE"
-ESTADOS_VALIDOS = {ONLINE, MANUTENCAO, OFFLINE}
+ESTADOS_VALIDOS = {ONLINE, MANUTENCAO, MANUTENCAO_PARCIAL, OFFLINE}
 
 
 def inicializar_estado_sistema():
@@ -52,7 +53,7 @@ def automacao_ativa():
 
 
 def em_manutencao():
-    return obter_estado_sistema()["estado"] == MANUTENCAO
+    return obter_estado_sistema()["estado"] in {MANUTENCAO, MANUTENCAO_PARCIAL}
 
 
 def em_offline():

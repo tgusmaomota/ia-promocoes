@@ -1,31 +1,31 @@
 # Relatório do Ciclo Automático
 
-- Gerado em: 2026-06-26 11:59:25
+- Gerado em: 2026-06-26 12:44:43
 - Modo: dry-run
-- Publicar solicitado: True
+- Publicar solicitado: False
 - Backup: não aplicável
 - Estado do sistema: MANUTENCAO
 
 ## Resumo
 - Coletadas: 0
 - Atualizadas: 0
-- Com histórico: 6192
-- Com queda: 16
-- No menor preço: 185
-- Com meli.la: 919
+- Com histórico: 6244
+- Com queda: 18
+- No menor preço: 201
+- Com meli.la: 967
 - Aprovadas automaticamente: 1
-- Rejeitadas automaticamente: 46
+- Rejeitadas automaticamente: 11
 - Pendentes: 1
 - Pendentes estimados após aplicar: 1
-- Publicáveis atuais: 788
-- Publicáveis estimadas após curadoria: 789
+- Publicáveis atuais: 826
+- Publicáveis estimadas após curadoria: 827
 
 ## Site e qualidade
-- site/: 632 ofertas, 632 páginas
-- dist_site/: 632 ofertas, 632 páginas
+- site/: 751 ofertas, 751 páginas
+- dist_site/: 751 ofertas, 751 páginas
 - Qualidade: APROVADO COM RESSALVAS NÃO BLOQUEANTES
-- Git permitido: 1339
-- Git bloqueante: 24
+- Git permitido: 299
+- Git bloqueante: 6
 
 ## Telegram simulado
 - OK: True
@@ -33,6 +33,7 @@
 - Oferta: PENTA MAGNÉSIO - Bisglicinato + Dimalato + Citrato + Taurato + Óxido de Magnésio - A Combinação Perfeita de 5 Magnésios com Máxima Pureza e Biodisponibilidade - 60 Cápsulas
 
 ## Bloqueios
+- publicação real exige --publicar
 - Git possui alterações bloqueantes fora dos artefatos permitidos
 
 ## Status final

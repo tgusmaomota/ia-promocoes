@@ -13,6 +13,7 @@ from gerar_site import resumo_seo_publico
 from ia_revisora import listar_revisoes_pendentes, registrar_feedback as registrar_feedback_revisora
 from estado_sistema import obter_estado_sistema
 from gerador_afiliados_oficial import produtos_sem_afiliado
+from alertas_telegram import ultimo_alerta
 
 
 st.set_page_config(page_title="Promogg | Controle de ofertas", layout="wide")
@@ -25,6 +26,8 @@ inicializar_banco()
 estado_mestre = obter_estado_sistema()
 if estado_mestre["estado"] == "MANUTENCAO":
     st.warning("Sistema em manutenção: automações estão pausadas; edição, banco e consultas locais permanecem disponíveis.")
+elif estado_mestre["estado"] == "MANUTENCAO_PARCIAL":
+    st.warning("Sistema em manutenção parcial: Mercado Livre/Playwright pode estar degradado; site, painel, IA e histórico seguem disponíveis.")
 elif estado_mestre["estado"] == "OFFLINE":
     st.error("Sistema offline: serviços automatizados estão parados. Dados locais permanecem preservados.")
 else:
@@ -127,13 +130,40 @@ with legado[1]:
         executar(["ia_promocoes.py", "reprocessar-pendentes"])
 
 with st.expander("Relatórios da automação e score", expanded=False):
-    for caminho in ("RELATORIO_CICLO_AUTOMATICO.md", "RELATORIO_SCORE_ADAPTATIVO.md", "RELATORIO_CURADORIA_AUTOMATICA.md"):
+    for caminho in ("RELATORIO_SUPERVISOR_AUTOMATICO.md", "RELATORIO_CICLO_AUTOMATICO.md", "RELATORIO_SCORE_ADAPTATIVO.md", "RELATORIO_CURADORIA_AUTOMATICA.md"):
         path = Path(caminho)
         if path.exists():
             st.markdown(f"### {caminho}")
             st.text(path.read_text(encoding="utf-8")[:5000])
         else:
             st.info(f"{caminho} ainda não foi gerado.")
+
+st.subheader("Supervisor automático")
+ultimo = ultimo_alerta()
+relatorio_supervisor = Path("RELATORIO_SUPERVISOR_AUTOMATICO.md")
+modo_supervisor = "normal"
+if relatorio_supervisor.exists() and "Modo atual: degradado" in relatorio_supervisor.read_text(encoding="utf-8"):
+    modo_supervisor = "degradado"
+elif estado_mestre["estado"] in {"MANUTENCAO", "MANUTENCAO_PARCIAL"}:
+    modo_supervisor = "manutenção"
+sup_cols = st.columns(4)
+sup_cols[0].metric("Modo supervisor", modo_supervisor)
+sup_cols[1].metric("Estado", estado_mestre["estado"])
+sup_cols[2].metric("Último alerta", ultimo.get("tipo", "nenhum"))
+sup_cols[3].metric("Alerta enviado", "sim" if ultimo.get("enviado") else "não")
+sup_acoes = st.columns(2)
+with sup_acoes[0]:
+    if st.button("Rodar supervisor dry-run", use_container_width=True):
+        executar(["ia_promocoes.py", "supervisor", "--dry-run"])
+with sup_acoes[1]:
+    if st.button("Rodar supervisor", use_container_width=True):
+        executar(["ia_promocoes.py", "supervisor"])
+if modo_supervisor == "degradado":
+    st.info(
+        "Login Mercado Livre pode ser necessário. Rode no terminal: "
+        "`python3 ia_promocoes.py login-mercadolivre`, depois "
+        "`python3 ia_promocoes.py testar-playwright-sessao` e `python3 ia_promocoes.py supervisor`."
+    )
 
 st.subheader("Filas de aprovação")
 with st.expander("Produtos sem afiliado", expanded=False):
