@@ -1,6 +1,6 @@
 # Relatório de Correções Pós-Reconstrução
 
-- Atualizado em: 2026-06-26 13:57:44
+- Atualizado em: 2026-06-26 16:43:13
 - Nenhum deploy, Telegram real, ONLINE, coleta agressiva, exclusão de histórico ou limpeza de perfil foi executado.
 
 ## Métricas atuais
@@ -25,8 +25,8 @@
 
 ## Auditoria Mercado Livre API
 - OAuth local configurado: sim
-- `/users/me`: falhou
-- Item: falhou
+- `/users/me`: ok
+- Item: ok
 - Categoria: não testada/falhou
 - Refresh automático: não necessário
 

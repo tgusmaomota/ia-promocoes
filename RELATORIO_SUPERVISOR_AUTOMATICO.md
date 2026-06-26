@@ -1,6 +1,6 @@
 # Relatório do Supervisor Automático
 
-- Gerado em: 2026-06-26 13:57:49
+- Gerado em: 2026-06-26 16:43:18
 - Modo: dry-run
 
 ## Configuração
@@ -11,8 +11,8 @@
 - PROMOGG_SUPERVISOR_ALERTA_COOLDOWN_MINUTOS: 60
 
 ## Último ciclo
-- Status final: bloqueado
-- Modo atual: degradado
+- Status final: ok
+- Modo atual: degradado_nao_bloqueante
 - Ofertas públicas: 751
 - Páginas: 751
 - Pendentes: 1
@@ -20,16 +20,15 @@
 - Rejeitadas: 137
 
 ## Alertas enviados/simulados
-- intervencao_humana_necessaria: cooldown ativo | dry_run=True
-- login_mercado_livre_necessario: simulado | dry_run=True
-- deploy_bloqueado: simulado | dry_run=True
+- intervencao_humana_necessaria: simulado | dry_run=True
+- producao_liberada: simulado | dry_run=True
+- ciclo_concluido: simulado | dry_run=True
 
 ## Bloqueios
-- Mercado Livre/API/Playwright em modo degradado bloqueante
+- nenhum
 
 ## Bloqueios de publicação
-- Git possui alterações bloqueantes para publicação
-- ciclo-automatico --publicar ainda não está homologado pelas travas de segurança
+- nenhum
 
 ## Avisos não bloqueantes
 - api_busca_403_fallback: API busca ML em 403, usando fallback Playwright.
@@ -38,11 +37,11 @@
 
 ## Status Mercado Livre
 - Problemas detectados: 2
-- /users/me atual: não confirmado
-- Item atual: não confirmado
+- /users/me atual: ok
+- Item atual: ok
 - Categoria: não testada/falhou
-- Modo ML: degradado
-- Bloqueantes ML: 1
+- Modo ML: degradado_nao_bloqueante
+- Bloqueantes ML: 0
 - Avisos ML: 3
 - api_401_403: API Mercado Livre respondeu HTTP 403; fallback/degradação pode ser necessária.
 - playwright_logout: Playwright/Mercado Livre registrou login necessário.
@@ -61,4 +60,4 @@
 - Segurança bloqueantes: 0
 
 ## Recomendação
-Rode login-mercadolivre e testar-playwright-sessao antes de retomar coleta/afiliados.
+Supervisor pronto. Publicação real segue protegida por validação, Git, catálogo, qualidade e PROMOGG_SUPERVISOR_PUBLICAR=true.

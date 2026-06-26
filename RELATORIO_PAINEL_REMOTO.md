@@ -1,6 +1,6 @@
 # Relatório do Painel Remoto Promogg
 
-- Gerado em: 2026-06-26 14:02:25
+- Gerado em: 2026-06-26 16:43:09
 - Aprovado: True
 - Domínio esperado: painel.promogg.com.br
 - Host local: 127.0.0.1
