@@ -17,6 +17,7 @@ from estado_sistema import MANUTENCAO, MANUTENCAO_PARCIAL, definir_estado_sistem
 from homologacao_publicacao import _git_status_classificado
 from playwright_perfil import diagnosticar_perfil
 from qualidade_catalogo import auditar_qualidade_catalogo
+from seguranca_publicacao import auditar_seguranca_publicacao
 from saude_sistema import obter_relatorio_saude
 
 
@@ -351,6 +352,9 @@ def _escrever_relatorio(resultado):
         f"- Qualidade: {resultado['qualidade']['indicador']}",
         f"- Ressalvas bloqueantes: {len(resultado['qualidade'].get('ressalvas_bloqueantes', {}))}",
         f"- Ressalvas informativas: {len(resultado['qualidade'].get('ressalvas_informativas', {}))}",
+        f"- Segurança publicação: {resultado.get('seguranca', {}).get('status_final', 'n/d')}",
+        f"- Segurança críticos: {len(resultado.get('seguranca', {}).get('critico', []))}",
+        f"- Segurança bloqueantes: {len(resultado.get('seguranca', {}).get('bloqueante', []))}",
         "",
         "## Recomendação",
         resultado["recomendacao"],
@@ -368,6 +372,7 @@ def executar_supervisor(dry_run=True):
     catalogo = resumo_catalogo("site")
     qualidade = auditar_qualidade_catalogo()
     saude = obter_relatorio_saude()
+    seguranca = auditar_seguranca_publicacao()
     playwright = status_playwright_supervisor(dry_run=dry_run)
     problemas_ml = detectar_erros_ml()
     git = _git_status_classificado()
@@ -399,6 +404,9 @@ def executar_supervisor(dry_run=True):
         bloqueios.append("saúde possui críticos")
     if git.get("bloqueantes"):
         bloqueios_publicacao.append("Git possui alterações bloqueantes para publicação")
+    if seguranca.get("critico") or seguranca.get("bloqueante"):
+        bloqueios_publicacao.append("auditoria de segurança possui achados críticos/bloqueantes")
+        alertas.append(enviar_alerta_operacional("seguranca_publicacao_bloqueada", "Publicação bloqueada: auditoria de segurança encontrou achados críticos/bloqueantes.", dry_run=dry_run))
     if classificacao_ml["bloqueantes"]:
         bloqueios.append("Mercado Livre/API/Playwright em modo degradado bloqueante")
     if not playwright["ok"] and playwright["modo"] == "login_necessario":
@@ -477,6 +485,7 @@ def executar_supervisor(dry_run=True):
         "catalogo": catalogo,
         "qualidade": qualidade,
         "saude": saude,
+        "seguranca": seguranca,
         "playwright": playwright,
         "problemas_ml": problemas_ml,
         "auditoria_ml": auditoria_ml,

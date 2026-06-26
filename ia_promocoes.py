@@ -635,6 +635,117 @@ def comando_ciclo_automatico(dry_run=False, publicar=False):
     return 0 if resultado["seguro_ciclo"] else 1
 
 
+def comando_auditar_seguranca_publicacao(json_output=False):
+    from seguranca_publicacao import RELATORIO, auditar_seguranca_publicacao
+
+    resultado = auditar_seguranca_publicacao()
+    if json_output:
+        print(json.dumps(resultado, ensure_ascii=False, indent=2))
+        return 0 if resultado["publicacao_segura"] else 1
+
+    print("Auditoria de segurança de publicação")
+    print(f"Status final: {resultado['status_final']}")
+    print(f"Críticos: {len(resultado['critico'])}")
+    print(f"Bloqueantes: {len(resultado['bloqueante'])}")
+    print(f"Alertas: {len(resultado['alerta'])}")
+    print(f"Seguro para publicação automática: {'sim' if resultado['publicacao_segura'] else 'não'}")
+    if resultado["critico"]:
+        print("Achados críticos:")
+        for item in resultado["critico"][:10]:
+            print(f"- {item['arquivo']}: {item['mensagem']}")
+    if resultado["bloqueante"]:
+        print("Achados bloqueantes:")
+        for item in resultado["bloqueante"][:10]:
+            print(f"- {item['arquivo']}: {item['mensagem']}")
+    if resultado["alerta"]:
+        print("Alertas:")
+        for item in resultado["alerta"][:10]:
+            print(f"- {item['arquivo']}: {item['mensagem']}")
+    print(f"Relatório: {RELATORIO}")
+    return 0 if resultado["publicacao_segura"] else 1
+
+
+def comando_auditar_painel_remoto():
+    from painel_remoto import RELATORIO, auditar_painel_remoto
+
+    resultado = auditar_painel_remoto()
+    print("Auditoria do painel remoto")
+    print(f"Aprovado: {'sim' if resultado['aprovado'] else 'não'}")
+    print(f"Domínio: {resultado['config']['dominio']}")
+    print(f"Host local: {resultado['config']['host']}:{resultado['config']['port']}")
+    print(f"Admin emails configurados: {'sim' if resultado['config']['admin_emails'] else 'não'}")
+    if resultado["achados"]:
+        print("Achados bloqueantes:")
+        for achado in resultado["achados"]:
+            print(f"- {achado}")
+    if resultado["avisos"]:
+        print("Avisos:")
+        for aviso in resultado["avisos"]:
+            print(f"- {aviso}")
+    print("Túnel sugerido:")
+    print(resultado["comando_tunnel_sugerido"])
+    print(f"Relatório: {RELATORIO}")
+    return 0 if resultado["aprovado"] else 1
+
+
+def comando_painel_remoto(dry_run=False):
+    from painel_remoto import iniciar_painel_remoto
+
+    resultado = iniciar_painel_remoto(dry_run=dry_run)
+    modo = "dry-run" if dry_run else "execução real"
+    print(f"Painel remoto ({modo})")
+    print(f"Auditoria aprovada: {'sim' if resultado['auditoria']['aprovado'] else 'não'}")
+    print(f"Comando local Streamlit: {resultado['comando_streamlit']}")
+    print(f"Iniciado: {'sim' if resultado.get('iniciado') else 'não'}")
+    if resultado.get("pid"):
+        print(f"PID: {resultado['pid']}")
+    print("Exposição externa deve ser feita por Cloudflare Tunnel + Cloudflare Access.")
+    return 0 if resultado["auditoria"]["aprovado"] or dry_run else 1
+
+
+def comando_publicar_alteracoes_painel():
+    from painel_remoto import publicar_alteracoes_painel
+
+    resultado = publicar_alteracoes_painel(auto=False)
+    print("Publicar alterações do painel")
+    for passo in resultado["passos"]:
+        print(f"- {passo['comando']} -> {passo['codigo']}")
+    print(f"Auto deploy: {'sim' if resultado['auto_deploy'] else 'não'}")
+    print(f"OK: {'sim' if resultado['ok'] else 'não'}")
+    return 0 if resultado["ok"] else 1
+
+
+def _id_argumento(args):
+    if not args:
+        raise SystemExit("Informe o ID da oferta.")
+    try:
+        return int(args[0])
+    except ValueError as erro:
+        raise SystemExit("ID da oferta inválido.") from erro
+
+
+def comando_ocultar_oferta(args):
+    from painel_remoto import ocultar_oferta
+
+    resultado = ocultar_oferta(_id_argumento(args), ator="cli_admin")
+    print("Oferta ocultada com segurança.")
+    print(f"Status: {resultado['postagem']['status']}")
+    print(f"Backup: {resultado['backup']}")
+    print(f"Publicação pós-ação: {'ok' if resultado['publicacao']['ok'] else 'bloqueada'}")
+    return 0 if resultado["publicacao"]["ok"] else 1
+
+
+def comando_restaurar_oferta(args):
+    from painel_remoto import restaurar_oferta
+
+    resultado = restaurar_oferta(_id_argumento(args), ator="cli_admin")
+    print("Oferta restaurada com segurança.")
+    print(f"Status: {resultado['postagem']['status']}")
+    print(f"Backup: {resultado['backup']}")
+    print(f"Publicação pós-ação: {'ok' if resultado['publicacao']['ok'] else 'bloqueada'}")
+    return 0 if resultado["publicacao"]["ok"] else 1
+
+
 def comando_preparar_publicacao(dry_run=False):
     from homologacao_publicacao import preparar_publicacao
 
@@ -826,7 +937,7 @@ COMANDOS_PROMOGG = {
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
+    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
 
@@ -1577,8 +1688,14 @@ def comando_publicar_site():
 
 def comando_subir_site(reutilizar_site=False):
     from publicar_site_git import DOMINIO, subir_site
+    from seguranca_publicacao import auditar_seguranca_publicacao
 
     preparar_base()
+    seguranca = auditar_seguranca_publicacao()
+    if not seguranca.get("publicacao_segura"):
+        print("Subida cancelada: auditoria de segurança de publicação encontrou achados críticos/bloqueantes.")
+        print("Rode: python3 ia_promocoes.py auditar-seguranca-publicacao")
+        return 1
 
     try:
         resultado = subir_site(reutilizar_site=reutilizar_site)
@@ -1783,6 +1900,12 @@ def main():
             "testar-playwright-sessao",
             "meli-auth",
             "meli-auditar-api",
+            "auditar-seguranca-publicacao",
+            "auditar-painel-remoto",
+            "painel-remoto",
+            "publicar-alteracoes-painel",
+            "ocultar-oferta",
+            "restaurar-oferta",
             "meli-testar-token",
             "meli-refresh-token",
             "testar-coleta-api",
@@ -1807,6 +1930,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--publicar", action="store_true")
     parser.add_argument("--somente-leitura", action="store_true")
+    parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
     comandos = {

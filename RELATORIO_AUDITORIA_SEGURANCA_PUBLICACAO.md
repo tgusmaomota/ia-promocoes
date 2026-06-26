@@ -1,0 +1,35 @@
+# Relatório de Auditoria de Segurança de Publicação
+
+- Gerado em: 2026-06-26 14:02:25
+- Status final: **ok**
+- Críticos: 0
+- Bloqueantes: 0
+- Alertas: 0
+
+## Métricas
+- dist_site_arquivos: 1744
+- git_nomes_suspeitos: 48
+- git_versionados: 3628
+- gitignore_faltantes: 0
+- python_auditados: 83
+- relatorios_auditados: 45
+- site_arquivos: 1743
+
+## Achados críticos
+- nenhum
+
+## Achados bloqueantes
+- nenhum
+
+## Alertas
+- nenhum
+
+## Correções/garantias aplicadas
+- `.gitignore` reforçado para banco, SQLite, sessões, cookies, checkpoints, storage state, perfil Playwright, backups, logs e relatórios privados.
+- Auditoria automática criada no comando `python3 ia_promocoes.py auditar-seguranca-publicacao`.
+- Gate integrado ao supervisor e ao ciclo automático antes de liberar publicação.
+- Nenhum token, cookie ou segredo foi impresso neste relatório.
+
+## Decisão
+- Publicação automática é segura apenas quando não houver achados críticos nem bloqueantes.
+- Seguro para publicar automaticamente agora: sim

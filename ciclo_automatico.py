@@ -20,6 +20,7 @@ from operacao_sistema import criar_backup_emergencia
 from publicador_telegram import validar_postagem
 from homologacao_publicacao import _git_status_classificado
 from qualidade_catalogo import auditar_qualidade_catalogo
+from seguranca_publicacao import auditar_seguranca_publicacao
 from saude_sistema import obter_relatorio_saude
 
 
@@ -119,7 +120,7 @@ def _executar_comando(args):
     }
 
 
-def _bloqueios_publicacao(qualidade, saude, site, publicar, telegram, git):
+def _bloqueios_publicacao(qualidade, saude, site, publicar, telegram, git, seguranca):
     bloqueios = []
     metricas = qualidade.get("metricas", {})
     if not publicar:
@@ -146,6 +147,8 @@ def _bloqueios_publicacao(qualidade, saude, site, publicar, telegram, git):
         bloqueios.append(f"Telegram em simulação falhou: {telegram.get('motivo')}")
     if git.get("bloqueantes"):
         bloqueios.append("Git possui alterações bloqueantes fora dos artefatos permitidos")
+    if seguranca.get("critico") or seguranca.get("bloqueante"):
+        bloqueios.append("auditoria de segurança de publicação possui achados críticos/bloqueantes")
     return bloqueios
 
 
@@ -214,6 +217,9 @@ def _gerar_relatorio(resultado):
         f"- Qualidade: {resultado['qualidade'].get('indicador')}",
         f"- Git permitido: {len(resultado['git'].get('permitidas', []))}",
         f"- Git bloqueante: {len(resultado['git'].get('bloqueantes', []))}",
+        f"- Segurança publicação: {resultado['seguranca'].get('status_final')}",
+        f"- Segurança críticos: {len(resultado['seguranca'].get('critico', []))}",
+        f"- Segurança bloqueantes: {len(resultado['seguranca'].get('bloqueante', []))}",
         "",
         "## Telegram simulado",
         f"- OK: {resultado['telegram']['ok']}",
@@ -265,8 +271,9 @@ def executar_ciclo_automatico(dry_run=True, publicar=False):
     saude = obter_relatorio_saude()
     telegram = _simular_telegram(curadoria.get("itens", []))
     git = _git_status_classificado()
+    seguranca = auditar_seguranca_publicacao()
     publicaveis_estimadas = banco["publicaveis_atuais"] + (curadoria["aprovados_auto"] if dry_run else 0)
-    bloqueios = _bloqueios_publicacao(qualidade, saude, site, publicar, telegram, git)
+    bloqueios = _bloqueios_publicacao(qualidade, saude, site, publicar, telegram, git, seguranca)
 
     if not dry_run:
         passos_reais.append(_executar_comando(["validar", "--somente-leitura"]))
@@ -292,6 +299,7 @@ def executar_ciclo_automatico(dry_run=True, publicar=False):
         "saude": saude,
         "telegram": telegram,
         "git": git,
+        "seguranca": seguranca,
         "publicaveis_estimadas": publicaveis_estimadas,
         "bloqueios": bloqueios,
         "seguro_ciclo": bool(oauth.get("configurado") and perfil_ok),
