@@ -60,6 +60,28 @@ relatorios_privados/
 .promogg_painel.pid
 *.pid
 
+# Artefatos gerados
+site/
+dist_site/
+site_promocoes.html
+
+# Relatórios e saídas operacionais
+RELATORIO_*.md
+relatorio_*.txt
+*.csv
+*.tsv
+
+# Estados locais Promogg
+.promogg_*.json
+.promogg_*.pid
+
+# Arquivos sociais/postagem gerados
+telegram.txt
+whatsapp.txt
+whatsapp_posts.txt
+instagram.txt
+promobit.txt
+
 # IDE/editor
 .vscode/
 .idea/
