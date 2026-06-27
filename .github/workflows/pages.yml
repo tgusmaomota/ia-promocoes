@@ -6,7 +6,10 @@ on:
       - main
       - master
     paths:
-      - "dist_site/**"
+      - "catalogo_publico/ofertas.json"
+      - "gerar_site_publico.py"
+      - "gerar_site.py"
+      - "validar_catalogo_publico.py"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -28,6 +31,23 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validar catálogo público
+        run: python3 validar_catalogo_publico.py
+
+      - name: Gerar dist_site
+        run: python3 gerar_site_publico.py --fonte catalogo_publico/ofertas.json --destino dist_site --dominio promogg.com.br
+
+      - name: Validar dist_site gerado
+        run: python3 validar_catalogo_publico.py --arquivo dist_site/ofertas.json
+
+      - name: Validar CNAME
+        run: test "$(cat dist_site/CNAME)" = "promogg.com.br"
 
       - name: Preparar GitHub Pages
         uses: actions/configure-pages@v5
