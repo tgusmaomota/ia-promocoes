@@ -1,5 +1,27 @@
 # Manutenção do Promogg
 
+## Modo Econômico
+
+O Promogg deve operar em Modo Econômico por padrão. Antes de qualquer manutenção ou homologação:
+
+```bash
+python3 ia_promocoes.py modo-economico
+python3 ia_promocoes.py servicos
+```
+
+Serviços externos/custosos devem aparecer OFF, incluindo Playwright, supervisor loop, monitor contínuo, scheduler, Telegram, deploy e Cloudflare Tunnel.
+
+Para iniciar manualmente um serviço específico:
+
+```bash
+python3 ia_promocoes.py iniciar supervisor
+python3 ia_promocoes.py parar supervisor
+```
+
+O painel possui a aba `Serviços` para iniciar, parar e reiniciar serviços com um clique, exibindo PID, CPU, memória, tempo ligado, requisições e custo estimado.
+
+Não configure LaunchAgent, cron, login item ou autostart no Mac para serviços do Promogg.
+
 ## Rotina segura
 
 1. Entre em manutenção: `python3 ia_promocoes.py manutencao`.

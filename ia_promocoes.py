@@ -195,7 +195,13 @@ def _iniciar_servico_producao():
     return 0
 
 
-def comando_iniciar():
+def comando_iniciar(argumentos=None):
+    argumentos = argumentos or []
+    if argumentos:
+        from servicos_promogg import iniciar_servico
+        resultado = iniciar_servico(argumentos[0])
+        print(resultado["mensagem"])
+        return 0 if resultado["ok"] else 1
     return _iniciar_servico_producao()
 
 
@@ -203,7 +209,13 @@ def comando_producao():
     return _iniciar_servico_producao()
 
 
-def comando_parar():
+def comando_parar(argumentos=None):
+    argumentos = argumentos or []
+    if argumentos:
+        from servicos_promogg import parar_servico
+        resultado = parar_servico(argumentos[0])
+        print(resultado["mensagem"])
+        return 0 if resultado["ok"] else 1
     pid = robo_rodando()
     STOP_FILE.write_text("parar\n", encoding="utf-8")
 
@@ -214,6 +226,86 @@ def comando_parar():
         PID_FILE.unlink(missing_ok=True)
         print("Robô não estava rodando. Flag de parada registrada/limpa.")
 
+    return 0
+
+
+def comando_servicos():
+    from servicos_promogg import status_servicos
+
+    for servico in status_servicos():
+        nome = servico["nome"]
+        status = servico["status"]
+        pid = servico["pid"] or "-"
+        cpu = servico["cpu"] or "-"
+        memoria = servico["memoria"] or "-"
+        tempo = servico["tempo_ligado"] or "-"
+        custo = f"R$ {servico['custo_estimado']:.2f}"
+        print(f"{nome:.<22} {status:<3} PID={pid} CPU={cpu} MEM={memoria} UP={tempo} CUSTO={custo}")
+    return 0
+
+
+def comando_modo_estavel():
+    from servicos_promogg import modo_estavel
+
+    print("Ativando MODO_ESTAVEL_LOCAL...")
+    for mensagem in modo_estavel():
+        print(f"- {mensagem}")
+    print("Modo estável local ativo: painel/site local, banco e Ollama ficam permitidos; deploy, Telegram, loop, Playwright e coleta agressiva ficam OFF.")
+    return 0
+
+
+def comando_modo_economico():
+    from servicos_promogg import modo_economico
+
+    print("Ativando Modo Econômico...")
+    for mensagem in modo_economico():
+        print(f"- {mensagem}")
+    print("Serviços externos/custosos ficaram OFF. Painel, banco, site local e IA local permanecem permitidos.")
+    return 0
+
+
+def comando_modo_operacao():
+    from ciclo_automatico import executar_ciclo_automatico
+    from servicos_promogg import modo_operacao
+
+    print("Ativando Modo Operação controlada...")
+    for mensagem in modo_operacao():
+        print(f"- {mensagem}")
+    print("Rodando ciclo controlado em dry-run, sem deploy e sem Telegram real...")
+    resultado = executar_ciclo_automatico(dry_run=True, publicar=False)
+    print(f"Coletadas estimadas: {resultado['coleta'].get('coletadas', 0)}")
+    print(f"Atualizadas estimadas: {resultado['precos'].get('atualizadas', 0)}")
+    print(f"Aprovadas automaticamente estimadas: {resultado['curadoria']['aprovados_auto']}")
+    print(f"Publicáveis estimadas: {resultado['publicaveis_estimadas']}")
+    print("Operação concluída como simulação controlada. Use comandos explícitos para aplicar qualquer etapa real.")
+    return 0 if resultado["seguro_ciclo"] else 1
+
+
+def comando_modo_divulgacao():
+    from servicos_promogg import modo_divulgacao
+
+    print("Validando liberação do Modo Divulgação...")
+    resultado = modo_divulgacao()
+    for mensagem in resultado["mensagens"]:
+        print(f"- {mensagem}")
+    auditoria = resultado["auditoria"]
+    print(f"Segurança de publicação: {auditoria['status_final']}")
+    print(f"Críticos: {len(auditoria['critico'])} | Bloqueantes: {len(auditoria['bloqueante'])} | Alertas: {len(auditoria['alerta'])}")
+    if not resultado["ok"]:
+        print("Deploy, Telegram/social e publicação automática continuam bloqueados.")
+        print("Rode: python3 ia_promocoes.py auditar-seguranca-publicacao")
+        return 1
+    print("Modo Divulgação liberado apenas como estado validado. Deploy e Telegram/social ainda exigem comando/flag explícitos.")
+    return 0
+
+
+def comando_modo_producao():
+    from servicos_promogg import modo_producao
+
+    print("Ativando Modo Produção...")
+    for mensagem in modo_producao():
+        print(f"- {mensagem}")
+    print("Modo Produção habilitado manualmente. Nenhum deploy ou Telegram é executado apenas por habilitar flags.")
     return 0
 
 
@@ -938,6 +1030,7 @@ COMANDOS_PROMOGG = {
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
     "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
+    "Serviços e Modos V1": {"modo-estavel": "Ativa MODO_ESTAVEL_LOCAL: local seguro, sem publicação, loop, Telegram, Playwright automático ou coleta agressiva.", "modo-economico": "Para serviços externos/custosos e mantém apenas recursos locais permitidos.", "modo-operacao": "Roda operação controlada em dry-run, sem deploy automático.", "modo-divulgacao": "Só libera estado de divulgação após auditoria de segurança aprovada.", "status-servicos": "Mostra status ON/OFF, PID, CPU, memória, uptime, custo estimado e logs dos serviços.", "servicos": "Alias legado de status-servicos.", "iniciar <serviço>": "Inicia/habilita manualmente um serviço controlado.", "parar <serviço>": "Para/desabilita manualmente um serviço controlado.", "modo-producao": "Legado: inicia/habilita manualmente os serviços de produção; prefira modo-operacao ou modo-divulgacao."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
 
@@ -1823,6 +1916,34 @@ def comando_monitorar_precos():
     return 0
 
 
+def _executar_worker_monitor():
+    from monitor_precos import monitorar_precos_diariamente
+
+    stop_file = Path(".promogg_servicos") / "monitor.stop"
+    pid_file = Path(".promogg_servicos") / "monitor.pid"
+    intervalo = int(os.getenv("PROMOGG_MONITOR_INTERVALO_MINUTOS", "60") or 60)
+    pid_file.parent.mkdir(exist_ok=True)
+    stop_file.unlink(missing_ok=True)
+    pid_file.write_text(str(os.getpid()), encoding="utf-8")
+    registrar_log("monitor", f"Monitor iniciado manualmente. intervalo={intervalo}min")
+    try:
+        while not stop_file.exists():
+            try:
+                preparar_base()
+                resultado = monitorar_precos_diariamente(forcar=True)
+                registrar_log("monitor", "Monitoramento de preços concluído", dados=json.dumps(resultado, ensure_ascii=False))
+            except Exception as erro:
+                registrar_log("monitor", f"Falha no monitoramento: {erro}", nivel="error")
+            fim = time.time() + max(1, intervalo) * 60
+            while time.time() < fim and not stop_file.exists():
+                time.sleep(min(5, max(1, fim - time.time())))
+    finally:
+        registrar_log("monitor", "Monitor parado com segurança")
+        pid_file.unlink(missing_ok=True)
+        stop_file.unlink(missing_ok=True)
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Central operacional do Promogg.\n\nGrupos: MASTER Produção, Operação Master, Site, Coleta, Afiliados, Curadoria, Monitoramento, IA, Analytics, Segurança e Backup.",
@@ -1834,6 +1955,13 @@ def main():
         metavar="COMANDO",
         choices=[
             "iniciar",
+            "servicos",
+            "status-servicos",
+            "modo-estavel",
+            "modo-economico",
+            "modo-operacao",
+            "modo-divulgacao",
+            "modo-producao",
             "producao",
             "online",
             "iniciar-producao",
@@ -1842,6 +1970,7 @@ def main():
             "offline",
             "parar-producao",
             "_worker-producao",
+            "_worker-monitor",
             "parar",
             "reiniciar",
             "status",
@@ -1934,7 +2063,14 @@ def main():
     args = parser.parse_args()
 
     comandos = {
-        "iniciar": comando_iniciar,
+        "iniciar": lambda: comando_iniciar(args.argumentos),
+        "servicos": comando_servicos,
+        "status-servicos": comando_servicos,
+        "modo-estavel": comando_modo_estavel,
+        "modo-economico": comando_modo_economico,
+        "modo-operacao": comando_modo_operacao,
+        "modo-divulgacao": comando_modo_divulgacao,
+        "modo-producao": comando_modo_producao,
         "producao": comando_producao,
         "online": comando_online,
         "iniciar-producao": lambda: comando_iniciar_producao(args.dry_run),
@@ -1943,7 +2079,8 @@ def main():
         "offline": comando_offline,
         "parar-producao": comando_parar_producao,
         "_worker-producao": _executar_worker_producao,
-        "parar": comando_parar,
+        "_worker-monitor": _executar_worker_monitor,
+        "parar": lambda: comando_parar(args.argumentos),
         "reiniciar": comando_reiniciar,
         "status": lambda: (imprimir_status() or 0),
         "supervisor": lambda: comando_supervisor(args.dry_run),

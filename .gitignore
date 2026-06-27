@@ -29,6 +29,7 @@ backups/
 quarentena_remocao/
 logs/
 *.log
+promocoes.db
 
 # Perfis de navegador e automacao
 perfil_mercadolivre/
@@ -54,6 +55,7 @@ relatorios_privados/
 .ia_promocoes.pid
 .ia_promocoes.stop
 .ia_promocoes.producao.json
+.promogg_servicos/
 .promogg_analytics.pid
 .promogg_painel.pid
 *.pid

@@ -28,8 +28,10 @@ Não coloque tokens, senhas ou cookies diretamente no código.
 Use o arquivo `ia_promocoes.py` para operar o sistema:
 
 ```bash
-venv/bin/python ia_promocoes.py iniciar
-venv/bin/python ia_promocoes.py parar
+venv/bin/python ia_promocoes.py servicos
+venv/bin/python ia_promocoes.py modo-economico
+venv/bin/python ia_promocoes.py iniciar scheduler
+venv/bin/python ia_promocoes.py parar scheduler
 venv/bin/python ia_promocoes.py status
 venv/bin/python ia_promocoes.py painel
 venv/bin/python ia_promocoes.py simular
@@ -38,13 +40,68 @@ venv/bin/python ia_promocoes.py coletar
 venv/bin/python ia_promocoes.py relatorio
 ```
 
-## Iniciar o robô
+## Modo Econômico
+
+```bash
+venv/bin/python ia_promocoes.py modo-economico
+```
+
+O Modo Econômico é o padrão operacional recomendado. Ele mantém disponíveis os recursos locais e deixa desligado tudo que pode gerar custo, requisições externas ou automação contínua.
+
+Permitido automaticamente:
+
+- painel local;
+- banco SQLite;
+- IA local/Ollama;
+- site local;
+- consultas locais;
+- histórico;
+- relatórios;
+- logs.
+
+Desligado até ativação manual:
+
+- Playwright;
+- supervisor loop;
+- monitor contínuo;
+- scheduler;
+- Telegram real;
+- deploy automático;
+- Cloudflare Tunnel;
+- analytics externos;
+- geração automática de afiliados;
+- coletas contínuas;
+- verificações periódicas de API.
+
+## Gerenciar serviços
+
+```bash
+venv/bin/python ia_promocoes.py servicos
+venv/bin/python ia_promocoes.py iniciar supervisor
+venv/bin/python ia_promocoes.py parar supervisor
+venv/bin/python ia_promocoes.py iniciar monitor
+venv/bin/python ia_promocoes.py parar monitor
+venv/bin/python ia_promocoes.py iniciar scheduler
+venv/bin/python ia_promocoes.py parar scheduler
+```
+
+Serviços controlados têm PID, logs, timeout de parada e status no painel.
+
+## Iniciar produção manualmente
+
+```bash
+venv/bin/python ia_promocoes.py modo-producao
+```
+
+Use somente quando quiser habilitar os recursos de produção. O comando é manual e não deve ser configurado para iniciar com o Mac.
+
+O comando legado abaixo continua existindo por compatibilidade, mas não é o fluxo recomendado para economia:
 
 ```bash
 venv/bin/python ia_promocoes.py iniciar
 ```
 
-Esse comando roda continuamente:
+Esse fluxo contínuo pode:
 
 - coleta ofertas do Mercado Livre;
 - aplica curadoria e score já existentes;

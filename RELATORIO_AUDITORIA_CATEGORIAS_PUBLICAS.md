@@ -1,6 +1,6 @@
 # Relatório de auditoria de categorias públicas
 
-Data: 26/06/2026 20:26
+Data: 27/06/2026 12:58
 
 Escopo: auditoria somente leitura das categorias públicas geradas para o site estático. Banco, histórico, curadoria e status internos não foram alterados.
 

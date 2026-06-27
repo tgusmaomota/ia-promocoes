@@ -15,6 +15,7 @@ from estado_sistema import obter_estado_sistema
 from gerador_afiliados_oficial import produtos_sem_afiliado
 from alertas_telegram import ultimo_alerta
 from painel_remoto import config_painel
+from servicos_promogg import iniciar_servico, parar_servico, reiniciar_servico, status_servicos
 
 
 st.set_page_config(page_title="Promogg | Controle de ofertas", layout="wide")
@@ -223,6 +224,7 @@ abas = st.tabs([
     "Saúde do Sistema",
     "SEO",
     "IA Revisora",
+    "Serviços",
 ])
 for aba, status_aba in zip(abas[:5], [
     "pendente_revisao", "aprovado_auto", "aprovado_manual", "rejeitado", "publicado",
@@ -408,6 +410,50 @@ with abas[8]:
                         st.info("Feedback salvo; a oferta continua pendente de revisão.")
     except Exception:
         st.warning("Não foi possível carregar a IA revisora agora. As decisões manuais continuam disponíveis.")
+
+with abas[9]:
+    st.caption("Modo Econômico é o padrão: serviços externos, custosos ou de alto volume só iniciam por ação manual.")
+    try:
+        servicos = pd.DataFrame(status_servicos())
+    except Exception as erro:
+        st.error(f"Não foi possível carregar serviços: {erro}")
+        servicos = pd.DataFrame()
+    if servicos.empty:
+        st.info("Nenhum serviço registrado.")
+    else:
+        st.dataframe(
+            servicos[[
+                "id", "nome", "status", "pid", "cpu", "memoria", "tempo_ligado",
+                "requisicoes", "custo_estimado", "watchdog", "ultimo_evento",
+            ]],
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.divider()
+        for servico in servicos.to_dict("records"):
+            with st.container():
+                cols = st.columns([2, 1, 1, 1, 1])
+                cols[0].markdown(f"**{servico['nome']}**  \n{servico['descricao']}")
+                cols[1].metric("Status", servico["status"])
+                cols[2].metric("CPU", servico.get("cpu") or "-")
+                cols[3].metric("Memória", servico.get("memoria") or "-")
+                cols[4].metric("Custo", f"R$ {float(servico.get('custo_estimado') or 0):.2f}")
+                acoes_servico = st.columns(3)
+                servico_id = servico["id"]
+                pode_controlar = servico_id not in {"ollama", "banco"}
+                with acoes_servico[0]:
+                    if st.button("Iniciar", key=f"iniciar_{servico_id}", disabled=not pode_controlar, use_container_width=True):
+                        resultado = iniciar_servico(servico_id)
+                        st.success(resultado["mensagem"]) if resultado["ok"] else st.error(resultado["mensagem"])
+                with acoes_servico[1]:
+                    if st.button("Parar", key=f"parar_{servico_id}", disabled=not pode_controlar, use_container_width=True):
+                        resultado = parar_servico(servico_id)
+                        st.success(resultado["mensagem"]) if resultado["ok"] else st.error(resultado["mensagem"])
+                with acoes_servico[2]:
+                    if st.button("Reiniciar", key=f"reiniciar_{servico_id}", disabled=not pode_controlar, use_container_width=True):
+                        resultado = reiniciar_servico(servico_id)
+                        st.success(resultado["mensagem"]) if resultado["ok"] else st.error(resultado["mensagem"])
+                st.divider()
 
 st.subheader("Buscar e editar")
 status_filtro = st.multiselect(

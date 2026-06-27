@@ -1,6 +1,6 @@
 # Relatório de Auditoria de Segurança de Publicação
 
-- Gerado em: 2026-06-26 20:26:24
+- Gerado em: 2026-06-27 12:58:43
 - Status final: **ok**
 - Críticos: 0
 - Bloqueantes: 0
@@ -11,8 +11,8 @@
 - git_nomes_suspeitos: 44
 - git_versionados: 3233
 - gitignore_faltantes: 0
-- python_auditados: 83
-- relatorios_auditados: 49
+- python_auditados: 84
+- relatorios_auditados: 50
 - site_arquivos: 1541
 
 ## Achados críticos
