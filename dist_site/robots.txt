@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /ofertas.json
-Disallow: /logs/
-Disallow: /tmp/
-Disallow: /backups/
-Sitemap: https://promogg.com.br/sitemap.xml
