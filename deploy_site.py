@@ -1,16 +1,22 @@
 import argparse
+import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from banco import registrar_evento_sistema, registrar_log
+from catalogo_integridade import minimo_catalogo
 from gerar_site import SITE_DIR, gerar_site
 
 
 DIST_DIR = Path("dist_site")
 DEFAULT_BRANCH = "main"
 DOMAIN_ENV = "IA_PROMOCOES_DOMINIO"
+
+
+class ErroDeploySeguro(RuntimeError):
+    pass
 
 
 def dominio_configurado(dominio=None):
@@ -70,6 +76,7 @@ def criar_cname(destino, dominio=None):
 def copiar_site(destino):
     gerar_site()
     origem = SITE_DIR.resolve()
+    validar_catalogo_deploy(origem)
     destino = Path(destino).expanduser().resolve()
     destino.mkdir(parents=True, exist_ok=True)
 
@@ -86,11 +93,36 @@ def copiar_site(destino):
     return destino
 
 
+def validar_catalogo_deploy(destino):
+    destino = Path(destino)
+    caminho = destino / "ofertas.json"
+    try:
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as erro:
+        raise ErroDeploySeguro(f"catálogo público inválido em {caminho}: {erro}") from erro
+
+    ofertas = dados.get("ofertas")
+    if not isinstance(ofertas, list):
+        raise ErroDeploySeguro(f"catálogo público inválido em {caminho}: campo ofertas não é uma lista")
+
+    minimo = minimo_catalogo()
+    total = len(ofertas)
+    if total <= 0:
+        raise ErroDeploySeguro("deploy bloqueado: o site gerado não possui ofertas públicas")
+    if total < minimo:
+        raise ErroDeploySeguro(
+            f"deploy bloqueado: catálogo possui {total} ofertas; mínimo configurado é {minimo}"
+        )
+    return {"ofertas": total, "minimo": minimo}
+
+
 def preparar_dist_site(dominio=None):
     destino = copiar_site(DIST_DIR)
     cname = criar_cname(destino, dominio)
+    validacao = validar_catalogo_deploy(destino)
     if cname:
         registrar_log("deploy_site", f"CNAME configurado para {dominio_configurado(dominio)}")
+    registrar_log("deploy_site", f"Catálogo validado para deploy: {validacao['ofertas']} ofertas")
     return destino
 
 
@@ -114,25 +146,39 @@ def publicar_no_github(dominio=None, mensagem="Atualiza site publico"):
 
 
 def publicar_local(args):
-    destino = copiar_site(args.destino)
-    cname = criar_cname(destino, args.dominio)
+    try:
+        destino = copiar_site(args.destino)
+        cname = criar_cname(destino, args.dominio)
+        validacao = validar_catalogo_deploy(destino)
+    except ErroDeploySeguro as erro:
+        print(f"Erro no deploy local: {erro}")
+        return 1
     print(f"Site preparado em: {destino}")
     if cname:
         print(f"Domínio configurado em CNAME: {dominio_configurado(args.dominio)}")
+    print(f"Catálogo validado: {validacao['ofertas']} ofertas públicas.")
     print("Publique essa pasta no provedor estático ou sirva com um servidor web.")
+    return 0
 
 
 def publicar_github_pages(args):
-    destino = copiar_site(args.destino)
-    cname = criar_cname(destino, args.dominio)
+    try:
+        destino = copiar_site(args.destino)
+        cname = criar_cname(destino, args.dominio)
+        validacao = validar_catalogo_deploy(destino)
+    except ErroDeploySeguro as erro:
+        print(f"Erro no deploy GitHub Pages: {erro}")
+        return 1
     print(f"Arquivos copiados para GitHub Pages em: {destino}")
     if cname:
         print(f"Domínio configurado em CNAME: {dominio_configurado(args.dominio)}")
+    print(f"Catálogo validado: {validacao['ofertas']} ofertas públicas.")
     print("Próximos comandos sugeridos dentro do repositório de Pages:")
     print("git status")
     print("git add .")
     print('git commit -m "Atualiza ofertas"')
     print("git push")
+    return 0
 
 
 def publicar_github_actions(args):
@@ -141,7 +187,7 @@ def publicar_github_actions(args):
             dominio=args.dominio,
             mensagem=args.mensagem,
         )
-    except RuntimeError as erro:
+    except (ErroDeploySeguro, RuntimeError) as erro:
         print(f"Erro no deploy: {erro}")
         return 1
 
@@ -182,8 +228,8 @@ def main():
     vps.set_defaults(func=publicar_vps)
 
     args = parser.parse_args()
-    args.func(args)
+    return args.func(args) or 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

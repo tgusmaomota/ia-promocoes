@@ -71,6 +71,10 @@ relatorio_*.txt
 *.csv
 *.tsv
 
+# Catálogo público sanitizado para CI
+!catalogo_publico/
+!catalogo_publico/ofertas.json
+
 # Estados locais Promogg
 .promogg_*.json
 .promogg_*.pid
