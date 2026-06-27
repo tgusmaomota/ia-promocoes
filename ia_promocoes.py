@@ -1011,6 +1011,200 @@ def comando_auditar_qualidade_catalogo():
     return 0 if resultado["indicador"] != "REPROVADO" else 1
 
 
+def _bool_env(nome, padrao=False):
+    valor = os.getenv(nome, str(padrao)).strip().lower()
+    return valor in {"1", "true", "sim", "yes", "on"}
+
+
+def _resultado_check(nome, ok, mensagem, bloqueante=True):
+    return {"nome": nome, "ok": bool(ok), "mensagem": mensagem, "bloqueante": bool(bloqueante)}
+
+
+def _dominios_divulgacao():
+    dominios = []
+    for env_nome in ("IA_PROMOCOES_DOMINIO", "PROMOGG_DOMINIO", "PROMOGG_SITE_DOMINIO"):
+        valor = os.getenv(env_nome, "").strip()
+        if valor:
+            dominios.append(valor.removeprefix("https://").removeprefix("http://").strip("/"))
+    for cname in (Path("dist_site") / "CNAME", Path("site") / "CNAME"):
+        try:
+            valor = cname.read_text(encoding="utf-8").strip()
+            if valor:
+                dominios.append(valor.removeprefix("https://").removeprefix("http://").strip("/"))
+        except OSError:
+            pass
+    vistos = set()
+    return [d for d in dominios if d and not (d in vistos or vistos.add(d))]
+
+
+def _checar_dns_cloudflare_leve():
+    import socket
+
+    dominios = _dominios_divulgacao()
+    if not dominios:
+        return _resultado_check("DNS/Cloudflare", True, "domínio público não configurado; checagem remota omitida", bloqueante=False)
+    mensagens = []
+    for dominio in dominios[:2]:
+        try:
+            enderecos = sorted({item[4][0] for item in socket.getaddrinfo(dominio, 443)})
+            if not enderecos:
+                return _resultado_check("DNS/Cloudflare", False, f"{dominio}: sem resolução DNS", bloqueante=False)
+            cloudflare = any(ip.startswith(("104.", "172.64.", "172.65.", "172.66.", "172.67.", "188.114.")) for ip in enderecos)
+            sufixo = "Cloudflare provável" if cloudflare else "DNS resolve; proxy Cloudflare não confirmado"
+            mensagens.append(f"{dominio}: {sufixo}")
+        except OSError as erro:
+            return _resultado_check("DNS/Cloudflare", False, f"{dominio}: DNS indisponível ({erro})", bloqueante=False)
+    return _resultado_check("DNS/Cloudflare", True, "; ".join(mensagens), bloqueante=False)
+
+
+def _checar_http_local(servicos_por_id, servico_id, nome, porta_padrao):
+    from urllib.error import HTTPError, URLError
+    from urllib.request import Request, urlopen
+
+    servico = servicos_por_id.get(servico_id, {})
+    if servico.get("status") != "ON":
+        return _resultado_check(nome, False, f"{nome} OFF em status-servicos")
+    porta = os.getenv("PROMOGG_SITE_LOCAL_PORTA", str(porta_padrao)) if servico_id == "site-local" else str(porta_padrao)
+    url = f"http://127.0.0.1:{porta}/"
+    try:
+        req = Request(url, method="HEAD")
+        with urlopen(req, timeout=2) as resposta:
+            ok = 200 <= int(resposta.status) < 500
+            return _resultado_check(nome, ok, f"{url} HTTP {resposta.status}")
+    except HTTPError as erro:
+        ok = 200 <= int(erro.code) < 500
+        return _resultado_check(nome, ok, f"{url} HTTP {erro.code}")
+    except (OSError, URLError, ValueError) as erro:
+        return _resultado_check(nome, False, f"{url} indisponível ({erro})")
+
+
+def _checar_git_divulgacao():
+    try:
+        proc = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=False)
+    except OSError as erro:
+        return _resultado_check("Git", False, f"Git indisponível: {erro}")
+    if proc.returncode:
+        return _resultado_check("Git", False, "não foi possível consultar git status")
+    pendentes = len([linha for linha in proc.stdout.splitlines() if linha.strip()])
+    if pendentes:
+        return _resultado_check("Git", True, f"{pendentes} alteração(ões) pendente(s); revisar antes de publicar", bloqueante=False)
+    return _resultado_check("Git", True, "árvore de trabalho limpa")
+
+
+def _checar_catalogo_dist_site():
+    from catalogo_integridade import resumo_catalogo
+
+    resultados = []
+    for pasta in (Path("site"), Path("dist_site")):
+        resumo_local = resumo_catalogo(pasta)
+        if resumo_local["erro"]:
+            resultados.append(_resultado_check(f"Catálogo {pasta}", False, resumo_local["erro"]))
+            continue
+        ok = resumo_local["ofertas"] > 0 and resumo_local["ofertas"] == resumo_local["paginas"] and not resumo_local["paginas_ausentes"]
+        resultados.append(_resultado_check(
+            f"Catálogo {pasta}",
+            ok,
+            f"{resumo_local['ofertas']} ofertas, {resumo_local['paginas']} páginas, {resumo_local['links_invalidos']} links inválidos",
+        ))
+    return resultados
+
+
+def comando_checklist_divulgacao():
+    from catalogo_integridade import validar_catalogo_estatico
+    from integridade_paginas_produto import auditar_paginas_produto
+    from painel_remoto import config_painel
+    from producao_promogg import validar_preflight_somente_leitura
+    from qualidade_catalogo import auditar_qualidade_catalogo
+    from seguranca_publicacao import auditar_seguranca_publicacao
+    from servicos_promogg import status_servicos
+
+    checks = []
+
+    seguranca = auditar_seguranca_publicacao()
+    checks.append(_resultado_check(
+        "Segurança da publicação",
+        seguranca["publicacao_segura"],
+        f"status={seguranca['status_final']} criticos={len(seguranca['critico'])} bloqueantes={len(seguranca['bloqueante'])} alertas={len(seguranca['alerta'])}",
+    ))
+
+    erros_validacao = validar_preflight_somente_leitura()
+    checks.append(_resultado_check(
+        "Validação somente leitura",
+        not erros_validacao,
+        "catálogo íntegro" if not erros_validacao else "; ".join(erros_validacao[:3]),
+    ))
+
+    qualidade = auditar_qualidade_catalogo()
+    checks.append(_resultado_check(
+        "Qualidade do catálogo",
+        qualidade["indicador"] != "REPROVADO",
+        f"{qualidade['indicador']} bloqueantes={len(qualidade.get('ressalvas_bloqueantes', {}))} informativas={len(qualidade.get('ressalvas_informativas', {}))}",
+    ))
+
+    paginas = auditar_paginas_produto(escrever_relatorio=False)
+    checks.append(_resultado_check(
+        "Páginas do catálogo",
+        not paginas["erros"] and bool(paginas["ofertas"]),
+        f"ofertas={len(paginas['ofertas'])} páginas={len(paginas['paginas'])} erros={len(paginas['erros'])}",
+    ))
+
+    checks.extend(_checar_catalogo_dist_site())
+    for pasta in (Path("site"), Path("dist_site")):
+        erros_catalogo = validar_catalogo_estatico(pasta)
+        checks.append(_resultado_check(
+            f"Links, imagens e SEO {pasta}",
+            not erros_catalogo,
+            "válidos" if not erros_catalogo else "; ".join(erros_catalogo[:3]),
+        ))
+
+    servicos = status_servicos()
+    servicos_por_id = {servico["id"]: servico for servico in servicos}
+    esperados_on = {"painel", "site-local", "ollama", "banco"}
+    esperados_off = {"playwright", "supervisor", "monitor", "scheduler", "telegram", "tunnel"}
+    for servico_id in sorted(esperados_on):
+        servico = servicos_por_id.get(servico_id, {})
+        checks.append(_resultado_check(f"Serviço {servico.get('nome', servico_id)}", servico.get("status") == "ON", f"status={servico.get('status', 'N/D')}"))
+    for servico_id in sorted(esperados_off):
+        servico = servicos_por_id.get(servico_id, {})
+        checks.append(_resultado_check(f"Serviço {servico.get('nome', servico_id)}", servico.get("status") == "OFF", f"status={servico.get('status', 'N/D')}"))
+
+    checks.append(_checar_http_local(servicos_por_id, "site-local", "Site local", 8080))
+    checks.append(_checar_http_local(servicos_por_id, "painel", "Painel local", 8501))
+    checks.append(_checar_git_divulgacao())
+    checks.append(_checar_dns_cloudflare_leve())
+
+    cfg_painel = config_painel()
+    deploy_flag = servicos_por_id.get("deploy", {}).get("status") == "ON"
+    supervisor_on = servicos_por_id.get("supervisor", {}).get("status") == "ON"
+    supervisor_publicar = _bool_env("PROMOGG_SUPERVISOR_PUBLICAR", False)
+    auto_deploy = _bool_env("PROMOGG_PAINEL_AUTO_DEPLOY", False)
+    checks.append(_resultado_check(
+        "Deploy desligado/controlado",
+        not deploy_flag and not auto_deploy and not (supervisor_on and supervisor_publicar),
+        f"serviço_deploy={'ON' if deploy_flag else 'OFF'} painel_auto_deploy={cfg_painel['auto_deploy']} supervisor={'ON' if supervisor_on else 'OFF'} supervisor_publicar={supervisor_publicar}",
+    ))
+    telegram_real = servicos_por_id.get("telegram", {}).get("status") == "ON"
+    checks.append(_resultado_check("Telegram real desligado", not telegram_real, f"serviço_telegram={'ON' if telegram_real else 'OFF'}"))
+
+    bloqueios = [check for check in checks if not check["ok"] and check["bloqueante"]]
+    avisos = [check for check in checks if not check["ok"] and not check["bloqueante"]]
+    liberada = not bloqueios
+
+    print("Checklist de Divulgação Promogg")
+    for check in checks:
+        marcador = "[OK]" if check["ok"] else ("[BLOQUEIO]" if check["bloqueante"] else "[AVISO]")
+        print(f"{marcador} {check['nome']}: {check['mensagem']}")
+    print(f"Bloqueios: {len(bloqueios)}")
+    for check in bloqueios[:20]:
+        print(f"- {check['nome']}: {check['mensagem']}")
+    print(f"Avisos: {len(avisos)}")
+    for check in avisos[:10]:
+        print(f"- {check['nome']}: {check['mensagem']}")
+    print("Nada real foi executado: sem deploy, Telegram, supervisor-loop, online, ciclo com publicação, coleta agressiva ou Playwright automático.")
+    print(f"DIVULGACAO_LIBERADA={'true' if liberada else 'false'}")
+    return 0 if liberada else 1
+
+
 COMANDOS_PROMOGG = {
     "MASTER Produção": {
         "iniciar-producao": "Executa pré-voo e entra em ONLINE apenas se aprovado.",
@@ -1029,7 +1223,7 @@ COMANDOS_PROMOGG = {
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
+    "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "checklist-divulgacao": "Agrega pré-divulgação segura: segurança, validação, catálogo, serviços, Git, DNS leve, site/painel locais e flags reais desligadas.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Serviços e Modos V1": {"modo-estavel": "Ativa MODO_ESTAVEL_LOCAL: local seguro, sem publicação, loop, Telegram, Playwright automático ou coleta agressiva.", "modo-economico": "Para serviços externos/custosos e mantém apenas recursos locais permitidos.", "modo-operacao": "Roda operação controlada em dry-run, sem deploy automático.", "modo-divulgacao": "Só libera estado de divulgação após auditoria de segurança aprovada.", "status-servicos": "Mostra status ON/OFF, PID, CPU, memória, uptime, custo estimado e logs dos serviços.", "servicos": "Alias legado de status-servicos.", "iniciar <serviço>": "Inicia/habilita manualmente um serviço controlado.", "parar <serviço>": "Para/desabilita manualmente um serviço controlado.", "modo-producao": "Legado: inicia/habilita manualmente os serviços de produção; prefira modo-operacao ou modo-divulgacao."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
 }
@@ -2030,6 +2224,7 @@ def main():
             "meli-auth",
             "meli-auditar-api",
             "auditar-seguranca-publicacao",
+            "checklist-divulgacao",
             "auditar-painel-remoto",
             "painel-remoto",
             "publicar-alteracoes-painel",
@@ -2139,6 +2334,7 @@ def main():
         "meli-auth": comando_meli_auth,
         "meli-auditar-api": comando_meli_auditar_api,
         "auditar-seguranca-publicacao": lambda: comando_auditar_seguranca_publicacao(args.json),
+        "checklist-divulgacao": comando_checklist_divulgacao,
         "auditar-painel-remoto": comando_auditar_painel_remoto,
         "painel-remoto": lambda: comando_painel_remoto(args.dry_run),
         "publicar-alteracoes-painel": comando_publicar_alteracoes_painel,

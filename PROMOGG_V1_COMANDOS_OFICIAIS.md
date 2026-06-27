@@ -16,6 +16,7 @@ python3 ia_promocoes.py saude-detalhada
 python3 ia_promocoes.py auditar-base
 python3 ia_promocoes.py auditar-sistema
 python3 ia_promocoes.py auditar-seguranca-publicacao
+python3 ia_promocoes.py checklist-divulgacao
 python3 ia_promocoes.py auditar-qualidade-catalogo
 python3 ia_promocoes.py auditar-paginas-produto
 python3 ia_promocoes.py auditar-precos
