@@ -1205,6 +1205,93 @@ def comando_checklist_divulgacao():
     return 0 if liberada else 1
 
 
+def _api_rotas_mutaveis(app):
+    metodos_mutaveis = {"POST", "PUT", "PATCH", "DELETE"}
+    rotas_mutaveis = []
+    for rota in app.routes:
+        metodos = set(getattr(rota, "methods", set()) or set())
+        if metodos & metodos_mutaveis:
+            rotas_mutaveis.append(f"{','.join(sorted(metodos & metodos_mutaveis))} {getattr(rota, 'path', '')}")
+    return rotas_mutaveis
+
+
+def comando_api(host="127.0.0.1", porta=8001):
+    host = host or "127.0.0.1"
+    porta = int(porta or 8001)
+    if host == "0.0.0.0":
+        print("Bloqueado: a API read-only não deve ser exposta em 0.0.0.0 por padrão.")
+        print("Use 127.0.0.1 para operação local ou configure uma camada autenticada antes de expor.")
+        return 2
+
+    print("API Promogg read-only e local.")
+    print("Sem login/JWT nesta fase, sem rotas mutáveis e sem substituição do Streamlit.")
+    print(f"Iniciando: uvicorn api_promogg.main:app --host {host} --port {porta} --reload")
+    return subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "api_promogg.main:app",
+            "--host",
+            host,
+            "--port",
+            str(porta),
+            "--reload",
+        ],
+        check=False,
+    ).returncode
+
+
+def comando_api_teste():
+    from fastapi.testclient import TestClient
+
+    from api_promogg.main import app
+
+    cliente = TestClient(app)
+    rotas = [
+        "/api/v1/health",
+        "/api/v1/health/detalhada",
+        "/api/v1/ofertas",
+        "/api/v1/categorias",
+    ]
+    erros = []
+
+    print("Smoke test da API Promogg read-only")
+    for rota in rotas:
+        resposta = cliente.get(rota, headers={"X-Request-ID": "req_cli_api_teste"})
+        ok = resposta.status_code == 200 and bool(resposta.headers.get("X-Request-ID"))
+        print(f"{'[OK]' if ok else '[ERRO]'} GET {rota} HTTP {resposta.status_code}")
+        if not ok:
+            erros.append(f"{rota}: HTTP {resposta.status_code} ou X-Request-ID ausente")
+
+    resposta_erro = cliente.get("/api/v1/ofertas/OFERTA_INEXISTENTE", headers={"X-Request-ID": "req_cli_api_erro"})
+    payload_erro = resposta_erro.json()
+    erro_padronizado = (
+        resposta_erro.status_code == 404
+        and payload_erro.get("error", {}).get("code") == "NOT_FOUND"
+        and payload_erro.get("error", {}).get("request_id") == "req_cli_api_erro"
+    )
+    print(f"{'[OK]' if erro_padronizado else '[ERRO]'} erro padronizado NOT_FOUND")
+    if not erro_padronizado:
+        erros.append("Erro padronizado NOT_FOUND inválido")
+
+    rotas_mutaveis = _api_rotas_mutaveis(app)
+    somente_leitura = not rotas_mutaveis
+    print(f"{'[OK]' if somente_leitura else '[ERRO]'} rotas somente leitura")
+    if rotas_mutaveis:
+        erros.append("Rotas mutáveis encontradas: " + "; ".join(rotas_mutaveis))
+
+    if erros:
+        print("API_TESTE=erro")
+        for erro in erros:
+            print(f"- {erro}")
+        return 1
+
+    print("API_TESTE=ok")
+    print("API continua read-only, local e sem autenticação real nesta fase.")
+    return 0
+
+
 COMANDOS_PROMOGG = {
     "MASTER Produção": {
         "iniciar-producao": "Executa pré-voo e entra em ONLINE apenas se aprovado.",
@@ -1223,6 +1310,7 @@ COMANDOS_PROMOGG = {
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
+    "API Read-only": {"api": "Inicia a API local read-only em 127.0.0.1:8001.", "api-teste": "Testa a API internamente sem depender de servidor rodando."},
     "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "checklist-divulgacao": "Agrega pré-divulgação segura: segurança, validação, catálogo, serviços, Git, DNS leve, site/painel locais e flags reais desligadas.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Serviços e Modos V1": {"modo-estavel": "Ativa MODO_ESTAVEL_LOCAL: local seguro, sem publicação, loop, Telegram, Playwright automático ou coleta agressiva.", "modo-economico": "Para serviços externos/custosos e mantém apenas recursos locais permitidos.", "modo-operacao": "Roda operação controlada em dry-run, sem deploy automático.", "modo-divulgacao": "Só libera estado de divulgação após auditoria de segurança aprovada.", "status-servicos": "Mostra status ON/OFF, PID, CPU, memória, uptime, custo estimado e logs dos serviços.", "servicos": "Alias legado de status-servicos.", "iniciar <serviço>": "Inicia/habilita manualmente um serviço controlado.", "parar <serviço>": "Para/desabilita manualmente um serviço controlado.", "modo-producao": "Legado: inicia/habilita manualmente os serviços de produção; prefira modo-operacao ou modo-divulgacao."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
@@ -2171,6 +2259,8 @@ def main():
             "supervisor",
             "supervisor-loop",
             "testar-alerta-telegram",
+            "api",
+            "api-teste",
             "comandos",
             "painel",
             "simular",
@@ -2255,6 +2345,8 @@ def main():
     parser.add_argument("--publicar", action="store_true")
     parser.add_argument("--somente-leitura", action="store_true")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--porta", type=int, default=8001)
     args = parser.parse_args()
 
     comandos = {
@@ -2281,6 +2373,8 @@ def main():
         "supervisor": lambda: comando_supervisor(args.dry_run),
         "supervisor-loop": comando_supervisor_loop,
         "testar-alerta-telegram": lambda: comando_testar_alerta_telegram(args.dry_run),
+        "api": lambda: comando_api(args.host, args.porta),
+        "api-teste": comando_api_teste,
         "comandos": comando_comandos,
         "painel": comando_painel,
         "simular": comando_simular,

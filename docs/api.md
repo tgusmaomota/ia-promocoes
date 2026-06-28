@@ -23,7 +23,21 @@ Comando planejado para desenvolvimento local:
 uvicorn api_promogg.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
+Comando oficial pelo CLI:
+
+```bash
+python3 ia_promocoes.py api
+```
+
+Smoke test interno sem depender de servidor rodando:
+
+```bash
+python3 ia_promocoes.py api-teste
+```
+
 Essa API inicial é paralela ao fluxo existente. Ela não substitui CLI, Streamlit, geração do site, GitHub Pages ou banco SQLite.
+
+O CLI usa `127.0.0.1` e porta `8001` por padrão. `--host` e `--porta` são aceitos, mas `0.0.0.0` é bloqueado para evitar exposição acidental antes de autenticação real.
 
 ## Testes Automatizados
 
@@ -34,6 +48,7 @@ Cobertura atual:
 - health básico e detalhado;
 - listagem e detalhe de ofertas;
 - listagem de categorias;
+- comando `api-teste` do CLI;
 - validação padronizada para parâmetros inválidos;
 - `NOT_FOUND` padronizado;
 - preservação de `X-Request-ID`;

@@ -49,6 +49,15 @@ Comando local planejado para a API read-only:
 uvicorn api_promogg.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
+Comandos oficiais no CLI:
+
+```bash
+python3 ia_promocoes.py api
+python3 ia_promocoes.py api-teste
+```
+
+`api` inicia o Uvicorn localmente em `127.0.0.1:8001` por padrão e bloqueia `0.0.0.0`. `api-teste` usa chamada interna com `TestClient`, valida health, ofertas, categorias, `X-Request-ID`, erro `NOT_FOUND` padronizado e ausência de rotas mutáveis.
+
 Rotas iniciais:
 
 - `GET /api/v1/health`

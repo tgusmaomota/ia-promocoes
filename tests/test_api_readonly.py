@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 
 from fastapi.testclient import TestClient
 
@@ -91,3 +93,15 @@ def test_headers_de_seguranca_sao_aplicados():
 
 def test_cors_default_nao_usa_wildcard():
     assert "*" not in ALLOWED_ORIGINS
+
+
+def test_cli_api_teste_funciona():
+    resultado = subprocess.run(
+        [sys.executable, "ia_promocoes.py", "api-teste"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert resultado.returncode == 0
+    assert "API_TESTE=ok" in resultado.stdout
+    assert "rotas somente leitura" in resultado.stdout

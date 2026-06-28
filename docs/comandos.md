@@ -35,6 +35,23 @@ python3 ia_promocoes.py modo-economico
 python3 ia_promocoes.py parar
 ```
 
+## API Read-only
+
+```bash
+python3 ia_promocoes.py api
+python3 ia_promocoes.py api-teste
+```
+
+O comando `api` inicia a API local em `127.0.0.1:8001` com Uvicorn e `--reload`. A API é somente leitura, não substitui o painel Streamlit e não implementa login/JWT nesta fase.
+
+Opções:
+
+```bash
+python3 ia_promocoes.py api --host 127.0.0.1 --porta 8001
+```
+
+O host `0.0.0.0` é bloqueado pelo CLI para evitar exposição acidental sem camada autenticada.
+
 ## Coleta e Curadoria
 
 ```bash
