@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from api_promogg.config import ALLOWED_ORIGINS, API_PREFIX, APP_TITLE
+from api_promogg.config import ALLOWED_ORIGINS, API_PREFIX, APP_TITLE, validar_allowed_origins
 from api_promogg.errors import (
     ApiError,
     api_error_handler,
@@ -14,6 +14,8 @@ from api_promogg.errors import (
 from api_promogg.middleware import RequestIDMiddleware
 from api_promogg.routers import health, ofertas
 
+
+validar_allowed_origins(ALLOWED_ORIGINS)
 
 app = FastAPI(
     title=APP_TITLE,

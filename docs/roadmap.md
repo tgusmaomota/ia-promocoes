@@ -34,13 +34,15 @@ Status: em documentação inicial.
 
 ### Fase 2: Backend API Autenticado em Paralelo
 
-Status: Fase 2B com esqueleto read-only inicial em paralelo.
+Status: Fase 2C com endurecimento read-only em andamento.
 
 - Criar API HTTP versionada em `/api/v1`.
 - Manter CLI, Streamlit e fluxo estático funcionando durante a transição.
 - Expor primeiro rotas somente leitura e health checks.
 - Padronizar erros, validação, sanitização, CORS e rate limiting.
 - Criar testes de contrato e segurança para a nova API.
+- Endurecer respostas read-only com headers de segurança, logs sem segredos e CORS sem wildcard default.
+- Manter autenticação real, JWT, sessões e RBAC para fases posteriores.
 
 ### Fase 3: Usuários, Senhas, JWT, Refresh Cookie e Sessões
 

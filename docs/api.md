@@ -7,7 +7,7 @@ O Promogg ainda não possui API autenticada própria para operação administrat
 ## Estado
 
 - Status deste documento: contrato planejado.
-- Backend API: esqueleto read-only inicial criado em paralelo.
+- Backend API: esqueleto read-only inicial criado em paralelo, com endurecimento básico de segurança.
 - Autenticação própria: ainda não implementada.
 - RBAC próprio: ainda não implementado.
 - Painel atual: continua sendo Streamlit/local.
@@ -24,6 +24,28 @@ uvicorn api_promogg.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
 Essa API inicial é paralela ao fluxo existente. Ela não substitui CLI, Streamlit, geração do site, GitHub Pages ou banco SQLite.
+
+## Testes Automatizados
+
+A API read-only possui testes de contrato e segurança em `tests/test_api_readonly.py`.
+
+Cobertura atual:
+
+- health básico e detalhado;
+- listagem e detalhe de ofertas;
+- listagem de categorias;
+- validação padronizada para parâmetros inválidos;
+- `NOT_FOUND` padronizado;
+- preservação de `X-Request-ID`;
+- presença de `request_id` em erros;
+- headers de segurança;
+- CORS padrão sem wildcard.
+
+Comando:
+
+```bash
+python3 -m pytest tests/test_api_readonly.py
+```
 
 ## Mercado Livre
 
@@ -68,11 +90,13 @@ Respostas:
 
 Headers de segurança planejados para painel/API:
 
-- `Strict-Transport-Security`
-- `Content-Security-Policy`
-- `X-Content-Type-Options`
-- `Referrer-Policy`
-- `Permissions-Policy`
+- `X-Content-Type-Options: nosniff`: implementado na API read-only.
+- `Referrer-Policy: no-referrer`: implementado na API read-only.
+- `X-Frame-Options: DENY`: implementado na API read-only.
+- `Permissions-Policy`: implementado com política restritiva na API read-only.
+- `Cache-Control: no-store`: implementado na API read-only.
+- `Strict-Transport-Security`: planejado para ambiente HTTPS de produção.
+- `Content-Security-Policy`: planejado para painel HTML; não aplicado agora porque a API atual retorna JSON puro.
 
 ## Padrão de Resposta
 
@@ -118,6 +142,18 @@ Regras:
 - erros de validação podem indicar campos inválidos, sem ecoar segredo;
 - `request_id` deve correlacionar resposta, logs e auditoria.
 
+## Logs Seguros
+
+A API read-only registra log mínimo por requisição:
+
+- `request_id`;
+- método HTTP;
+- path sem query string;
+- status code;
+- tempo de resposta em milissegundos.
+
+Os logs não devem registrar token, cookie, `Authorization`, query sensível ou payload sensível. Como a fase atual é somente leitura e sem corpo de escrita, nenhum payload é logado.
+
 ## Códigos de Erro
 
 | Código | HTTP | Uso |
@@ -148,6 +184,13 @@ Controles obrigatórios para `/api/v1`:
 - proteção contra XSS com escape padrão e sanitização de HTML;
 - uploads seguros com allowlist, limite de tamanho e storage isolado quando existirem;
 - HTTPS obrigatório em produção.
+
+Limitações atuais:
+
+- ainda não há login, JWT, refresh token, sessão, RBAC ou MFA;
+- não há rotas mutáveis;
+- a API não consulta o banco SQLite;
+- CORS padrão não usa `"*"`.
 
 ## Resumo dos Endpoints
 

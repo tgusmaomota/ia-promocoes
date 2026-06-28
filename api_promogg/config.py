@@ -13,3 +13,7 @@ ALLOWED_ORIGINS = [
     "https://promogg.com.br",
 ]
 
+
+def validar_allowed_origins(origins):
+    if "*" in origins:
+        raise RuntimeError("CORS wildcard não permitido na configuração padrão da API.")

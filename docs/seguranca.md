@@ -27,6 +27,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Serviços locais em `127.0.0.1` | Parcial | Site local, analytics e painel remoto foram desenhados para não abrir porta pública diretamente. |
 | Cloudflare Access para painel remoto | Parcial | Documentado e auditado, mas depende de configuração externa. |
 | Auditoria operacional sanitizada | Parcial | Há `sistema_eventos` e logs sanitizados, mas ainda sem identidade forte por usuário. |
+| API read-only endurecida | Parcial | `/api/v1` tem testes, headers de segurança, CORS sem wildcard default, erros padronizados e logs mínimos sem query/payload. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -173,6 +174,17 @@ Política planejada:
 
 A API futura deve começar em `/api/v1`.
 
+Estado implementado da API read-only:
+
+- somente rotas `GET`;
+- fonte exclusiva em `catalogo_publico/ofertas.json`;
+- sem consulta ao SQLite;
+- sem login, JWT, refresh token, sessão, RBAC ou MFA;
+- testes automatizados em `tests/test_api_readonly.py`;
+- CORS por allowlist e bloqueio de wildcard na configuração padrão;
+- logs de requisição com `request_id`, método, path sem query, status code e duração;
+- sem log de token, cookie, authorization, query sensível ou payload.
+
 Controles obrigatórios:
 
 - autenticação em todas as rotas privadas;
@@ -190,11 +202,13 @@ Controles obrigatórios:
 
 Headers planejados:
 
-- `Strict-Transport-Security`
-- `Content-Security-Policy`
-- `X-Content-Type-Options`
-- `Referrer-Policy`
-- `Permissions-Policy`
+- `X-Content-Type-Options`: implementado na API read-only.
+- `Referrer-Policy`: implementado na API read-only.
+- `X-Frame-Options`: implementado na API read-only.
+- `Permissions-Policy`: implementado na API read-only.
+- `Cache-Control`: implementado como `no-store` na API read-only.
+- `Strict-Transport-Security`: planejado para HTTPS em produção.
+- `Content-Security-Policy`: planejado para painel HTML; não aplicado agora para JSON puro.
 
 ## Banco
 

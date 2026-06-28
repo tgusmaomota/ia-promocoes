@@ -35,6 +35,14 @@ Objetivos:
 - padronizar validação, erros, logs, auditoria e rate limiting;
 - permitir que o painel futuro consuma a API em vez de executar comandos diretamente.
 
+Endurecimento atual da API read-only:
+
+- testes automatizados em `tests/test_api_readonly.py`;
+- headers de segurança em todas as respostas JSON;
+- logs mínimos com `request_id`, método, path, status code e duração;
+- CORS restrito por allowlist, sem wildcard na configuração padrão;
+- erros padronizados com `request_id`.
+
 Comando local planejado para a API read-only:
 
 ```bash
@@ -48,6 +56,12 @@ Rotas iniciais:
 - `GET /api/v1/ofertas`
 - `GET /api/v1/ofertas/{oferta_id}`
 - `GET /api/v1/categorias`
+
+Validação de testes:
+
+```bash
+python3 -m pytest tests/test_api_readonly.py
+```
 
 ## Assistente
 
