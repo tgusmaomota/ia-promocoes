@@ -30,6 +30,8 @@ O desenho de autenticação futura está em `docs/auth-model.md`. Ele define ent
 
 A base técnica isolada de autenticação fica em `api_promogg/auth/` e cobre hash Argon2id, tokens opacos, rotação simulada de refresh token, RBAC em memória e sanitização de auditoria. Ela ainda não é ligada às rotas, não cria tabelas, não protege endpoints read-only e não implementa login real.
 
+A persistência experimental da Fase 3C usa SQLite separado (`auth_dev.db` por padrão, ou `PROMOGG_AUTH_DB_PATH`) para preparar usuários, sessões, refresh tokens e auditoria. Esse banco não é o `banco.db` operacional, é ignorado pelo Git, não cria admin automático e não ativa autenticação nas rotas existentes.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

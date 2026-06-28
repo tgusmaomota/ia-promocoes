@@ -374,3 +374,48 @@ Testes:
 ```bash
 python3 -m pytest tests/test_auth_base.py
 ```
+
+## Persistência Experimental da Fase 3C
+
+A persistência experimental usa SQLite separado do banco operacional:
+
+- caminho padrão: `auth_dev.db`;
+- variável de ambiente: `PROMOGG_AUTH_DB_PATH`;
+- testes sempre usam banco temporário fora do caminho padrão;
+- `banco.db` operacional não é alterado.
+
+Módulos internos:
+
+- `db.py`: resolução de caminho e conexão SQLite com `PRAGMA foreign_keys = ON`.
+- `migrations.py`: schema experimental e seeds de papéis/permissões.
+- `models.py`: dataclasses simples para leitura de usuário, sessão, papel e permissão.
+- `repository.py`: funções de criação e consulta do banco experimental.
+
+Tabelas experimentais:
+
+- `users`;
+- `roles`;
+- `permissions`;
+- `role_permissions`;
+- `user_roles`;
+- `sessions`;
+- `refresh_tokens`;
+- `audit_events`;
+- `schema_migrations`.
+
+Garantias atuais:
+
+- refresh token é persistido apenas como hash;
+- senha é persistida apenas como hash Argon2id recebido pelo repositório;
+- auditoria passa por sanitização antes de persistir `metadata`;
+- seeds criam apenas papéis e permissões padrão;
+- nenhum administrador automático é criado;
+- não há senha fixa ou hardcoded;
+- não há endpoint público de login;
+- rotas read-only continuam sem autenticação.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_auth_persistence.py
+```

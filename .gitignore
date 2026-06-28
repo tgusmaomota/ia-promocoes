@@ -24,6 +24,9 @@ banco.db
 *.db
 *.sqlite
 *.sqlite3
+auth_dev.db
+auth_*.db
+*.auth.sqlite
 *.db-journal
 backups/
 quarentena_remocao/
