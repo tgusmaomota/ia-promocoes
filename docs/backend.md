@@ -28,6 +28,8 @@ A API será criada em paralelo, começando por `/api/v1`. A primeira etapa é re
 
 O desenho de autenticação futura está em `docs/auth-model.md`. Ele define entidades de usuários, papéis, permissões, sessões, refresh tokens, MFA, reset de senha, contas OAuth e eventos de auditoria antes de qualquer implementação de login/JWT.
 
+A base técnica isolada de autenticação fica em `api_promogg/auth/` e cobre hash Argon2id, tokens opacos, rotação simulada de refresh token, RBAC em memória e sanitização de auditoria. Ela ainda não é ligada às rotas, não cria tabelas, não protege endpoints read-only e não implementa login real.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

@@ -30,6 +30,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Auditoria operacional sanitizada | Parcial | Há `sistema_eventos` e logs sanitizados, mas ainda sem identidade forte por usuário. |
 | API read-only endurecida | Parcial | `/api/v1` tem testes, headers de segurança, CORS sem wildcard default, erros padronizados e logs mínimos sem query/payload. |
 | Modelo de identidade e sessões | Planejado | Entidades, lifecycle, permissões e auditoria futura definidos em `docs/auth-model.md`. |
+| Base técnica de auth isolada | Parcial | Hash Argon2id, tokens opacos, RBAC em memória e sanitização de auditoria existem como módulos internos, ainda sem login real ou proteção de rotas. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -101,6 +102,8 @@ Responsabilidades planejadas:
 ## Autenticação
 
 O modelo detalhado de entidades futuras, lifecycle de sessão, refresh tokens, MFA, reset de senha, OAuth e eventos mínimos de auditoria está em [Modelo de Identidade e Auditoria](auth-model.md). Esta seção resume as regras de segurança que a implementação futura deve seguir.
+
+A base técnica isolada já possui módulos internos para hashing de senha, tokens opacos, RBAC em memória e auditoria sanitizada. Esses módulos não expõem endpoint de login, não geram JWT real, não persistem dados e não protegem as rotas read-only atuais.
 
 ### JWT
 

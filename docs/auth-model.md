@@ -1,6 +1,6 @@
 # Modelo de Identidade, Sessões, Permissões e Auditoria
 
-Este documento define o desenho da Fase 3A. Ele é planejamento de implementação futura: ainda não há login real, JWT, tabela de usuários, migração de banco, rotas mutáveis ou autenticação aplicada à API.
+Este documento define o desenho da Fase 3A e a base técnica isolada da Fase 3B. Ainda não há login real, JWT, tabela de usuários, migração de banco, rotas mutáveis ou autenticação aplicada à API read-only.
 
 ## Princípios
 
@@ -350,3 +350,27 @@ Este documento define o desenho da Fase 3A. Ele é planejamento de implementaç�
 - Testes de autorização por permissão e MFA.
 - Auditoria obrigatória para eventos críticos.
 - Documentação operacional de recuperação de conta, revogação e incidente.
+
+## Base Técnica Isolada da Fase 3B
+
+Módulos internos criados em `api_promogg/auth/`:
+
+- `password.py`: hash e verificação de senha com Argon2id via `argon2-cffi`.
+- `tokens.py`: geração de token opaco com `secrets`, hash para armazenamento, comparação segura e simulação em memória de refresh token rotativo com detecção de reuso.
+- `rbac.py`: papéis e permissões padrão em memória, com checagem por papel único ou múltiplos papéis.
+- `audit.py`: modelo simples de evento de auditoria e sanitização de campos sensíveis.
+
+Limites atuais da Fase 3B:
+
+- sem endpoint público de login;
+- sem JWT real;
+- sem persistência;
+- sem criação de tabelas;
+- sem proteção das rotas read-only atuais;
+- sem mudança no Streamlit, Pages, site estático ou banco SQLite.
+
+Testes:
+
+```bash
+python3 -m pytest tests/test_auth_base.py
+```
