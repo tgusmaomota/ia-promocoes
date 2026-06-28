@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-06-28
+
+### Planejamento de Segurança
+
+- Aprovação da direção arquitetural de segurança para produção.
+- Documentação do estado atual: CLI/Streamlit/local, SQLite operacional, site público estático e separação de dados privados.
+- Registro dos riscos atuais de confidencialidade, integridade, disponibilidade, autenticidade, auditoria e rastreabilidade.
+- Definição da arquitetura futura com `frontend/`, `api/`, `auth/`, `core/`, `models/`, `services/`, `workers/`, `integrations/`, `tests/` e `docs/`.
+- Planejamento de JWT, refresh token, cookies seguros, sessões revogáveis, RBAC, OAuth2 Google/GitHub com PKCE, MFA/TOTP e senhas com Argon2id ou bcrypt.
+- Planejamento de API `/api/v1`, erros padronizados, CORS, CSP, CSRF, rate limiting, validação, sanitização, proteção contra SQL Injection e XSS.
+- Planejamento de PostgreSQL, auditoria completa, criptografia em repouso, Secret Manager, Docker, CI/CD, staging, rollback e monitoramento.
+- Esta entrada registra decisão arquitetural e planejamento; esses controles ainda não foram implementados.
+
 ## 2026-06-27
 
 ### Organização e Segurança do Git
