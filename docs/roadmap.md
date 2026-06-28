@@ -24,6 +24,8 @@
 
 ### Fase 1: Threat Model, Inventário e RBAC
 
+Status: em documentação inicial.
+
 - Mapear ameaças por ativo: banco, painel, catálogo, tokens, deploy, analytics e workers.
 - Inventariar dados sensíveis, públicos e operacionais.
 - Definir matriz RBAC com papéis, permissões e ações críticas.

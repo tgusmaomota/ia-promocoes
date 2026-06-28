@@ -11,6 +11,12 @@ A arquitetura de segurança aprovada para o Promogg tem como pilares:
 
 Este documento descreve o estado atual, os riscos conhecidos e a arquitetura futura planejada. Ele não representa implementação completa de autenticação, RBAC, MFA ou API autenticada.
 
+## Documentos da Fase 1
+
+- [Threat Model](threat-model.md)
+- [Inventário de Dados](inventario-dados.md)
+- [RBAC](rbac.md)
+
 ## Status dos Controles
 
 | Controle | Status | Observação |
