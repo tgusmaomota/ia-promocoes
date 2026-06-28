@@ -16,6 +16,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 - [Threat Model](threat-model.md)
 - [Inventário de Dados](inventario-dados.md)
 - [RBAC](rbac.md)
+- [Modelo de Identidade e Auditoria](auth-model.md)
 
 ## Status dos Controles
 
@@ -28,6 +29,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Cloudflare Access para painel remoto | Parcial | Documentado e auditado, mas depende de configuração externa. |
 | Auditoria operacional sanitizada | Parcial | Há `sistema_eventos` e logs sanitizados, mas ainda sem identidade forte por usuário. |
 | API read-only endurecida | Parcial | `/api/v1` tem testes, headers de segurança, CORS sem wildcard default, erros padronizados e logs mínimos sem query/payload. |
+| Modelo de identidade e sessões | Planejado | Entidades, lifecycle, permissões e auditoria futura definidos em `docs/auth-model.md`. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -97,6 +99,8 @@ Responsabilidades planejadas:
 - `tests/`: testes de unidade, integração, autorização e segurança.
 
 ## Autenticação
+
+O modelo detalhado de entidades futuras, lifecycle de sessão, refresh tokens, MFA, reset de senha, OAuth e eventos mínimos de auditoria está em [Modelo de Identidade e Auditoria](auth-model.md). Esta seção resume as regras de segurança que a implementação futura deve seguir.
 
 ### JWT
 
@@ -236,6 +240,8 @@ Auditoria futura deve registrar:
 - resultado: sucesso, falha, bloqueio ou erro;
 - motivo: justificativa quando aplicável;
 - antes/depois quando seguro e necessário.
+
+Eventos mínimos obrigatórios estão definidos em `docs/auth-model.md` e incluem login sucesso/falha, logout, refresh token usado/reusado, senha alterada, MFA ativado/desativado, papel alterado, revisão/edição de oferta, publicação Telegram, deploy, início/parada de produção, restore de backup, alteração de secret, acesso a logs e exportação de dados.
 
 Nunca registrar:
 

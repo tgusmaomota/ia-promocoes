@@ -209,28 +209,30 @@ Limitações atuais:
 
 ## Resumo dos Endpoints
 
-| Método | Path | Status | Auth | Permissão | MFA | Auditoria |
-|---|---|---|---|---|---|---|
-| GET | `/api/v1/health` | Implementado read-only | Não | Nenhuma | Não | Não |
-| GET | `/api/v1/health/detalhada` | Implementado read-only | Não nesta fase | Futura `health:read` | Não | Futura |
-| GET | `/api/v1/ofertas` | Implementado read-only | Não | Futura `offers:read` se privado | Não | Não público; futura se privado |
-| GET | `/api/v1/ofertas/{oferta_id}` | Implementado read-only | Não | Futura `offers:read` se privado | Não | Não público; futura se privado |
-| GET | `/api/v1/categorias` | Implementado read-only | Não | Nenhuma | Não | Não |
-| POST | `/api/v1/auth/login` | Futuro | Não | Nenhuma | Pode exigir | Sim |
-| POST | `/api/v1/auth/refresh` | Futuro | Cookie refresh | Nenhuma | Não | Sim |
-| POST | `/api/v1/auth/logout` | Futuro | Sim | Nenhuma | Não | Sim |
-| GET | `/api/v1/auth/me` | Futuro | Sim | Nenhuma | Não | Sim |
-| GET | `/api/v1/users` | Futuro | Sim | `users:manage` | Sim | Sim |
-| POST | `/api/v1/users` | Futuro | Sim | `users:manage` | Sim | Sim |
-| PATCH | `/api/v1/users/{id}` | Futuro | Sim | `users:manage` | Sim | Sim |
-| GET | `/api/v1/roles` | Futuro | Sim | `roles:manage` ou `audit:read` | Sim | Sim |
-| PATCH | `/api/v1/users/{id}/roles` | Futuro | Sim | `roles:manage` | Sim | Sim |
-| GET | `/api/v1/audit/events` | Futuro | Sim | `audit:read` | Sim para exportação | Sim |
-| POST | `/api/v1/operations/coleta` | Futuro | Sim | `collection:run` | Não | Sim |
-| POST | `/api/v1/operations/curadoria` | Futuro | Sim | `offers:review` | Não | Sim |
-| POST | `/api/v1/operations/publicar-site` | Futuro | Sim | `site:publish` | Sim | Sim |
-| POST | `/api/v1/operations/publicar-telegram` | Futuro | Sim | `telegram:publish` | Sim | Sim |
-| POST | `/api/v1/operations/parar-producao` | Futuro | Sim | `production:stop` | Sim | Sim |
+O mapa abaixo é contratual. As rotas `GET` read-only estão implementadas; rotas mutáveis permanecem apenas planejadas e não existem na API atual.
+
+| Método | Path | Status | Exposição | Autenticação | Permissão futura | MFA | Auditoria |
+|---|---|---|---|---|---|---|---|
+| GET | `/api/v1/health` | Implementado read-only | Pública | Não | Nenhuma | Não | Não |
+| GET | `/api/v1/health/detalhada` | Implementado read-only | Pública nesta fase; privada no futuro | Não nesta fase | `workers:read` ou `system:admin` para detalhes sensíveis | Não | Futura |
+| GET | `/api/v1/ofertas` | Implementado read-only | Pública para dados sanitizados | Não para público | `offers:read` se visão privada | Não | Não público; futura se privado |
+| GET | `/api/v1/ofertas/{oferta_id}` | Implementado read-only | Pública para dados sanitizados | Não para público | `offers:read` se visão privada | Não | Não público; futura se privado |
+| GET | `/api/v1/categorias` | Implementado read-only | Pública | Não | `catalog:read` se visão privada | Não | Não público; futura se privado |
+| POST | `/api/v1/auth/login` | Futuro | Pública | Não | Nenhuma | Pode exigir etapa MFA | Sim |
+| POST | `/api/v1/auth/refresh` | Futuro | Pública com cookie seguro | Cookie refresh | Nenhuma | Não | Sim |
+| POST | `/api/v1/auth/logout` | Futuro | Autenticada | Sim | Nenhuma | Não | Sim |
+| GET | `/api/v1/auth/me` | Futuro | Autenticada | Sim | Nenhuma | Não | Sim |
+| GET | `/api/v1/users` | Futuro | Autenticada | Sim | `users:read` ou `users:manage` | Sim para consulta ampla | Sim |
+| POST | `/api/v1/users` | Futuro | Autenticada | Sim | `users:manage` | Sim | Sim |
+| PATCH | `/api/v1/users/{id}` | Futuro | Autenticada | Sim | `users:manage` | Sim | Sim |
+| GET | `/api/v1/roles` | Futuro | Autenticada | Sim | `roles:manage` ou `audit:read` | Sim para consulta ampla | Sim |
+| PATCH | `/api/v1/users/{id}/roles` | Futuro | Autenticada | Sim | `roles:manage` | Sim | Sim |
+| GET | `/api/v1/audit/events` | Futuro | Autenticada | Sim | `audit:read` | Sim para exportação/amplo | Sim |
+| POST | `/api/v1/operations/coleta` | Futuro | Autenticada | Sim | `workers:run` | Não por padrão; sim para Playwright/confiável | Sim |
+| POST | `/api/v1/operations/curadoria` | Futuro | Autenticada | Sim | `offers:review` | Não | Sim |
+| POST | `/api/v1/operations/publicar-site` | Futuro | Autenticada | Sim | `site:deploy` ou `catalog:generate` | Sim para deploy real | Sim |
+| POST | `/api/v1/operations/publicar-telegram` | Futuro | Autenticada | Sim | `telegram:publish` ou `offers:publish` | Sim | Sim |
+| POST | `/api/v1/operations/parar-producao` | Futuro | Autenticada | Sim | `workers:stop` | Sim | Sim |
 
 ## Health
 

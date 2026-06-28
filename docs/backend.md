@@ -26,6 +26,8 @@ Ainda não existe uma API autenticada própria do Promogg. A autenticação e au
 
 A API será criada em paralelo, começando por `/api/v1`. A primeira etapa é read-only e usa somente `catalogo_publico/ofertas.json`, sem consultar `banco.db` e sem implementar autenticação real.
 
+O desenho de autenticação futura está em `docs/auth-model.md`. Ele define entidades de usuários, papéis, permissões, sessões, refresh tokens, MFA, reset de senha, contas OAuth e eventos de auditoria antes de qualquer implementação de login/JWT.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

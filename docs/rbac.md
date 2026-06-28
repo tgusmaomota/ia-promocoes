@@ -1,6 +1,6 @@
 # RBAC
 
-Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. Ele é planejamento de segurança: não há implementação de RBAC nesta fase.
+Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. Ele é planejamento de segurança: não há implementação de RBAC nesta fase. O modelo detalhado de entidades, sessões, refresh tokens e auditoria futura está em [Modelo de Identidade e Auditoria](auth-model.md).
 
 ## Papéis
 
@@ -30,21 +30,31 @@ Este documento define a matriz inicial de controle de acesso baseado em papéis 
 | `offers:read` | Visualizar ofertas. |
 | `offers:review` | Aprovar ou rejeitar ofertas. |
 | `offers:edit` | Editar dados de oferta. |
+| `offers:publish` | Publicar oferta em canais públicos. |
+| `catalog:read` | Visualizar catálogo público/operacional. |
+| `catalog:generate` | Gerar ou preparar catálogo/site. |
 | `telegram:publish` | Publicar oferta no Telegram. |
-| `site:publish` | Publicar site/catálogo. |
-| `production:start` | Iniciar produção/scheduler. |
-| `production:stop` | Parar produção/scheduler. |
+| `site:deploy` | Publicar/deployar site. |
+| `workers:read` | Visualizar serviços e workers. |
+| `workers:run` | Iniciar execução de worker/produção. |
+| `workers:stop` | Parar worker/produção. |
+| `site:publish` | Alias legado planejado para `site:deploy`. |
+| `production:start` | Alias legado planejado para `workers:run`. |
+| `production:stop` | Alias legado planejado para `workers:stop`. |
 | `collection:run` | Rodar coleta. |
 | `affiliates:generate` | Gerar links afiliados. |
 | `logs:read` | Acessar logs sanitizados. |
 | `analytics:read` | Acessar analytics. |
+| `users:read` | Consultar usuários. |
 | `users:manage` | Criar, editar, desativar usuários. |
 | `roles:manage` | Alterar papéis e permissões. |
 | `secrets:manage` | Alterar secrets/configurações sensíveis. |
 | `rollback:run` | Executar rollback. |
 | `backup:restore` | Restaurar backup. |
+| `backup:create` | Criar backup manual. |
 | `data:export` | Exportar dados. |
 | `audit:read` | Consultar trilha de auditoria. |
+| `system:admin` | Administração crítica do sistema. |
 
 ## Matriz de Ações
 

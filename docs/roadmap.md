@@ -47,6 +47,12 @@ Status: Fase 2D com comandos oficiais da API no CLI em andamento.
 
 ### Fase 3: Usuários, Senhas, JWT, Refresh Cookie e Sessões
 
+Status: Fase 3A em desenho de modelo, sem implementação de login real.
+
+- Definir modelo de entidades de identidade, sessões, refresh tokens, MFA, reset de senha, OAuth e auditoria.
+- Definir lifecycle de sessão, access token curto, refresh token rotativo e detecção de reuso.
+- Mapear permissões futuras e eventos mínimos de auditoria antes de criar rotas autenticadas.
+
 - Criar usuários internos.
 - Implementar senhas com Argon2id ou bcrypt.
 - Criar access token JWT curto.
