@@ -24,7 +24,7 @@ Ainda não existe uma API autenticada própria do Promogg. A autenticação e au
 
 ## API Autenticada Planejada
 
-A API autenticada será criada em paralelo, começando por `/api/v1`.
+A API será criada em paralelo, começando por `/api/v1`. A primeira etapa é read-only e usa somente `catalogo_publico/ofertas.json`, sem consultar `banco.db` e sem implementar autenticação real.
 
 Objetivos:
 
@@ -34,6 +34,20 @@ Objetivos:
 - aplicar RBAC em ações críticas;
 - padronizar validação, erros, logs, auditoria e rate limiting;
 - permitir que o painel futuro consuma a API em vez de executar comandos diretamente.
+
+Comando local planejado para a API read-only:
+
+```bash
+uvicorn api_promogg.main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+Rotas iniciais:
+
+- `GET /api/v1/health`
+- `GET /api/v1/health/detalhada`
+- `GET /api/v1/ofertas`
+- `GET /api/v1/ofertas/{oferta_id}`
+- `GET /api/v1/categorias`
 
 ## Assistente
 

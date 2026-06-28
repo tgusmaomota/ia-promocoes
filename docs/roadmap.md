@@ -34,7 +34,7 @@ Status: em documentação inicial.
 
 ### Fase 2: Backend API Autenticado em Paralelo
 
-Status: Fase 2A em documentação do contrato da API.
+Status: Fase 2B com esqueleto read-only inicial em paralelo.
 
 - Criar API HTTP versionada em `/api/v1`.
 - Manter CLI, Streamlit e fluxo estático funcionando durante a transição.

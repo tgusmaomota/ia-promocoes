@@ -7,11 +7,23 @@ O Promogg ainda não possui API autenticada própria para operação administrat
 ## Estado
 
 - Status deste documento: contrato planejado.
-- Backend API: ainda não implementado.
+- Backend API: esqueleto read-only inicial criado em paralelo.
 - Autenticação própria: ainda não implementada.
 - RBAC próprio: ainda não implementado.
 - Painel atual: continua sendo Streamlit/local.
 - CLI atual: continua sendo `ia_promocoes.py`.
+- Fonte inicial da API: `catalogo_publico/ofertas.json`.
+- Banco SQLite: não é consultado pela API read-only inicial.
+
+## Execução Local da API Read-only
+
+Comando planejado para desenvolvimento local:
+
+```bash
+uvicorn api_promogg.main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+Essa API inicial é paralela ao fluxo existente. Ela não substitui CLI, Streamlit, geração do site, GitHub Pages ou banco SQLite.
 
 ## Mercado Livre
 
@@ -141,11 +153,11 @@ Controles obrigatórios para `/api/v1`:
 
 | Método | Path | Status | Auth | Permissão | MFA | Auditoria |
 |---|---|---|---|---|---|---|
-| GET | `/api/v1/health` | Fase inicial | Não | Nenhuma | Não | Não |
-| GET | `/api/v1/health/detalhada` | Fase inicial | Sim | `health:read` | Não | Sim |
-| GET | `/api/v1/ofertas` | Fase inicial | Não para dados públicos | `offers:read` se privado | Não | Não público; sim privado |
-| GET | `/api/v1/ofertas/{oferta_id}` | Fase inicial | Não para dados públicos | `offers:read` se privado | Não | Não público; sim privado |
-| GET | `/api/v1/categorias` | Fase inicial | Não | Nenhuma | Não | Não |
+| GET | `/api/v1/health` | Implementado read-only | Não | Nenhuma | Não | Não |
+| GET | `/api/v1/health/detalhada` | Implementado read-only | Não nesta fase | Futura `health:read` | Não | Futura |
+| GET | `/api/v1/ofertas` | Implementado read-only | Não | Futura `offers:read` se privado | Não | Não público; futura se privado |
+| GET | `/api/v1/ofertas/{oferta_id}` | Implementado read-only | Não | Futura `offers:read` se privado | Não | Não público; futura se privado |
+| GET | `/api/v1/categorias` | Implementado read-only | Não | Nenhuma | Não | Não |
 | POST | `/api/v1/auth/login` | Futuro | Não | Nenhuma | Pode exigir | Sim |
 | POST | `/api/v1/auth/refresh` | Futuro | Cookie refresh | Nenhuma | Não | Sim |
 | POST | `/api/v1/auth/logout` | Futuro | Sim | Nenhuma | Não | Sim |
@@ -197,11 +209,11 @@ Erros esperados:
 
 Finalidade: retornar saúde detalhada de banco, workers, catálogo, analytics e integrações.
 
-- Status: fase inicial.
-- Autenticação: sim, futura.
-- Permissão RBAC: `health:read`.
+- Status: implementado read-only inicial.
+- Autenticação: não nesta fase; sim no futuro.
+- Permissão RBAC: futura `health:read`.
 - MFA: não.
-- Auditoria: sim.
+- Auditoria: futura.
 - Parâmetros: `include=workers,integrations,storage` opcional.
 
 Resposta:
@@ -235,9 +247,9 @@ Erros esperados:
 
 Finalidade: listar ofertas públicas sanitizadas e, no futuro autenticado, permitir visão operacional conforme papel.
 
-- Status: fase inicial.
+- Status: implementado read-only inicial.
 - Autenticação: não para dados públicos; sim para campos privados futuros.
-- Permissão RBAC: nenhuma para público; `offers:read` para visão privada.
+- Permissão RBAC: nenhuma nesta fase; futura `offers:read` para visão privada.
 - MFA: não.
 - Auditoria: não para público; sim para visão privada.
 - Parâmetros: `categoria`, `busca`, `limit`, `offset`, `ordenar`, `somente_publicas`.
@@ -274,9 +286,9 @@ Erros esperados:
 
 Finalidade: retornar detalhe público sanitizado de uma oferta.
 
-- Status: fase inicial.
+- Status: implementado read-only inicial.
 - Autenticação: não para dados públicos; sim para campos privados futuros.
-- Permissão RBAC: nenhuma para público; `offers:read` para visão privada.
+- Permissão RBAC: nenhuma nesta fase; futura `offers:read` para visão privada.
 - MFA: não.
 - Auditoria: não para público; sim para visão privada.
 - Parâmetros: `oferta_id` no path.
@@ -308,7 +320,7 @@ Erros esperados:
 
 Finalidade: listar categorias públicas disponíveis.
 
-- Status: fase inicial.
+- Status: implementado read-only inicial.
 - Autenticação: não.
 - Permissão RBAC: nenhuma.
 - MFA: não.
