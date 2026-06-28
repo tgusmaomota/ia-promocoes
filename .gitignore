@@ -71,6 +71,10 @@ relatorio_*.txt
 *.csv
 *.tsv
 
+# Documentação histórica versionada
+!docs/
+!docs/**
+
 # Catálogo público sanitizado para CI
 !catalogo_publico/
 !catalogo_publico/ofertas.json
