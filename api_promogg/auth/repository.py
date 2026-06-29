@@ -6,8 +6,8 @@ from uuid import uuid4
 from api_promogg.auth.audit import AuditEvent, sanitize_event
 from api_promogg.auth.db import conectar_auth_db
 from api_promogg.auth.migrations import inicializar_schema
-from api_promogg.auth.models import Permission, Role, Session, User
-from api_promogg.auth.tokens import hash_token
+from api_promogg.auth.models import Permission, RefreshToken, Role, Session, User
+from api_promogg.auth.tokens import compare_token, hash_token
 
 
 def utc_now_iso():
@@ -75,6 +75,19 @@ class AuthRepository:
         ).fetchone()
         return _session_from_row(row) if row else None
 
+    def buscar_refresh_token_por_token(self, token: str) -> RefreshToken | None:
+        rows = self.conn.execute(
+            """
+            SELECT id, session_id, token_hash, family_id, previous_token_id,
+                   used_at, expires_at, revoked_at, reuse_detected_at
+            FROM refresh_tokens
+            """
+        ).fetchall()
+        for row in rows:
+            if compare_token(token, row["token_hash"]):
+                return _refresh_from_row(row)
+        return None
+
     def registrar_refresh_token(
         self,
         session_id: str,
@@ -103,6 +116,31 @@ class AuthRepository:
             "previous_token_id": previous_token_id,
             "expires_at": expires_at,
         }
+
+    def marcar_refresh_token_usado(self, token_id: str):
+        now = utc_now_iso()
+        self.conn.execute("UPDATE refresh_tokens SET used_at = ? WHERE id = ?", (now, token_id))
+        self.conn.commit()
+
+    def marcar_reuso_refresh_token(self, token_id: str):
+        now = utc_now_iso()
+        row = self.conn.execute("SELECT family_id FROM refresh_tokens WHERE id = ?", (token_id,)).fetchone()
+        if not row:
+            return
+        self.conn.execute("UPDATE refresh_tokens SET reuse_detected_at = ? WHERE id = ?", (now, token_id))
+        self.conn.execute(
+            "UPDATE refresh_tokens SET revoked_at = ? WHERE family_id = ? AND revoked_at IS NULL",
+            (now, row["family_id"]),
+        )
+        self.conn.commit()
+
+    def revogar_familia_refresh(self, family_id: str):
+        now = utc_now_iso()
+        self.conn.execute(
+            "UPDATE refresh_tokens SET revoked_at = ? WHERE family_id = ? AND revoked_at IS NULL",
+            (now, family_id),
+        )
+        self.conn.commit()
 
     def revogar_sessao(self, session_id: str, reason: str = "manual"):
         now = utc_now_iso()
@@ -167,3 +205,7 @@ def _user_from_row(row) -> User:
 
 def _session_from_row(row) -> Session:
     return Session(**dict(row))
+
+
+def _refresh_from_row(row) -> RefreshToken:
+    return RefreshToken(**dict(row))

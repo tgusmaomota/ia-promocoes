@@ -32,6 +32,8 @@ A base técnica isolada de autenticação fica em `api_promogg/auth/` e cobre ha
 
 A persistência experimental da Fase 3C usa SQLite separado (`auth_dev.db` por padrão, ou `PROMOGG_AUTH_DB_PATH`) para preparar usuários, sessões, refresh tokens e auditoria. Esse banco não é o `banco.db` operacional, é ignorado pelo Git, não cria admin automático e não ativa autenticação nas rotas existentes.
 
+O serviço interno experimental em `api_promogg/auth/service.py` une repository, password, tokens e audit para simular autenticação em testes. Ele ainda não expõe endpoint público, não cria JWT/cookie real e não protege as rotas read-only atuais.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

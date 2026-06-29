@@ -32,6 +32,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Modelo de identidade e sessões | Planejado | Entidades, lifecycle, permissões e auditoria futura definidos em `docs/auth-model.md`. |
 | Base técnica de auth isolada | Parcial | Hash Argon2id, tokens opacos, RBAC em memória e sanitização de auditoria existem como módulos internos, ainda sem login real ou proteção de rotas. |
 | Persistência auth experimental | Parcial | `auth_dev.db` separado, configurável por `PROMOGG_AUTH_DB_PATH`, com schema de usuários/sessões/tokens/auditoria; sem admin automático e sem tocar no `banco.db`. |
+| Serviço auth experimental | Parcial | Serviço interno simula autenticação, sessão, refresh rotativo, reuso e logout em testes; ainda sem endpoint público, JWT/cookie real ou proteção de rotas. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -107,6 +108,8 @@ O modelo detalhado de entidades futuras, lifecycle de sessão, refresh tokens, M
 A base técnica isolada já possui módulos internos para hashing de senha, tokens opacos, RBAC em memória e auditoria sanitizada. Esses módulos não expõem endpoint de login, não geram JWT real, não persistem dados e não protegem as rotas read-only atuais.
 
 A persistência experimental usa banco SQLite separado e ignorado pelo Git. Ela existe para testes e preparação técnica, sem endpoint público de login, sem admin padrão, sem senha hardcoded e sem alteração do banco operacional.
+
+O serviço interno experimental orquestra autenticação em testes com erros genéricos, auditoria sanitizada e revogação em reuso de refresh token. Ele não deve ser exposto em router até a fase de integração planejada.
 
 ### JWT
 

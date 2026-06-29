@@ -419,3 +419,39 @@ Teste:
 ```bash
 python3 -m pytest tests/test_auth_persistence.py
 ```
+
+## Serviço Interno Experimental da Fase 3D
+
+A Fase 3D adiciona `api_promogg/auth/service.py`, uma camada interna que orquestra:
+
+- `repository.py` para persistência experimental;
+- `password.py` para hash e verificação Argon2id;
+- `tokens.py` para refresh tokens opacos;
+- `audit.py` para eventos sanitizados.
+
+Funções cobertas:
+
+- criar usuário experimental com senha hasheada;
+- autenticar credenciais em modo interno;
+- negar autenticação de usuário inativo/bloqueado;
+- criar sessão experimental;
+- emitir refresh token opaco;
+- rotacionar refresh token;
+- detectar reuso e revogar sessão/família;
+- logout/revogação de sessão;
+- registrar auditoria sanitizada.
+
+Limites atuais:
+
+- sem endpoint público de login;
+- sem JWT real;
+- sem cookie real;
+- sem proteção de `/api/v1/health`, `/api/v1/ofertas` ou `/api/v1/categorias`;
+- sem admin automático ou senha hardcoded;
+- uso apenas por testes internos.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_auth_service.py
+```

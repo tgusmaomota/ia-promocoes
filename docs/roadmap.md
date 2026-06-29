@@ -47,13 +47,14 @@ Status: Fase 2D com comandos oficiais da API no CLI em andamento.
 
 ### Fase 3: Usuários, Senhas, JWT, Refresh Cookie e Sessões
 
-Status: Fase 3C com persistência experimental em banco separado, sem implementação de login real em produção.
+Status: Fase 3D com serviço interno experimental, sem implementação de login real em produção.
 
 - Definir modelo de entidades de identidade, sessões, refresh tokens, MFA, reset de senha, OAuth e auditoria.
 - Definir lifecycle de sessão, access token curto, refresh token rotativo e detecção de reuso.
 - Mapear permissões futuras e eventos mínimos de auditoria antes de criar rotas autenticadas.
 - Criar módulos internos testáveis para hashing de senha, tokens opacos, RBAC em memória e sanitização de auditoria.
 - Criar persistência experimental em `auth_dev.db`, separada do `banco.db`, com schema para usuários, sessões, refresh tokens e auditoria.
+- Criar serviço interno experimental para simular autenticação completa em testes.
 - Sem admin automático, senha hardcoded, endpoint de login ou proteção das rotas read-only.
 - Manter rotas read-only sem autenticação até a fase de integração planejada.
 

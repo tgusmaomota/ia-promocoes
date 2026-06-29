@@ -37,3 +37,16 @@ class Permission:
     description: str
     risk_level: str
     requires_mfa: int
+
+
+@dataclass(frozen=True)
+class RefreshToken:
+    id: str
+    session_id: str
+    token_hash: str
+    family_id: str
+    previous_token_id: str | None
+    used_at: str | None
+    expires_at: str
+    revoked_at: str | None
+    reuse_detected_at: str | None
