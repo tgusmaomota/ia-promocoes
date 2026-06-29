@@ -44,6 +44,13 @@ AUTH_EXPERIMENTAL_ENABLED = _env_bool(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, F
 PROMOGG_ENV = os.getenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_PRODUCTION).strip().lower()
 MFA_ENABLED = _env_bool(constants.ENV_MFA_ENABLED, False)
 JWT_ENABLED = _env_bool(constants.ENV_JWT_ENABLED, False)
+JWT_ISSUER = os.getenv(constants.ENV_JWT_ISSUER, "promogg-api").strip()
+JWT_AUDIENCE = os.getenv(constants.ENV_JWT_AUDIENCE, "promogg-admin").strip()
+JWT_ACCESS_TTL = _env_int(constants.ENV_JWT_ACCESS_TTL, 900, minimum=60)
+JWT_REFRESH_TTL = _env_int(constants.ENV_JWT_REFRESH_TTL, 2_592_000, minimum=60)
+JWT_ALGORITHM = os.getenv(constants.ENV_JWT_ALGORITHM, constants.JWT_ALGORITHM_HS256).strip().upper()
+if JWT_ALGORITHM not in constants.JWT_ALLOWED_ALGORITHMS:
+    raise RuntimeError(f"Algoritmo JWT não permitido: {JWT_ALGORITHM!r}")
 RBAC_ENABLED = _env_bool(constants.ENV_RBAC_ENABLED, False)
 AUDIT_ENABLED = _env_bool(constants.ENV_AUDIT_ENABLED, True)
 

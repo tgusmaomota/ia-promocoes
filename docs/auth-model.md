@@ -519,3 +519,34 @@ Teste:
 ```bash
 python3 -m pytest tests/test_auth_experimental_routes.py
 ```
+
+## Infraestrutura de Credenciais da Fase 4A
+
+A Fase 4A adiciona contratos internos para preparar JWT e cookies seguros sem ativar autenticacao:
+
+- `api_promogg/auth/credentials.py`: define `AccessCredential`, `RefreshCredential` e `CredentialProvider`; a aplicacao futura deve depender desses contratos, nao de JWT diretamente.
+- `api_promogg/auth/jwt_provider.py`: provider JWT experimental, interno e explicito. Ele documenta issuer, audience, subject, issued_at, expires_at, not_before, token_id, algoritmo permitido, versao do token e claims privadas.
+- `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookie `HttpOnly`, `Secure`, `SameSite`, `Path`, `Max-Age` e limpeza de logout.
+
+Limites atuais:
+
+- `JWT_ENABLED` continua `False` por padrao;
+- o provider so emite quando chamado explicitamente em `PROMOGG_ENV=development` com `PROMOGG_JWT_ENABLED=true`;
+- producao nao emite JWT mesmo com configuracao parcial;
+- nenhuma rota usa JWT;
+- nenhum endpoint envia cookie;
+- nenhuma autenticacao foi ativada.
+
+Configuracoes novas:
+
+- `PROMOGG_JWT_ISSUER`;
+- `PROMOGG_JWT_AUDIENCE`;
+- `PROMOGG_JWT_ACCESS_TTL`;
+- `PROMOGG_JWT_REFRESH_TTL`;
+- `PROMOGG_JWT_ALGORITHM`.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_auth_credentials_infra.py
+```

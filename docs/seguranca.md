@@ -36,6 +36,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Serviço auth experimental | Parcial | Serviço interno simula autenticação, sessão, refresh rotativo, reuso e logout em testes; ainda sem endpoint público, JWT/cookie real ou proteção de rotas. |
 | Configuração central de segurança | Parcial | `api_promogg/security/` centraliza settings, feature flags, constantes e validadores para autenticação futura; auth continua desabilitada por padrão. |
 | Rotas auth experimentais locais | Parcial | `/api/v1/auth/*` é registrado, mas retorna 404 fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`; não emite JWT e não funciona em produção. |
+| Infraestrutura JWT/cookies | Parcial | Contratos e helpers internos existem, mas `JWT_ENABLED` fica desligado por padrão; nenhuma rota emite JWT ou envia cookie. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -131,6 +132,14 @@ As rotas experimentais da Fase 3E existem somente para desenvolvimento local:
 - `GET /api/v1/auth/me`.
 
 Elas retornam `404 Not Found` quando `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` não está ligado ou quando `PROMOGG_ENV` não é exatamente `development`. Produção, staging e ambientes desconhecidos continuam sem autenticação ativa. A fase não emite JWT, não altera rotas públicas read-only, não toca no `banco.db` e não deve ser usada em produção.
+
+A Fase 4A prepara infraestrutura interna para credenciais:
+
+- contratos `AccessCredential`, `RefreshCredential` e `CredentialProvider`;
+- provider JWT experimental, com algoritmo permitido `HS256`;
+- helpers de cookie seguro com `HttpOnly`, `Secure`, `SameSite`, `Path`, `Max-Age` e limpeza.
+
+Esses módulos não são usados por rotas nesta fase. Nenhum cookie real é escrito, nenhum JWT é emitido por padrão e produção continua bloqueada.
 
 ### JWT
 

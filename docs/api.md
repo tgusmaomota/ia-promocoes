@@ -234,6 +234,30 @@ Limites da fase:
 - usa apenas sessão experimental, refresh token opaco e banco experimental configurável por `PROMOGG_AUTH_DB_PATH`;
 - permanece desligada por padrão.
 
+## Credenciais e Cookies Experimentais
+
+A Fase 4A prepara contratos internos para JWT e cookies seguros, mas nao altera o comportamento da API:
+
+- nenhuma rota emite JWT;
+- nenhuma rota envia cookie;
+- nenhuma rota read-only foi protegida;
+- `PROMOGG_JWT_ENABLED` permanece `false` por padrao;
+- producao continua sem emissao de tokens ou cookies, mesmo com configuracao parcial.
+
+Os modulos internos sao:
+
+- `api_promogg/auth/credentials.py`: contratos `AccessCredential`, `RefreshCredential` e `CredentialProvider`;
+- `api_promogg/auth/jwt_provider.py`: provider JWT experimental, apenas para uso interno futuro;
+- `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookies, sem chamar `set_cookie`.
+
+Configuracoes previstas:
+
+- `PROMOGG_JWT_ISSUER`;
+- `PROMOGG_JWT_AUDIENCE`;
+- `PROMOGG_JWT_ACCESS_TTL`;
+- `PROMOGG_JWT_REFRESH_TTL`;
+- `PROMOGG_JWT_ALGORITHM`.
+
 ## Resumo dos Endpoints
 
 O mapa abaixo é contratual. As rotas `GET` read-only estão implementadas; rotas mutáveis permanecem apenas planejadas e não existem na API atual.

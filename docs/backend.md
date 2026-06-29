@@ -38,6 +38,8 @@ A configuração central de segurança fica em `api_promogg/security/`. Ela conc
 
 A Fase 3E registra rotas experimentais em `/api/v1/auth/*`, mas elas respondem 404 por padrão e só ficam disponíveis quando `PROMOGG_ENV=development` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`. Essa etapa não emite JWT, não cria login utilizável em produção, não protege rotas read-only, não consulta `banco.db` e usa somente sessão/refresh token opacos no banco experimental.
 
+A Fase 4A adiciona infraestrutura passiva de credenciais em `api_promogg/auth/credentials.py`, `api_promogg/auth/jwt_provider.py` e `api_promogg/auth/cookies.py`. Esses módulos preparam contratos para access credential, refresh credential, provider de credenciais, claims JWT experimentais e especificações de cookies seguros, mas nenhuma rota usa JWT, nenhum cookie é enviado e `JWT_ENABLED` permanece desligado por padrão.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

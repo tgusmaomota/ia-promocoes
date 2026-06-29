@@ -23,6 +23,11 @@ def test_security_settings_valores_padrao(monkeypatch):
     assert settings.PROMOGG_ENV == constants.ENVIRONMENT_PRODUCTION
     assert settings.MFA_ENABLED is False
     assert settings.JWT_ENABLED is False
+    assert settings.JWT_ISSUER == "promogg-api"
+    assert settings.JWT_AUDIENCE == "promogg-admin"
+    assert settings.JWT_ACCESS_TTL == 900
+    assert settings.JWT_REFRESH_TTL == 2_592_000
+    assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
     assert settings.RBAC_ENABLED is False
     assert settings.AUDIT_ENABLED is True
     assert settings.MAX_LOGIN_ATTEMPTS == 5
@@ -41,6 +46,11 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
     monkeypatch.setenv(constants.ENV_MFA_ENABLED, "yes")
     monkeypatch.setenv(constants.ENV_JWT_ENABLED, "on")
+    monkeypatch.setenv(constants.ENV_JWT_ISSUER, "promogg-test")
+    monkeypatch.setenv(constants.ENV_JWT_AUDIENCE, "promogg-admin-test")
+    monkeypatch.setenv(constants.ENV_JWT_ACCESS_TTL, "300")
+    monkeypatch.setenv(constants.ENV_JWT_REFRESH_TTL, "7200")
+    monkeypatch.setenv(constants.ENV_JWT_ALGORITHM, constants.JWT_ALGORITHM_HS256)
     monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
     monkeypatch.setenv(constants.ENV_AUDIT_ENABLED, "false")
     monkeypatch.setenv(constants.ENV_MAX_LOGIN_ATTEMPTS, "7")
@@ -59,6 +69,11 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     assert settings.PROMOGG_ENV == constants.ENVIRONMENT_DEVELOPMENT
     assert settings.MFA_ENABLED is True
     assert settings.JWT_ENABLED is True
+    assert settings.JWT_ISSUER == "promogg-test"
+    assert settings.JWT_AUDIENCE == "promogg-admin-test"
+    assert settings.JWT_ACCESS_TTL == 300
+    assert settings.JWT_REFRESH_TTL == 7200
+    assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
     assert settings.RBAC_ENABLED is True
     assert settings.AUDIT_ENABLED is False
     assert settings.MAX_LOGIN_ATTEMPTS == 7
@@ -122,3 +137,5 @@ def test_constantes_centralizadas():
     assert constants.COOKIE_REFRESH_TOKEN in constants.COOKIE_NAMES
     assert constants.ENV_AUTH_ENABLED in constants.ENV_VARS
     assert constants.ENVIRONMENT_DEVELOPMENT in constants.ENVIRONMENTS
+    assert constants.ENV_JWT_ISSUER in constants.ENV_VARS
+    assert constants.JWT_ALGORITHM_HS256 in constants.JWT_ALLOWED_ALGORITHMS

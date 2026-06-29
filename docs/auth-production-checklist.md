@@ -15,6 +15,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 
 ## JWT
 
+- [ ] Manter provider desacoplado por `CredentialProvider`; rotas nao devem depender diretamente de JWT.
 - [ ] Definir issuer, audience, algoritmo e politica de chaves.
 - [ ] Emitir access token curto, preferencialmente entre 5 e 15 minutos.
 - [ ] Incluir apenas claims necessarias: `sub`, `session_id`, `roles`/`permissions`, `iat`, `exp`, `iss`, `aud`.
@@ -23,6 +24,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 
 ## Cookies HttpOnly
 
+- [ ] Integrar helpers de cookie somente quando a autenticacao estiver pronta para producao.
 - [ ] Enviar refresh token somente em cookie `HttpOnly`.
 - [ ] Exigir `Secure` em producao.
 - [ ] Definir `SameSite=Strict` ou `SameSite=Lax` conforme fluxo.
