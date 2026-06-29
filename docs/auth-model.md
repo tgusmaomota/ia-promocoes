@@ -455,3 +455,34 @@ Teste:
 ```bash
 python3 -m pytest tests/test_auth_service.py
 ```
+
+## Configuração Central de Segurança
+
+A camada `api_promogg/security/` prepara a configuração comum para toda autenticação futura sem expor endpoint público:
+
+- `settings.py`: centraliza flags e parâmetros lidos de variáveis de ambiente, incluindo `AUTH_ENABLED`, `AUTH_EXPERIMENTAL_ENABLED`, `MFA_ENABLED`, `JWT_ENABLED`, `RBAC_ENABLED`, `AUDIT_ENABLED`, tentativas de login, lockout, TTLs, senha, CORS e hosts;
+- `feature_flags.py`: fornece a interface que rotas futuras devem consultar antes de ativar qualquer comportamento experimental;
+- `constants.py`: concentra nomes de permissões, papéis, códigos de erro, eventos de auditoria, headers HTTP, cookies e variáveis de ambiente;
+- `validators.py`: oferece validadores reutilizáveis para entradas comuns de autenticação e segurança.
+
+Padrões atuais:
+
+- `AUTH_ENABLED=False`;
+- `AUTH_EXPERIMENTAL_ENABLED=False`;
+- `MFA_ENABLED=False`;
+- `JWT_ENABLED=False`;
+- `RBAC_ENABLED=False`;
+- `AUDIT_ENABLED=True`.
+
+Garantias desta etapa:
+
+- nenhuma rota pública de login foi criada;
+- nenhuma rota read-only foi alterada ou protegida;
+- nenhum fluxo Streamlit, workflow ou `banco.db` foi alterado;
+- futuras rotas de autenticação devem usar essa camada em vez de ler variáveis de ambiente diretamente.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_security_settings.py
+```

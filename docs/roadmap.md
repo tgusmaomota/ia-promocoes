@@ -55,6 +55,7 @@ Status: Fase 3D com serviço interno experimental, sem implementação de login 
 - Criar módulos internos testáveis para hashing de senha, tokens opacos, RBAC em memória e sanitização de auditoria.
 - Criar persistência experimental em `auth_dev.db`, separada do `banco.db`, com schema para usuários, sessões, refresh tokens e auditoria.
 - Criar serviço interno experimental para simular autenticação completa em testes.
+- Criar camada central `api_promogg/security/` para settings, feature flags, constantes e validadores compartilhados por toda autenticação futura.
 - Sem admin automático, senha hardcoded, endpoint de login ou proteção das rotas read-only.
 - Manter rotas read-only sem autenticação até a fase de integração planejada.
 

@@ -34,6 +34,8 @@ A persistência experimental da Fase 3C usa SQLite separado (`auth_dev.db` por p
 
 O serviço interno experimental em `api_promogg/auth/service.py` une repository, password, tokens e audit para simular autenticação em testes. Ele ainda não expõe endpoint público, não cria JWT/cookie real e não protege as rotas read-only atuais.
 
+A configuração central de segurança fica em `api_promogg/security/`. Ela concentra feature flags, TTLs, política de senha, allowlists de CORS/hosts, nomes de permissões, papéis, erros, eventos de auditoria, headers, cookies, variáveis de ambiente e validadores reutilizáveis. Futuras rotas de autenticação devem consultar `feature_flags.py` e `settings.py`, evitando configuração espalhada pelo projeto. Por padrão, `PROMOGG_AUTH_ENABLED` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` permanecem desligados.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

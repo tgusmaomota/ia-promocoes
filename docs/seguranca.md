@@ -33,6 +33,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Base técnica de auth isolada | Parcial | Hash Argon2id, tokens opacos, RBAC em memória e sanitização de auditoria existem como módulos internos, ainda sem login real ou proteção de rotas. |
 | Persistência auth experimental | Parcial | `auth_dev.db` separado, configurável por `PROMOGG_AUTH_DB_PATH`, com schema de usuários/sessões/tokens/auditoria; sem admin automático e sem tocar no `banco.db`. |
 | Serviço auth experimental | Parcial | Serviço interno simula autenticação, sessão, refresh rotativo, reuso e logout em testes; ainda sem endpoint público, JWT/cookie real ou proteção de rotas. |
+| Configuração central de segurança | Parcial | `api_promogg/security/` centraliza settings, feature flags, constantes e validadores para autenticação futura; auth continua desabilitada por padrão. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -110,6 +111,15 @@ A base técnica isolada já possui módulos internos para hashing de senha, toke
 A persistência experimental usa banco SQLite separado e ignorado pelo Git. Ela existe para testes e preparação técnica, sem endpoint público de login, sem admin padrão, sem senha hardcoded e sem alteração do banco operacional.
 
 O serviço interno experimental orquestra autenticação em testes com erros genéricos, auditoria sanitizada e revogação em reuso de refresh token. Ele não deve ser exposto em router até a fase de integração planejada.
+
+Antes de qualquer endpoint público de login, a configuração de segurança deve passar por `api_promogg/security/`:
+
+- `settings.py`: lê variáveis de ambiente como `PROMOGG_AUTH_ENABLED`, `PROMOGG_JWT_ENABLED`, TTLs, política de senha, CORS e hosts permitidos;
+- `feature_flags.py`: interface única para rotas futuras consultarem `auth_enabled()`, `auth_experimental_enabled()`, `rbac_enabled()`, `mfa_enabled()` e `jwt_enabled()`;
+- `constants.py`: nomes oficiais de permissões, papéis, erros, auditoria, headers, cookies e variáveis de ambiente;
+- `validators.py`: validação reutilizável de e-mail, senha, nome de usuário, origem CORS, host, request id e tamanho de entrada.
+
+Essa camada ainda não cria rota, não protege endpoint existente e não altera o Streamlit, workflows ou `banco.db`.
 
 ### JWT
 
