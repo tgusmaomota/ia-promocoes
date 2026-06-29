@@ -12,7 +12,7 @@ from api_promogg.errors import (
     validation_error_handler,
 )
 from api_promogg.middleware import RequestIDMiddleware
-from api_promogg.routers import health, ofertas
+from api_promogg.routers import auth, health, ofertas
 
 
 validar_allowed_origins(ALLOWED_ORIGINS)
@@ -41,3 +41,4 @@ app.add_exception_handler(Exception, unhandled_error_handler)
 
 app.include_router(health.router, prefix=API_PREFIX)
 app.include_router(ofertas.router, prefix=API_PREFIX)
+app.include_router(auth.router, prefix=API_PREFIX)

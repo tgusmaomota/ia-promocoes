@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from api_promogg.auth.audit import AuditEvent
 from api_promogg.auth.password import hash_password, verify_password
-from api_promogg.auth.repository import AuthRepository
+from api_promogg.auth.repository import AuthRepository, inicializar_banco_auth
 from api_promogg.auth.tokens import generate_opaque_token
 
 
@@ -111,6 +111,15 @@ class ExperimentalAuthService:
         self._audit("auth.logout", "success", actor_session_id=session_id)
         return bool(session and session.status == "revoked")
 
+    def obter_usuario_da_sessao(self, session_id: str) -> UserDTO | None:
+        session = self.repository.buscar_sessao(session_id)
+        if not session or session.status != "active":
+            return None
+        user = self.repository.buscar_usuario_por_id(session.user_id)
+        if not user or user.status != "active":
+            return None
+        return _user_dto(user)
+
     def _audit(self, action, result, actor_user_id=None, actor_session_id=None, metadata=None):
         self.repository.registrar_evento_auditoria(
             AuditEvent(
@@ -125,3 +134,7 @@ class ExperimentalAuthService:
 
 def _user_dto(user) -> UserDTO:
     return UserDTO(id=user.id, email=user.email, status=user.status)
+
+
+def criar_experimental_auth_service(path=None) -> ExperimentalAuthService:
+    return ExperimentalAuthService(AuthRepository(inicializar_banco_auth(path)))

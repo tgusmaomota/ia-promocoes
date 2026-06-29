@@ -36,6 +36,8 @@ O serviço interno experimental em `api_promogg/auth/service.py` une repository,
 
 A configuração central de segurança fica em `api_promogg/security/`. Ela concentra feature flags, TTLs, política de senha, allowlists de CORS/hosts, nomes de permissões, papéis, erros, eventos de auditoria, headers, cookies, variáveis de ambiente e validadores reutilizáveis. Futuras rotas de autenticação devem consultar `feature_flags.py` e `settings.py`, evitando configuração espalhada pelo projeto. Por padrão, `PROMOGG_AUTH_ENABLED` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` permanecem desligados.
 
+A Fase 3E registra rotas experimentais em `/api/v1/auth/*`, mas elas respondem 404 por padrão e só ficam disponíveis quando `PROMOGG_ENV=development` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`. Essa etapa não emite JWT, não cria login utilizável em produção, não protege rotas read-only, não consulta `banco.db` e usa somente sessão/refresh token opacos no banco experimental.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;
@@ -75,6 +77,13 @@ Rotas iniciais:
 - `GET /api/v1/ofertas`
 - `GET /api/v1/ofertas/{oferta_id}`
 - `GET /api/v1/categorias`
+
+Rotas experimentais locais, inativas por padrão:
+
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/logout`
+- `POST /api/v1/auth/refresh`
+- `GET /api/v1/auth/me`
 
 Validação de testes:
 

@@ -486,3 +486,36 @@ Teste:
 ```bash
 python3 -m pytest tests/test_security_settings.py
 ```
+
+## Rotas Experimentais Locais da Fase 3E
+
+A Fase 3E registra `api_promogg/routers/auth.py` em `/api/v1/auth/*`, mas todas as rotas retornam `404 Not Found` por padrão. Para ficarem disponíveis, as duas condições abaixo precisam ser verdadeiras:
+
+- `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`;
+- `PROMOGG_ENV=development`.
+
+Qualquer outro cenário, incluindo produção, staging ou ambiente desconhecido, mantém os endpoints inativos. Essa proteção usa a camada central `api_promogg/security/`.
+
+Rotas previstas nesta fase:
+
+- `POST /api/v1/auth/login`;
+- `POST /api/v1/auth/logout`;
+- `POST /api/v1/auth/refresh`;
+- `GET /api/v1/auth/me`.
+
+Limites:
+
+- não há JWT;
+- não há cookie real de produção;
+- não há login utilizável fora do desenvolvimento local;
+- rotas read-only continuam públicas e não protegidas;
+- o banco operacional `banco.db` não é usado;
+- a persistência continua no banco experimental configurável por `PROMOGG_AUTH_DB_PATH`.
+
+Antes de qualquer ativação real, os itens em `docs/auth-production-checklist.md` precisam ser implementados e revisados.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_auth_experimental_routes.py
+```

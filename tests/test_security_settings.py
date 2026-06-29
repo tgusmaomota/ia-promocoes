@@ -20,6 +20,7 @@ def test_security_settings_valores_padrao(monkeypatch):
 
     assert settings.AUTH_ENABLED is False
     assert settings.AUTH_EXPERIMENTAL_ENABLED is False
+    assert settings.PROMOGG_ENV == constants.ENVIRONMENT_PRODUCTION
     assert settings.MFA_ENABLED is False
     assert settings.JWT_ENABLED is False
     assert settings.RBAC_ENABLED is False
@@ -37,6 +38,7 @@ def test_security_settings_valores_padrao(monkeypatch):
 def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     monkeypatch.setenv(constants.ENV_AUTH_ENABLED, "true")
     monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "1")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
     monkeypatch.setenv(constants.ENV_MFA_ENABLED, "yes")
     monkeypatch.setenv(constants.ENV_JWT_ENABLED, "on")
     monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
@@ -54,6 +56,7 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
 
     assert settings.AUTH_ENABLED is True
     assert settings.AUTH_EXPERIMENTAL_ENABLED is True
+    assert settings.PROMOGG_ENV == constants.ENVIRONMENT_DEVELOPMENT
     assert settings.MFA_ENABLED is True
     assert settings.JWT_ENABLED is True
     assert settings.RBAC_ENABLED is True
@@ -118,3 +121,4 @@ def test_constantes_centralizadas():
     assert constants.HEADER_REQUEST_ID in constants.HTTP_HEADERS
     assert constants.COOKIE_REFRESH_TOKEN in constants.COOKIE_NAMES
     assert constants.ENV_AUTH_ENABLED in constants.ENV_VARS
+    assert constants.ENVIRONMENT_DEVELOPMENT in constants.ENVIRONMENTS

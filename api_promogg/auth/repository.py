@@ -51,6 +51,13 @@ class AuthRepository:
         ).fetchone()
         return _user_from_row(row) if row else None
 
+    def buscar_usuario_por_id(self, user_id: str) -> User | None:
+        row = self.conn.execute(
+            "SELECT id, email, password_hash, status, created_at, updated_at FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+        return _user_from_row(row) if row else None
+
     def criar_sessao(self, user_id: str, expires_in_minutes: int = 60, ip_hash=None, user_agent_hash=None) -> Session:
         session_id = novo_id("ses")
         now_dt = datetime.now(UTC)

@@ -41,6 +41,7 @@ def _env_csv(name: str, default: tuple[str, ...]) -> tuple[str, ...]:
 
 AUTH_ENABLED = _env_bool(constants.ENV_AUTH_ENABLED, False)
 AUTH_EXPERIMENTAL_ENABLED = _env_bool(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, False)
+PROMOGG_ENV = os.getenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_PRODUCTION).strip().lower()
 MFA_ENABLED = _env_bool(constants.ENV_MFA_ENABLED, False)
 JWT_ENABLED = _env_bool(constants.ENV_JWT_ENABLED, False)
 RBAC_ENABLED = _env_bool(constants.ENV_RBAC_ENABLED, False)

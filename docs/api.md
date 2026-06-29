@@ -8,12 +8,13 @@ O Promogg ainda não possui API autenticada própria para operação administrat
 
 - Status deste documento: contrato planejado.
 - Backend API: esqueleto read-only inicial criado em paralelo, com endurecimento básico de segurança.
-- Autenticação própria: ainda não implementada.
+- Autenticação própria: rotas experimentais existem somente para desenvolvimento local e ficam inativas por padrão.
 - RBAC próprio: ainda não implementado.
 - Painel atual: continua sendo Streamlit/local.
 - CLI atual: continua sendo `ia_promocoes.py`.
 - Fonte inicial da API: `catalogo_publico/ofertas.json`.
 - Banco SQLite: não é consultado pela API read-only inicial.
+- Banco de autenticação experimental: separado do `banco.db`, usado apenas quando `PROMOGG_ENV=development` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`.
 
 ## Execução Local da API Read-only
 
@@ -202,10 +203,36 @@ Controles obrigatórios para `/api/v1`:
 
 Limitações atuais:
 
-- ainda não há login, JWT, refresh token, sessão, RBAC ou MFA;
+- não há login utilizável em produção;
+- as rotas `/api/v1/auth/*` respondem 404 fora de desenvolvimento local com feature flag experimental ligada;
+- ainda não há JWT, RBAC ou MFA;
 - não há rotas mutáveis;
-- a API não consulta o banco SQLite;
+- a API read-only não consulta o banco SQLite;
 - CORS padrão não usa `"*"`.
+
+## Autenticação Experimental Local
+
+As rotas abaixo existem apenas para preparar a integração futura de autenticação. Elas são registradas no app, mas retornam `404 Not Found` quando qualquer condição não for satisfeita:
+
+- `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`;
+- `PROMOGG_ENV=development`.
+
+Ambientes `production`, `staging` ou qualquer valor desconhecido continuam sem endpoints de autenticação ativos. Essa funcionalidade não deve ser usada em produção.
+
+Rotas experimentais:
+
+- `POST /api/v1/auth/login`;
+- `POST /api/v1/auth/logout`;
+- `POST /api/v1/auth/refresh`;
+- `GET /api/v1/auth/me`.
+
+Limites da fase:
+
+- não emite JWT;
+- não protege rotas read-only;
+- não altera Streamlit, CLI, catálogo público, GitHub Pages ou workflows;
+- usa apenas sessão experimental, refresh token opaco e banco experimental configurável por `PROMOGG_AUTH_DB_PATH`;
+- permanece desligada por padrão.
 
 ## Resumo dos Endpoints
 
@@ -218,6 +245,10 @@ O mapa abaixo é contratual. As rotas `GET` read-only estão implementadas; rota
 | GET | `/api/v1/ofertas` | Implementado read-only | Pública para dados sanitizados | Não para público | `offers:read` se visão privada | Não | Não público; futura se privado |
 | GET | `/api/v1/ofertas/{oferta_id}` | Implementado read-only | Pública para dados sanitizados | Não para público | `offers:read` se visão privada | Não | Não público; futura se privado |
 | GET | `/api/v1/categorias` | Implementado read-only | Pública | Não | `catalog:read` se visão privada | Não | Não público; futura se privado |
+| POST | `/api/v1/auth/login` | Experimental local, 404 por padrão | Local development | Experimental | Nenhuma nesta fase | Não | Sim, experimental |
+| POST | `/api/v1/auth/logout` | Experimental local, 404 por padrão | Local development | Sessão experimental | Nenhuma nesta fase | Não | Sim, experimental |
+| POST | `/api/v1/auth/refresh` | Experimental local, 404 por padrão | Local development | Refresh opaco experimental | Nenhuma nesta fase | Não | Sim, experimental |
+| GET | `/api/v1/auth/me` | Experimental local, 404 por padrão | Local development | Sessão experimental | Nenhuma nesta fase | Não | Não nesta fase |
 | POST | `/api/v1/auth/login` | Futuro | Pública | Não | Nenhuma | Pode exigir etapa MFA | Sim |
 | POST | `/api/v1/auth/refresh` | Futuro | Pública com cookie seguro | Cookie refresh | Nenhuma | Não | Sim |
 | POST | `/api/v1/auth/logout` | Futuro | Autenticada | Sim | Nenhuma | Não | Sim |

@@ -17,6 +17,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 - [Inventário de Dados](inventario-dados.md)
 - [RBAC](rbac.md)
 - [Modelo de Identidade e Auditoria](auth-model.md)
+- [Checklist de Autenticacao para Producao](auth-production-checklist.md)
 
 ## Status dos Controles
 
@@ -34,6 +35,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Persistência auth experimental | Parcial | `auth_dev.db` separado, configurável por `PROMOGG_AUTH_DB_PATH`, com schema de usuários/sessões/tokens/auditoria; sem admin automático e sem tocar no `banco.db`. |
 | Serviço auth experimental | Parcial | Serviço interno simula autenticação, sessão, refresh rotativo, reuso e logout em testes; ainda sem endpoint público, JWT/cookie real ou proteção de rotas. |
 | Configuração central de segurança | Parcial | `api_promogg/security/` centraliza settings, feature flags, constantes e validadores para autenticação futura; auth continua desabilitada por padrão. |
+| Rotas auth experimentais locais | Parcial | `/api/v1/auth/*` é registrado, mas retorna 404 fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`; não emite JWT e não funciona em produção. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -120,6 +122,15 @@ Antes de qualquer endpoint público de login, a configuração de segurança dev
 - `validators.py`: validação reutilizável de e-mail, senha, nome de usuário, origem CORS, host, request id e tamanho de entrada.
 
 Essa camada ainda não cria rota, não protege endpoint existente e não altera o Streamlit, workflows ou `banco.db`.
+
+As rotas experimentais da Fase 3E existem somente para desenvolvimento local:
+
+- `POST /api/v1/auth/login`;
+- `POST /api/v1/auth/logout`;
+- `POST /api/v1/auth/refresh`;
+- `GET /api/v1/auth/me`.
+
+Elas retornam `404 Not Found` quando `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` não está ligado ou quando `PROMOGG_ENV` não é exatamente `development`. Produção, staging e ambientes desconhecidos continuam sem autenticação ativa. A fase não emite JWT, não altera rotas públicas read-only, não toca no `banco.db` e não deve ser usada em produção.
 
 ### JWT
 
