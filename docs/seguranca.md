@@ -37,6 +37,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Configuração central de segurança | Parcial | `api_promogg/security/` centraliza settings, feature flags, constantes e validadores para autenticação futura; auth continua desabilitada por padrão. |
 | Rotas auth experimentais locais | Parcial | `/api/v1/auth/*` é registrado, mas retorna 404 fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`; não emite JWT e não funciona em produção. |
 | Infraestrutura JWT/cookies | Parcial | Contratos e helpers internos existem, mas `JWT_ENABLED` fica desligado por padrão; nenhuma rota emite JWT ou envia cookie. |
+| Fachada de credenciais | Parcial | `api_promogg/auth/auth_facade.py` centraliza emissão experimental via `CredentialProvider`, recusando antes de gerar token quando flags/ambiente bloqueiam. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -140,6 +141,8 @@ A Fase 4A prepara infraestrutura interna para credenciais:
 - helpers de cookie seguro com `HttpOnly`, `Secure`, `SameSite`, `Path`, `Max-Age` e limpeza.
 
 Esses módulos não são usados por rotas nesta fase. Nenhum cookie real é escrito, nenhum JWT é emitido por padrão e produção continua bloqueada.
+
+A Fase 4B cria uma fachada interna para credenciais. Ela recusa emissao quando `PROMOGG_AUTH_ENABLED`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` ou `PROMOGG_JWT_ENABLED` nao estao ligados, ou quando `PROMOGG_ENV` nao e `development`. A recusa acontece antes de chamar o provider, reduzindo risco de emissao acidental. Nenhum router usa a fachada.
 
 ### JWT
 

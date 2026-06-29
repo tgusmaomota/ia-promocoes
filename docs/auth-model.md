@@ -550,3 +550,38 @@ Teste:
 ```bash
 python3 -m pytest tests/test_auth_credentials_infra.py
 ```
+
+## Fachada de Credenciais da Fase 4B
+
+A Fase 4B adiciona `api_promogg/auth/auth_facade.py` como o unico ponto autorizado para emissao experimental de credenciais.
+
+A fachada usa somente a interface `CredentialProvider`, mantendo a aplicacao desacoplada do formato JWT. Ela cobre:
+
+- emissao de `AccessCredential`;
+- emissao de `RefreshCredential`;
+- renovacao de credenciais;
+- revogacao por `token_id`;
+- validacao temporal e de revogacao.
+
+Condicoes obrigatorias antes de qualquer emissao:
+
+- `PROMOGG_AUTH_ENABLED=true`;
+- `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`;
+- `PROMOGG_JWT_ENABLED=true`;
+- `PROMOGG_ENV=development`;
+- provider habilitado.
+
+A recusa ocorre antes de chamar o provider, evitando geracao acidental de token quando qualquer flag ou ambiente bloqueia. O servico interno experimental pode chamar a fachada em testes, mas nenhuma rota HTTP usa a fachada nesta fase.
+
+Limites atuais:
+
+- nenhuma rota retorna JWT;
+- nenhuma rota escreve cookie;
+- nenhuma autenticacao publica foi ativada;
+- producao continua sem emissao de credenciais, mesmo com configuracao parcial.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_auth_facade.py
+```

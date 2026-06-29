@@ -58,6 +58,7 @@ Status: Fase 3D com serviço interno experimental, sem implementação de login 
 - Criar camada central `api_promogg/security/` para settings, feature flags, constantes e validadores compartilhados por toda autenticação futura.
 - Registrar rotas experimentais `/api/v1/auth/*`, desativadas por padrão e disponíveis apenas com `PROMOGG_ENV=development` e feature flag experimental ligada.
 - Preparar contratos de credenciais, provider JWT experimental e helpers de cookies seguros sem ativar JWT, cookies ou autenticação em produção.
+- Criar fachada interna para emissão experimental de credenciais via `CredentialProvider`, sem uso por rotas públicas.
 - Sem admin automático, senha hardcoded, endpoint de login ou proteção das rotas read-only.
 - Manter rotas read-only sem autenticação até a fase de integração planejada.
 

@@ -249,6 +249,9 @@ Os modulos internos sao:
 - `api_promogg/auth/credentials.py`: contratos `AccessCredential`, `RefreshCredential` e `CredentialProvider`;
 - `api_promogg/auth/jwt_provider.py`: provider JWT experimental, apenas para uso interno futuro;
 - `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookies, sem chamar `set_cookie`.
+- `api_promogg/auth/auth_facade.py`: fachada experimental para emissão, renovação, revogação e validação via `CredentialProvider`.
+
+A fachada não é usada por routers nesta fase. Ela existe para testes e para o serviço interno experimental, sempre bloqueando emissão fora de `PROMOGG_ENV=development` ou sem as flags `PROMOGG_AUTH_ENABLED`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` e `PROMOGG_JWT_ENABLED`.
 
 Configuracoes previstas:
 

@@ -16,6 +16,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 ## JWT
 
 - [ ] Manter provider desacoplado por `CredentialProvider`; rotas nao devem depender diretamente de JWT.
+- [ ] Garantir que toda emissao passe pela fachada de credenciais, nunca direto pelo provider concreto.
 - [ ] Definir issuer, audience, algoritmo e politica de chaves.
 - [ ] Emitir access token curto, preferencialmente entre 5 e 15 minutos.
 - [ ] Incluir apenas claims necessarias: `sub`, `session_id`, `roles`/`permissions`, `iat`, `exp`, `iss`, `aud`.

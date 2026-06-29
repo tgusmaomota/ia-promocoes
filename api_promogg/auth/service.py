@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from api_promogg.auth.audit import AuditEvent
+from api_promogg.auth.auth_facade import AuthCredentialFacade
 from api_promogg.auth.password import hash_password, verify_password
 from api_promogg.auth.repository import AuthRepository, inicializar_banco_auth
 from api_promogg.auth.tokens import generate_opaque_token
@@ -119,6 +120,9 @@ class ExperimentalAuthService:
         if not user or user.status != "active":
             return None
         return _user_dto(user)
+
+    def emitir_credenciais_experimentais(self, session: SessionResult, facade: AuthCredentialFacade, **kwargs):
+        return facade.issue_credentials(subject=session.user.id, session_id=session.session_id, **kwargs)
 
     def _audit(self, action, result, actor_user_id=None, actor_session_id=None, metadata=None):
         self.repository.registrar_evento_auditoria(
