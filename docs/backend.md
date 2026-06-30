@@ -42,6 +42,8 @@ A Fase 4A adiciona infraestrutura passiva de credenciais em `api_promogg/auth/cr
 
 A Fase 4B adiciona `api_promogg/auth/auth_facade.py`, a fachada interna para emissão experimental de credenciais. Ela é o único ponto autorizado para emissão, renovação, revogação e validação de credenciais e opera via `CredentialProvider`. A fachada exige `PROMOGG_AUTH_ENABLED=true`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`, `PROMOGG_JWT_ENABLED=true` e `PROMOGG_ENV=development`; nenhuma rota usa essa fachada nesta fase.
 
+A Fase 4C adiciona helpers passivos para CSRF, validação de origem/host/referer e proteção contra session fixation em `api_promogg/security/`. Também amplia os contratos de cookies para incluir CSRF cookie. Nenhuma rota usa esses helpers, nenhum cookie real é enviado e `CSRF_ENABLED`/`SESSION_ROTATION_ENABLED` continuam desligados por padrão.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;

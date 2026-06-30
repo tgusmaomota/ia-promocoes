@@ -28,6 +28,13 @@ def test_security_settings_valores_padrao(monkeypatch):
     assert settings.JWT_ACCESS_TTL == 900
     assert settings.JWT_REFRESH_TTL == 2_592_000
     assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
+    assert settings.CSRF_ENABLED is False
+    assert settings.CSRF_COOKIE_NAME == constants.COOKIE_CSRF_TOKEN
+    assert settings.CSRF_HEADER_NAME == "X-CSRF-Token"
+    assert settings.CSRF_TOKEN_TTL == 3_600
+    assert settings.SESSION_ROTATION_ENABLED is False
+    assert settings.SESSION_IDLE_TIMEOUT == 1_800
+    assert settings.SESSION_ABSOLUTE_TIMEOUT == 43_200
     assert settings.RBAC_ENABLED is False
     assert settings.AUDIT_ENABLED is True
     assert settings.MAX_LOGIN_ATTEMPTS == 5
@@ -51,6 +58,13 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     monkeypatch.setenv(constants.ENV_JWT_ACCESS_TTL, "300")
     monkeypatch.setenv(constants.ENV_JWT_REFRESH_TTL, "7200")
     monkeypatch.setenv(constants.ENV_JWT_ALGORITHM, constants.JWT_ALGORITHM_HS256)
+    monkeypatch.setenv(constants.ENV_CSRF_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_CSRF_COOKIE_NAME, "promogg_csrf_custom")
+    monkeypatch.setenv(constants.ENV_CSRF_HEADER_NAME, "X-Promogg-CSRF")
+    monkeypatch.setenv(constants.ENV_CSRF_TOKEN_TTL, "600")
+    monkeypatch.setenv(constants.ENV_SESSION_ROTATION_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_SESSION_IDLE_TIMEOUT, "900")
+    monkeypatch.setenv(constants.ENV_SESSION_ABSOLUTE_TIMEOUT, "7200")
     monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
     monkeypatch.setenv(constants.ENV_AUDIT_ENABLED, "false")
     monkeypatch.setenv(constants.ENV_MAX_LOGIN_ATTEMPTS, "7")
@@ -74,6 +88,13 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     assert settings.JWT_ACCESS_TTL == 300
     assert settings.JWT_REFRESH_TTL == 7200
     assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
+    assert settings.CSRF_ENABLED is True
+    assert settings.CSRF_COOKIE_NAME == "promogg_csrf_custom"
+    assert settings.CSRF_HEADER_NAME == "X-Promogg-CSRF"
+    assert settings.CSRF_TOKEN_TTL == 600
+    assert settings.SESSION_ROTATION_ENABLED is True
+    assert settings.SESSION_IDLE_TIMEOUT == 900
+    assert settings.SESSION_ABSOLUTE_TIMEOUT == 7200
     assert settings.RBAC_ENABLED is True
     assert settings.AUDIT_ENABLED is False
     assert settings.MAX_LOGIN_ATTEMPTS == 7
@@ -138,4 +159,6 @@ def test_constantes_centralizadas():
     assert constants.ENV_AUTH_ENABLED in constants.ENV_VARS
     assert constants.ENVIRONMENT_DEVELOPMENT in constants.ENVIRONMENTS
     assert constants.ENV_JWT_ISSUER in constants.ENV_VARS
+    assert constants.ENV_CSRF_ENABLED in constants.ENV_VARS
+    assert constants.ENV_SESSION_ROTATION_ENABLED in constants.ENV_VARS
     assert constants.JWT_ALGORITHM_HS256 in constants.JWT_ALLOWED_ALGORITHMS

@@ -585,3 +585,36 @@ Teste:
 ```bash
 python3 -m pytest tests/test_auth_facade.py
 ```
+
+## CSRF, Cookies e Protecao de Sessao da Fase 4C
+
+A Fase 4C adiciona infraestrutura passiva, sem integracao com routers:
+
+- `api_promogg/security/csrf.py`: helpers para gerar token CSRF, validar token, comparar em tempo constante e respeitar expiracao configuravel.
+- `api_promogg/security/origin.py`: validadores de `Origin`, `Host` e `Referer`, com allowlist por ambiente.
+- `api_promogg/security/session_security.py`: contratos para rotacao de `session_id` apos login, regeneracao de sessao, invalidacao da sessao antiga, prevencao de session fixation e politicas futuras de idle timeout e absolute timeout.
+- `api_promogg/auth/cookies.py`: especificacoes passivas de refresh cookie e CSRF cookie, sem escrever cookies reais.
+
+Configuracoes novas:
+
+- `PROMOGG_CSRF_ENABLED`;
+- `PROMOGG_CSRF_COOKIE_NAME`;
+- `PROMOGG_CSRF_HEADER_NAME`;
+- `PROMOGG_CSRF_TOKEN_TTL`;
+- `PROMOGG_SESSION_ROTATION_ENABLED`;
+- `PROMOGG_SESSION_IDLE_TIMEOUT`;
+- `PROMOGG_SESSION_ABSOLUTE_TIMEOUT`.
+
+Limites:
+
+- CSRF continua desativado por padrao;
+- cookies continuam passivos;
+- session fixation ja esta prevista por contrato, mas ainda nao integrada ao servico;
+- nenhuma rota usa essa infraestrutura;
+- producao continua sem emitir cookies.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_csrf_infra.py
+```

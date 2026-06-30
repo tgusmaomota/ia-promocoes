@@ -66,6 +66,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 
 ## CSRF
 
+- [ ] Integrar helpers passivos de CSRF somente quando rotas mutaveis privadas existirem.
 - [ ] Ativar protecao CSRF para mutacoes quando cookies forem usados.
 - [ ] Separar rotas idempotentes de rotas mutaveis.
 - [ ] Validar origem e host em rotas privadas.
@@ -89,6 +90,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 
 ## Sessoes Revogaveis
 
+- [ ] Regenerar `session_id` apos login para prevenir session fixation.
 - [ ] Persistir sessoes com status, expiracao, ultimo uso e motivo de revogacao.
 - [ ] Revogar sessoes em logout, troca de senha, reuso de refresh, suspeita de incidente e mudanca critica de papel.
 - [ ] Validar sessao ativa no servidor mesmo quando o access token ainda nao expirou.

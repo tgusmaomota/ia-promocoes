@@ -71,3 +71,25 @@ def build_clear_refresh_cookie_spec(
         path=path,
         max_age=0,
     )
+
+
+def build_csrf_cookie_spec(
+    csrf_token: str,
+    *,
+    max_age: int | None = None,
+    secure: bool = True,
+    samesite: str = "strict",
+    path: str = "/api/v1/auth",
+    name: str | None = None,
+) -> CookieSpec:
+    if not csrf_token:
+        raise ValueError("csrf_token obrigatorio.")
+    return CookieSpec(
+        name=name or settings.CSRF_COOKIE_NAME,
+        value=csrf_token,
+        httponly=False,
+        secure=secure,
+        samesite=samesite,
+        path=path,
+        max_age=max_age if max_age is not None else settings.CSRF_TOKEN_TTL,
+    )

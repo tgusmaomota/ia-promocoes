@@ -38,6 +38,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Rotas auth experimentais locais | Parcial | `/api/v1/auth/*` é registrado, mas retorna 404 fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`; não emite JWT e não funciona em produção. |
 | Infraestrutura JWT/cookies | Parcial | Contratos e helpers internos existem, mas `JWT_ENABLED` fica desligado por padrão; nenhuma rota emite JWT ou envia cookie. |
 | Fachada de credenciais | Parcial | `api_promogg/auth/auth_facade.py` centraliza emissão experimental via `CredentialProvider`, recusando antes de gerar token quando flags/ambiente bloqueiam. |
+| CSRF/cookies/sessao passivos | Parcial | Helpers de CSRF, origem e session fixation existem sem integração a routers; nenhum cookie real é escrito. |
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Planejado | Ainda não implementado. |
 | Sessões seguras | Planejado | Ainda não há tabela formal de sessões de usuário. |
@@ -143,6 +144,15 @@ A Fase 4A prepara infraestrutura interna para credenciais:
 Esses módulos não são usados por rotas nesta fase. Nenhum cookie real é escrito, nenhum JWT é emitido por padrão e produção continua bloqueada.
 
 A Fase 4B cria uma fachada interna para credenciais. Ela recusa emissao quando `PROMOGG_AUTH_ENABLED`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` ou `PROMOGG_JWT_ENABLED` nao estao ligados, ou quando `PROMOGG_ENV` nao e `development`. A recusa acontece antes de chamar o provider, reduzindo risco de emissao acidental. Nenhum router usa a fachada.
+
+A Fase 4C prepara infraestrutura passiva para CSRF, cookies e protecao de sessao:
+
+- `api_promogg/security/csrf.py`: gera e valida token CSRF com comparacao em tempo constante e expiracao configuravel;
+- `api_promogg/security/origin.py`: valida `Origin`, `Host` e `Referer` por allowlist e ambiente;
+- `api_promogg/security/session_security.py`: define contratos para rotacao/regeneracao de sessao, invalidacao da sessao antiga, prevencao de session fixation e politicas futuras de idle/absolute timeout;
+- `api_promogg/auth/cookies.py`: possui especificacoes passivas para refresh cookie e CSRF cookie.
+
+`CSRF_ENABLED` e `SESSION_ROTATION_ENABLED` continuam desativados por padrao. Nenhuma rota usa esses helpers e nenhuma resposta HTTP escreve `set_cookie` ou `delete_cookie`.
 
 ### JWT
 

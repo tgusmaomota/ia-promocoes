@@ -53,6 +53,13 @@ if JWT_ALGORITHM not in constants.JWT_ALLOWED_ALGORITHMS:
     raise RuntimeError(f"Algoritmo JWT não permitido: {JWT_ALGORITHM!r}")
 RBAC_ENABLED = _env_bool(constants.ENV_RBAC_ENABLED, False)
 AUDIT_ENABLED = _env_bool(constants.ENV_AUDIT_ENABLED, True)
+CSRF_ENABLED = _env_bool(constants.ENV_CSRF_ENABLED, False)
+CSRF_COOKIE_NAME = os.getenv(constants.ENV_CSRF_COOKIE_NAME, constants.COOKIE_CSRF_TOKEN).strip()
+CSRF_HEADER_NAME = os.getenv(constants.ENV_CSRF_HEADER_NAME, "X-CSRF-Token").strip()
+CSRF_TOKEN_TTL = _env_int(constants.ENV_CSRF_TOKEN_TTL, 3_600, minimum=60)
+SESSION_ROTATION_ENABLED = _env_bool(constants.ENV_SESSION_ROTATION_ENABLED, False)
+SESSION_IDLE_TIMEOUT = _env_int(constants.ENV_SESSION_IDLE_TIMEOUT, 1_800, minimum=60)
+SESSION_ABSOLUTE_TIMEOUT = _env_int(constants.ENV_SESSION_ABSOLUTE_TIMEOUT, 43_200, minimum=60)
 
 MAX_LOGIN_ATTEMPTS = _env_int(constants.ENV_MAX_LOGIN_ATTEMPTS, 5, minimum=1)
 LOCKOUT_MINUTES = _env_int(constants.ENV_LOCKOUT_MINUTES, 15, minimum=1)
