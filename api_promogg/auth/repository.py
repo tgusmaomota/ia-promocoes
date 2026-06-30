@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from api_promogg.auth.audit import AuditEvent, sanitize_event
 from api_promogg.auth.db import conectar_auth_db
-from api_promogg.auth.migrations import inicializar_schema
+from api_promogg.auth.migrations import inicializar_schema, seed_roles_permissions
 from api_promogg.auth.models import Permission, RefreshToken, Role, Session, User
 from api_promogg.auth.tokens import compare_token, hash_token
 
@@ -204,6 +204,84 @@ class AuthRepository:
             "SELECT id, code, description, risk_level, requires_mfa FROM permissions ORDER BY code"
         ).fetchall()
         return [Permission(**dict(row)) for row in rows]
+
+    def garantir_seeds_papeis_permissoes(self):
+        seed_roles_permissions(self.conn)
+        self.conn.commit()
+
+    def atribuir_papel_usuario(self, user_id: str, role_name: str, granted_by: str | None = None) -> bool:
+        user = self.buscar_usuario_por_id(user_id)
+        role = self._buscar_papel_por_nome(role_name)
+        if not user or not role:
+            return False
+        active = self.conn.execute(
+            """
+            SELECT 1 FROM user_roles
+            WHERE user_id = ? AND role_id = ? AND revoked_at IS NULL
+            """,
+            (user_id, role.id),
+        ).fetchone()
+        if active:
+            return True
+        self.conn.execute(
+            """
+            INSERT INTO user_roles (user_id, role_id, granted_by)
+            VALUES (?, ?, ?)
+            """,
+            (user_id, role.id, granted_by),
+        )
+        self.conn.commit()
+        return True
+
+    def remover_papel_usuario(self, user_id: str, role_name: str) -> bool:
+        role = self._buscar_papel_por_nome(role_name)
+        if not role:
+            return False
+        now = utc_now_iso()
+        cursor = self.conn.execute(
+            """
+            UPDATE user_roles
+            SET revoked_at = ?
+            WHERE user_id = ? AND role_id = ? AND revoked_at IS NULL
+            """,
+            (now, user_id, role.id),
+        )
+        self.conn.commit()
+        return cursor.rowcount > 0
+
+    def listar_papeis_usuario(self, user_id: str) -> list[Role]:
+        rows = self.conn.execute(
+            """
+            SELECT r.id, r.name, r.description, r.is_system
+            FROM user_roles ur
+            JOIN roles r ON r.id = ur.role_id
+            WHERE ur.user_id = ? AND ur.revoked_at IS NULL
+            ORDER BY r.name
+            """,
+            (user_id,),
+        ).fetchall()
+        return [Role(**dict(row)) for row in rows]
+
+    def listar_permissoes_efetivas_usuario(self, user_id: str) -> list[Permission]:
+        rows = self.conn.execute(
+            """
+            SELECT DISTINCT p.id, p.code, p.description, p.risk_level, p.requires_mfa
+            FROM user_roles ur
+            JOIN role_permissions rp ON rp.role_id = ur.role_id
+            JOIN permissions p ON p.id = rp.permission_id
+            WHERE ur.user_id = ? AND ur.revoked_at IS NULL
+            ORDER BY p.code
+            """,
+            (user_id,),
+        ).fetchall()
+        return [Permission(**dict(row)) for row in rows]
+
+    def _buscar_papel_por_nome(self, role_name: str) -> Role | None:
+        row = self.conn.execute(
+            "SELECT id, name, description, is_system FROM roles WHERE name = ?",
+            (role_name,),
+        ).fetchone()
+        return Role(**dict(row)) if row else None
 
 
 def _user_from_row(row) -> User:

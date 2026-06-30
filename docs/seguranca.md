@@ -31,7 +31,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Auditoria operacional sanitizada | Parcial | Há `sistema_eventos` e logs sanitizados, mas ainda sem identidade forte por usuário. |
 | API read-only endurecida | Parcial | `/api/v1` tem testes, headers de segurança, CORS sem wildcard default, erros padronizados e logs mínimos sem query/payload. |
 | Modelo de identidade e sessões | Planejado | Entidades, lifecycle, permissões e auditoria futura definidos em `docs/auth-model.md`. |
-| Base técnica de auth isolada | Parcial | Hash Argon2id, tokens opacos, RBAC em memória e sanitização de auditoria existem como módulos internos, ainda sem login real ou proteção de rotas. |
+| Base técnica de auth isolada | Parcial | Hash Argon2id, tokens opacos, RBAC em memória/persistente experimental e sanitização de auditoria existem como módulos internos, sem proteção de rotas read-only. |
 | Persistência auth experimental | Parcial | `auth_dev.db` separado, configurável por `PROMOGG_AUTH_DB_PATH`, com schema de usuários/sessões/tokens/auditoria; sem admin automático e sem tocar no `banco.db`. |
 | Serviço auth experimental | Parcial | Serviço interno autentica em ambiente experimental local, com sessão, refresh rotativo, reuso e logout; sem produção e sem proteção de rotas read-only. |
 | Configuração central de segurança | Parcial | `api_promogg/security/` centraliza settings, feature flags, constantes e validadores para autenticação futura; auth continua desabilitada por padrão. |
@@ -42,7 +42,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Parcial | Refresh opaco rotativo existe no laboratório local; JWT access credential ainda não é produção. |
 | Sessões seguras | Parcial | Sessões experimentais revogáveis existem em `auth_dev.db`; política definitiva de produção ainda pendente. |
-| RBAC | Planejado | Ainda não há usuários, papéis ou permissões internas. |
+| RBAC | Parcial | Papéis/permissões persistentes existem no banco experimental e helpers negam por padrão; produção e rotas read-only seguem sem RBAC ativo. |
 | OAuth2 Google/GitHub | Planejado | Ainda não implementado para login do Promogg. |
 | MFA/TOTP | Planejado | Ainda não implementado. |
 | Senhas com Argon2id/bcrypt | Planejado | Ainda não há autenticação por senha no Promogg. |
@@ -111,7 +111,7 @@ Responsabilidades planejadas:
 
 O modelo detalhado de entidades futuras, lifecycle de sessão, refresh tokens, MFA, reset de senha, OAuth e eventos mínimos de auditoria está em [Modelo de Identidade e Auditoria](auth-model.md). Esta seção resume as regras de segurança que a implementação futura deve seguir.
 
-A base técnica isolada já possui módulos internos para hashing de senha, tokens opacos, RBAC em memória e auditoria sanitizada. Esses módulos não expõem endpoint de login, não geram JWT real, não persistem dados e não protegem as rotas read-only atuais.
+A base técnica isolada já possui módulos internos para hashing de senha, tokens opacos, RBAC em memória/persistente experimental e auditoria sanitizada. Esses módulos não protegem as rotas read-only atuais nem ativam produção.
 
 A persistência experimental usa banco SQLite separado e ignorado pelo Git. Ela existe para testes e preparação técnica, sem endpoint público de login, sem admin padrão, sem senha hardcoded e sem alteração do banco operacional.
 
@@ -183,6 +183,8 @@ Cada login deve criar uma sessão persistida com `session_id`, usuário, IP apro
 ## Autorização RBAC
 
 Toda rota, comando crítico e ação de painel deve exigir permissão explícita.
+
+Na Fase 6A, essa regra ainda não é aplicada às rotas atuais. O que existe é um autorizador experimental persistente para testes e futuras rotas de development: ele usa papéis/permissões do banco de autenticação isolado, exige `PROMOGG_ENV=development` e `PROMOGG_RBAC_ENABLED=true`, e nega por padrão fora desse contexto. Produção continua sem RBAC ativo.
 
 | Papel | Permissões |
 |---|---|

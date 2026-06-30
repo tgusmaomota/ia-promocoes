@@ -28,7 +28,7 @@ A API será criada em paralelo, começando por `/api/v1`. A primeira etapa é re
 
 O desenho de autenticação futura está em `docs/auth-model.md`. Ele define entidades de usuários, papéis, permissões, sessões, refresh tokens, MFA, reset de senha, contas OAuth e eventos de auditoria antes de qualquer implementação de login/JWT.
 
-A base técnica isolada de autenticação fica em `api_promogg/auth/` e cobre hash Argon2id, tokens opacos, rotação simulada de refresh token, RBAC em memória e sanitização de auditoria. Ela ainda não é ligada às rotas, não cria tabelas, não protege endpoints read-only e não implementa login real.
+A base técnica isolada de autenticação fica em `api_promogg/auth/` e cobre hash Argon2id, tokens opacos, rotação simulada de refresh token, RBAC em memória/persistente experimental e sanitização de auditoria. Ela não protege endpoints read-only, não ativa produção e não altera o banco operacional.
 
 A persistência experimental da Fase 3C usa SQLite separado (`auth_dev.db` por padrão, ou `PROMOGG_AUTH_DB_PATH`) para preparar usuários, sessões, refresh tokens e auditoria. Esse banco não é o `banco.db` operacional, é ignorado pelo Git, não cria admin automático e não ativa autenticação nas rotas existentes.
 
@@ -43,6 +43,8 @@ A Fase 4A adiciona infraestrutura de credenciais em `api_promogg/auth/credential
 A Fase 4B adiciona `api_promogg/auth/auth_facade.py`, a fachada interna para emissão experimental de credenciais. Ela é o único ponto autorizado para emissão, renovação, revogação e validação de credenciais e opera via `CredentialProvider`. A fachada exige `PROMOGG_AUTH_ENABLED=true`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`, `PROMOGG_JWT_ENABLED=true` e `PROMOGG_ENV=development`; na Fase 5A, apenas o router experimental pode chamá-la.
 
 A Fase 4C adiciona helpers para CSRF, validação de origem/host/referer e proteção contra session fixation em `api_promogg/security/`. Na Fase 5A, o router experimental pode usar cookies/CSRF apenas em development; produção segue sem cookies reais e `CSRF_ENABLED`/`SESSION_ROTATION_ENABLED` continuam desligados por padrão.
+
+A Fase 6A adiciona RBAC persistente experimental sobre o banco de autenticação isolado. O repository atribui/remove papéis, lista papéis do usuário e lista permissões efetivas; `PersistentRBACAuthorizer` checa uma ou múltiplas permissões e nega por padrão. A autorização só funciona em `development` com `PROMOGG_RBAC_ENABLED=true` ou em testes explícitos, e não é aplicada a `/health`, `/ofertas` ou `/categorias`.
 
 Objetivos:
 

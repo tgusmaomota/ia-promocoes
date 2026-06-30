@@ -654,3 +654,34 @@ Testes:
 ```bash
 python3 -m pytest tests/test_auth_experimental_routes.py tests/test_auth_experimental_security.py
 ```
+
+## RBAC Persistente Experimental da Fase 6A
+
+A Fase 6A conecta papéis e permissões ao banco experimental de autenticação, sem proteger rotas públicas atuais e sem ativar produção.
+
+Componentes:
+
+- `AuthRepository.garantir_seeds_papeis_permissoes()`: reaplica seeds padrão de papéis/permissões de forma idempotente;
+- `AuthRepository.atribuir_papel_usuario(user_id, role_name, granted_by=None)`;
+- `AuthRepository.remover_papel_usuario(user_id, role_name)`;
+- `AuthRepository.listar_papeis_usuario(user_id)`;
+- `AuthRepository.listar_permissoes_efetivas_usuario(user_id)`;
+- `PersistentRBACAuthorizer.list_user_permissions(user_id)`;
+- `PersistentRBACAuthorizer.has_permission(user_id, permission)`;
+- `PersistentRBACAuthorizer.has_any_permission(user_id, permissions)`;
+- `PersistentRBACAuthorizer.has_all_permissions(user_id, permissions)`.
+
+Regras:
+
+- nega por padrão quando usuário, papel ou permissão não existe;
+- nega para usuário inativo, bloqueado ou desabilitado;
+- nega fora de `PROMOGG_ENV=development` com `PROMOGG_RBAC_ENABLED=true`;
+- não cria admin hardcoded;
+- não altera `/health`, `/ofertas`, `/categorias`;
+- não toca no `banco.db`.
+
+Teste:
+
+```bash
+python3 -m pytest tests/test_rbac_persistence.py
+```

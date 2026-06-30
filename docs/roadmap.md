@@ -75,6 +75,13 @@ Status: Fase 5A com integração experimental local em `/api/v1/auth/*`, sem log
 
 ### Fase 4: RBAC em Ações Críticas
 
+Status: Fase 6A com RBAC experimental persistente isolado, ainda sem proteger produção.
+
+- Conectar papéis/permissões ao banco experimental de autenticação.
+- Criar helpers de autorização que listam permissões efetivas e checam uma ou múltiplas permissões.
+- Negar por padrão quando usuário, papel, sessão futura ou permissão não existe.
+- Manter `/health`, `/ofertas` e `/categorias` públicas.
+- Manter produção sem RBAC ativo.
 - Proteger aprovação, rejeição, edição, publicação e ocultação de ofertas.
 - Proteger início/parada de workers.
 - Proteger deploy, rollback e alteração de configurações.

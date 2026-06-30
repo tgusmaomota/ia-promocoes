@@ -1,6 +1,16 @@
 # RBAC
 
-Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. Ele é planejamento de segurança: não há implementação de RBAC nesta fase. O modelo detalhado de entidades, sessões, refresh tokens e auditoria futura está em [Modelo de Identidade e Auditoria](auth-model.md).
+Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. A Fase 6A implementa RBAC experimental persistente no banco de autenticação isolado (`auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`), mas ainda não aplica autorização nas rotas read-only, não ativa RBAC em produção e não cria rotas operacionais mutáveis. O modelo detalhado de entidades, sessões, refresh tokens e auditoria futura está em [Modelo de Identidade e Auditoria](auth-model.md).
+
+## Estado da Fase 6A
+
+- Papéis e permissões padrão são semeados no banco experimental.
+- Usuários podem receber ou perder papéis pelo repository experimental.
+- Helpers internos listam permissões efetivas e checam uma ou múltiplas permissões.
+- A autorização nega por padrão quando usuário, papel ou permissão não existe, quando o usuário não está ativo, ou quando o ambiente não é `development` com `PROMOGG_RBAC_ENABLED=true`.
+- Produção continua sem RBAC ativo.
+- `/api/v1/health`, `/api/v1/ofertas` e `/api/v1/categorias` continuam públicas.
+- `banco.db`, Streamlit e workflows não são alterados.
 
 ## Papéis
 
