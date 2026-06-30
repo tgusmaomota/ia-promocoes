@@ -1,0 +1,188 @@
+{
+  "strict": false,
+  "criticos": 0,
+  "bloqueantes": 0,
+  "alertas": 2,
+  "bloqueios_efetivos": 0,
+  "PRONTO_PARA_COMMIT": true,
+  "PRONTO_PARA_FASE_4": false,
+  "generated_files": [],
+  "checks": [
+    {
+      "area": "Arquitetura",
+      "name": "EmpresaGPT sem imports exclusivos do Promogg",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Nenhum import proibido encontrado.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Arquitetura",
+      "name": "Core sem dependencia do Promogg",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Core independente.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Arquitetura",
+      "name": "Promogg sem import estatico de EmpresaGPT",
+      "status": "FALHA",
+      "severity": "alerta",
+      "evidence": "ia_promocoes.py",
+      "recommendation": "Usar apenas ponte CLI preguicosa ou adaptador futuro aprovado por ADR/RFC.",
+      "files": [
+        "ia_promocoes.py"
+      ]
+    },
+    {
+      "area": "Estrutura",
+      "name": "Documentos, ADRs e contratos obrigatorios",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "26/26 artefatos encontrados.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Seguranca",
+      "name": "Arquivos sensiveis por nome",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Nenhum nome sensivel encontrado em area revisavel.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Seguranca",
+      "name": "Padroes sensiveis em texto",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Nenhum padrao sensivel inesperado encontrado.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Seguranca",
+      "name": "Site e dist_site sem padroes sensiveis",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Artefatos publicos sem padroes sensiveis detectados.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Documentacao",
+      "name": "README por area",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Todas as areas possuem README.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Documentacao",
+      "name": "README com secoes minimas",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "READMEs contem termos minimos esperados.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Contratos",
+      "name": "Contratos obrigatorios existem",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Todos os contratos obrigatorios existem.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Contratos",
+      "name": "Contratos importaveis sem side effects",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Contratos importados sem erro.",
+      "recommendation": "Nenhuma.",
+      "files": [
+        "empresa_gpt/core/config/contract.py",
+        "empresa_gpt/security/contract.py",
+        "empresa_gpt/ai/contract.py",
+        "empresa_gpt/storage/contract.py",
+        "empresa_gpt/analytics/contract.py",
+        "empresa_gpt/monitoring/contract.py",
+        "empresa_gpt/services/contract.py"
+      ]
+    },
+    {
+      "area": "Promogg preservado",
+      "name": "Comandos essenciais registrados no CLI",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Comandos essenciais encontrados sem execucao.",
+      "recommendation": "Nenhuma.",
+      "files": [
+        "ia_promocoes.py"
+      ]
+    },
+    {
+      "area": "Git",
+      "name": "Alteracoes pendentes",
+      "status": "FALHA",
+      "severity": "alerta",
+      "evidence": "19 alteracao(oes), 11 nao rastreada(s).",
+      "recommendation": "Revisar diff antes de commit. Aviso esperado durante desenvolvimento.",
+      "files": [
+        ".gitignore",
+        "empresa_gpt/README.md",
+        "empresa_gpt/core/README.md",
+        "empresa_gpt/deployment/README.md",
+        "empresa_gpt/docs/README.md",
+        "empresa_gpt/integrations/README.md",
+        "empresa_gpt/shared/README.md",
+        "ia_promocoes.py",
+        "RELATORIO_EMPRESAGPT_QUALITY_ENGINE.json",
+        "RELATORIO_EMPRESAGPT_QUALITY_ENGINE.md",
+        "empresa_gpt/docs/CHECKLIST-producao.md",
+        "empresa_gpt/docs/CONVENCOES-ia.md",
+        "empresa_gpt/docs/CRITERIOS-novas-funcionalidades.md",
+        "empresa_gpt/docs/GUIA-revisao-de-codigo.md",
+        "empresa_gpt/docs/MANUAL_OFICIAL_EMPRESAGPT.md",
+        "empresa_gpt/docs/PLAYBOOK-operacao-segura.md",
+        "empresa_gpt/docs/RFC-0000-template.md",
+        "empresa_gpt/quality/",
+        "tests/test_empresagpt_quality_engine.py"
+      ]
+    },
+    {
+      "area": "Git",
+      "name": "Arquivos sensiveis no status",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Nenhum arquivo sensivel no status.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Git",
+      "name": "Relatorios permitidos",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Somente relatorios permitidos aparecem no status.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    },
+    {
+      "area": "Git",
+      "name": "Arquivos grandes",
+      "status": "OK",
+      "severity": "info",
+      "evidence": "Nenhum arquivo grande pendente detectado.",
+      "recommendation": "Nenhuma.",
+      "files": []
+    }
+  ]
+}

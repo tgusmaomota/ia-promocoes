@@ -1464,6 +1464,7 @@ COMANDOS_PROMOGG["Segurança e Diagnóstico"]["corrigir-categorias-vazias"] = "C
 COMANDOS_PROMOGG["Segurança e Diagnóstico"]["auditar-duplicados"] = "Audita item_id duplicados e escolhe o registro mais íntegro sem apagar."
 COMANDOS_PROMOGG["Segurança e Diagnóstico"]["corrigir-duplicados"] = "Oculta duplicados não escolhidos como duplicado_oculto; use --dry-run."
 COMANDOS_PROMOGG["Segurança e Diagnóstico"]["reprocessar-afiliados-falhos"] = "Reprocessa apenas links meli.la falhos/pendentes; use --dry-run."
+COMANDOS_PROMOGG["Segurança e Diagnóstico"]["quality-check"] = "Executa o Quality Engine local da EmpresaGPT sem acionar operação do Promogg."
 
 
 def comando_comandos():
@@ -1474,6 +1475,14 @@ def comando_comandos():
             print(f"- {nome}: {descricao}")
     print("\nUse --dry-run antes de comandos de recuperação ou reprocessamento quando disponível.")
     return 0
+
+
+def comando_quality_check(json_output=False, strict=False):
+    from empresa_gpt.quality.engine import print_quality_summary, run_quality_check
+
+    relatorio = run_quality_check(strict=strict, json_output=json_output)
+    print_quality_summary(relatorio)
+    return 0 if relatorio.ready_for_commit else 1
 
 
 def comando_recuperar_indisponiveis(dry_run=False):
@@ -2403,6 +2412,7 @@ def main():
             "api-teste",
             "auth-teste",
             "comandos",
+            "quality-check",
             "painel",
             "simular",
             "publicar-um",
@@ -2486,6 +2496,7 @@ def main():
     parser.add_argument("--publicar", action="store_true")
     parser.add_argument("--somente-leitura", action="store_true")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--strict", action="store_true")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--porta", type=int, default=8001)
     args = parser.parse_args()
@@ -2518,6 +2529,7 @@ def main():
         "api-teste": comando_api_teste,
         "auth-teste": comando_auth_teste,
         "comandos": comando_comandos,
+        "quality-check": lambda: comando_quality_check(args.json, args.strict),
         "painel": comando_painel,
         "simular": comando_simular,
         "publicar-um": comando_publicar_um,
