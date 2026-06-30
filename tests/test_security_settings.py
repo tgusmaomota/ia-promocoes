@@ -25,6 +25,7 @@ def test_security_settings_valores_padrao(monkeypatch):
     assert settings.JWT_ENABLED is False
     assert settings.JWT_ISSUER == "promogg-api"
     assert settings.JWT_AUDIENCE == "promogg-admin"
+    assert settings.JWT_SIGNING_KEY == ""
     assert settings.JWT_ACCESS_TTL == 900
     assert settings.JWT_REFRESH_TTL == 2_592_000
     assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
@@ -55,6 +56,7 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     monkeypatch.setenv(constants.ENV_JWT_ENABLED, "on")
     monkeypatch.setenv(constants.ENV_JWT_ISSUER, "promogg-test")
     monkeypatch.setenv(constants.ENV_JWT_AUDIENCE, "promogg-admin-test")
+    monkeypatch.setenv(constants.ENV_JWT_SIGNING_KEY, "secret-test")
     monkeypatch.setenv(constants.ENV_JWT_ACCESS_TTL, "300")
     monkeypatch.setenv(constants.ENV_JWT_REFRESH_TTL, "7200")
     monkeypatch.setenv(constants.ENV_JWT_ALGORITHM, constants.JWT_ALGORITHM_HS256)
@@ -85,6 +87,7 @@ def test_security_settings_le_variaveis_de_ambiente(monkeypatch):
     assert settings.JWT_ENABLED is True
     assert settings.JWT_ISSUER == "promogg-test"
     assert settings.JWT_AUDIENCE == "promogg-admin-test"
+    assert settings.JWT_SIGNING_KEY == "secret-test"
     assert settings.JWT_ACCESS_TTL == 300
     assert settings.JWT_REFRESH_TTL == 7200
     assert settings.JWT_ALGORITHM == constants.JWT_ALGORITHM_HS256
@@ -159,6 +162,7 @@ def test_constantes_centralizadas():
     assert constants.ENV_AUTH_ENABLED in constants.ENV_VARS
     assert constants.ENVIRONMENT_DEVELOPMENT in constants.ENVIRONMENTS
     assert constants.ENV_JWT_ISSUER in constants.ENV_VARS
+    assert constants.ENV_JWT_SIGNING_KEY in constants.ENV_VARS
     assert constants.ENV_CSRF_ENABLED in constants.ENV_VARS
     assert constants.ENV_SESSION_ROTATION_ENABLED in constants.ENV_VARS
     assert constants.JWT_ALGORITHM_HS256 in constants.JWT_ALLOWED_ALGORITHMS

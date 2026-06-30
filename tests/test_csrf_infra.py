@@ -138,10 +138,9 @@ def test_producao_continua_sem_cookies_reais(monkeypatch):
     assert not hasattr(spec, "set_cookie")
 
 
-def test_nenhuma_rota_usa_csrf_cookies_ou_session_security():
+def test_apenas_router_auth_experimental_usa_csrf_cookies_ou_session_security():
     route_files = (
         Path("api_promogg/main.py"),
-        Path("api_promogg/routers/auth.py"),
         Path("api_promogg/routers/health.py"),
         Path("api_promogg/routers/ofertas.py"),
     )
@@ -160,3 +159,8 @@ def test_nenhuma_rota_usa_csrf_cookies_ou_session_security():
         content = path.read_text(encoding="utf-8")
         for marker in forbidden_markers:
             assert marker not in content, f"{path} nao deve usar {marker}"
+
+    auth_content = Path("api_promogg/routers/auth.py").read_text(encoding="utf-8")
+    assert "generate_csrf_token" in auth_content
+    assert "build_csrf_cookie_spec" in auth_content
+    assert "set_cookie" in auth_content

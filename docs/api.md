@@ -205,7 +205,7 @@ Limitações atuais:
 
 - não há login utilizável em produção;
 - as rotas `/api/v1/auth/*` respondem 404 fora de desenvolvimento local com feature flag experimental ligada;
-- ainda não há JWT, RBAC ou MFA;
+- RBAC e MFA ainda não estão ativos;
 - não há rotas mutáveis;
 - a API read-only não consulta o banco SQLite;
 - CORS padrão não usa `"*"`.
@@ -226,9 +226,16 @@ Rotas experimentais:
 - `POST /api/v1/auth/refresh`;
 - `GET /api/v1/auth/me`.
 
-Limites da fase:
+Contrato da Fase 5A:
 
-- não emite JWT;
+- `login` usa `ExperimentalAuthService` e o banco `auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`;
+- não cria admin automático nem usuário hardcoded;
+- não retorna senha, hash, refresh token hash ou refresh token no JSON;
+- refresh token opaco é persistido apenas como hash e enviado em cookie experimental `HttpOnly`;
+- `refresh` aceita token opaco no corpo JSON ou cookie, nunca em query string, rotaciona o token e revoga a sessão em caso de reuso;
+- `logout` revoga a sessão e expira o cookie experimental;
+- `me` retorna apenas dados mínimos de usuário e sessão;
+- se `PROMOGG_AUTH_ENABLED=true`, `PROMOGG_JWT_ENABLED=true` e `PROMOGG_JWT_SIGNING_KEY` estiver definido em `development`, login/refresh podem emitir access credential experimental;
 - não protege rotas read-only;
 - não altera Streamlit, CLI, catálogo público, GitHub Pages ou workflows;
 - usa apenas sessão experimental, refresh token opaco e banco experimental configurável por `PROMOGG_AUTH_DB_PATH`;
@@ -236,11 +243,12 @@ Limites da fase:
 
 ## Credenciais e Cookies Experimentais
 
-A Fase 4A prepara contratos internos para JWT e cookies seguros, mas nao altera o comportamento da API:
+A Fase 5A conecta esses contratos apenas ao router experimental `/api/v1/auth/*` em `development`:
 
-- nenhuma rota emite JWT;
-- nenhuma rota envia cookie;
+- produção continua sem `/api/v1/auth/*`, sem JWT, sem cookies e sem autenticação ativa;
 - nenhuma rota read-only foi protegida;
+- o cookie experimental de refresh é `HttpOnly`, `SameSite=Lax` e `Secure` quando a requisição usa HTTPS;
+- CSRF permanece desligado por padrão, mas pode emitir cookie/header experimental em development;
 - `PROMOGG_JWT_ENABLED` permanece `false` por padrao;
 - producao continua sem emissao de tokens ou cookies, mesmo com configuracao parcial.
 
@@ -248,15 +256,16 @@ Os modulos internos sao:
 
 - `api_promogg/auth/credentials.py`: contratos `AccessCredential`, `RefreshCredential` e `CredentialProvider`;
 - `api_promogg/auth/jwt_provider.py`: provider JWT experimental, apenas para uso interno futuro;
-- `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookies, sem chamar `set_cookie`.
+- `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookies para uso controlado pelo router experimental.
 - `api_promogg/auth/auth_facade.py`: fachada experimental para emissão, renovação, revogação e validação via `CredentialProvider`.
 
-A fachada não é usada por routers nesta fase. Ela existe para testes e para o serviço interno experimental, sempre bloqueando emissão fora de `PROMOGG_ENV=development` ou sem as flags `PROMOGG_AUTH_ENABLED`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` e `PROMOGG_JWT_ENABLED`.
+A fachada é usada pelo router experimental somente para access credential em development, sempre bloqueando emissão fora de `PROMOGG_ENV=development` ou sem as flags `PROMOGG_AUTH_ENABLED`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` e `PROMOGG_JWT_ENABLED`.
 
 Configuracoes previstas:
 
 - `PROMOGG_JWT_ISSUER`;
 - `PROMOGG_JWT_AUDIENCE`;
+- `PROMOGG_JWT_SIGNING_KEY`;
 - `PROMOGG_JWT_ACCESS_TTL`;
 - `PROMOGG_JWT_REFRESH_TTL`;
 - `PROMOGG_JWT_ALGORITHM`.

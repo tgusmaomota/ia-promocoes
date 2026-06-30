@@ -121,6 +121,12 @@ class ExperimentalAuthService:
             return None
         return _user_dto(user)
 
+    def obter_sessao_ativa(self, session_id: str) -> SessionResult | None:
+        user = self.obter_usuario_da_sessao(session_id)
+        if not user:
+            return None
+        return SessionResult(session_id=session_id, user=user, refresh_token="")
+
     def emitir_credenciais_experimentais(self, session: SessionResult, facade: AuthCredentialFacade, **kwargs):
         return facade.issue_credentials(subject=session.user.id, session_id=session.session_id, **kwargs)
 

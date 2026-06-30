@@ -91,23 +91,169 @@ def test_auth_experimental_development_com_flag_ligada_disponibiliza_rotas(monke
     assert login.status_code == 200
     login_data = login.json()["data"]
     assert login_data["jwt_issued"] is False
-    assert login_data["access_token"] is None
-    assert login_data["refresh_token"]
+    assert login_data["access_credential"] is None
+    assert "refresh_token" not in login_data
+    assert constants.COOKIE_REFRESH_TOKEN in login.cookies
+    refresh_token = login.cookies.get(constants.COOKIE_REFRESH_TOKEN)
 
     me = client.get("/api/v1/auth/me", params={"session_id": login_data["session_id"]})
     assert me.status_code == 200
     assert me.json()["data"]["user"]["email"] == "user@example.com"
+    assert me.json()["data"]["session"]["id"] == login_data["session_id"]
     assert me.json()["data"]["jwt_issued"] is False
 
-    refresh = client.post("/api/v1/auth/refresh", json={"refresh_token": login_data["refresh_token"]})
+    refresh = client.post("/api/v1/auth/refresh", json={"refresh_token": refresh_token})
     assert refresh.status_code == 200
     assert refresh.json()["data"]["status"] == "rotated"
     assert refresh.json()["data"]["jwt_issued"] is False
-    assert refresh.json()["data"]["access_token"] is None
+    assert refresh.json()["data"]["access_credential"] is None
+    assert "refresh_token" not in refresh.json()["data"]
 
     logout = client.post("/api/v1/auth/logout", json={"session_id": login_data["session_id"]})
     assert logout.status_code == 200
     assert logout.json()["data"]["logged_out"] is True
+
+
+def test_login_senha_errada_retorna_erro_generico(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+
+    response = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-errada"})
+
+    assert response.status_code == 401
+    assert constants.COOKIE_REFRESH_TOKEN not in response.cookies
+    assert "senha" not in response.text.lower()
+
+
+def test_refresh_rotaciona_cookie_e_reuso_revoga_sessao(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+    session_id = login.json()["data"]["session_id"]
+    old_refresh = login.cookies.get(constants.COOKIE_REFRESH_TOKEN)
+
+    rotated = client.post("/api/v1/auth/refresh", json={"refresh_token": old_refresh})
+    assert rotated.status_code == 200
+    new_refresh = rotated.cookies.get(constants.COOKIE_REFRESH_TOKEN)
+    assert new_refresh
+    assert new_refresh != old_refresh
+
+    reused = client.post("/api/v1/auth/refresh", json={"refresh_token": old_refresh})
+    assert reused.status_code == 401
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 401
+
+
+def test_refresh_nao_aceita_token_em_query_string(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    response = client.post("/api/v1/auth/refresh?refresh_token=texto-puro-url")
+
+    assert response.status_code == 400
+
+
+def test_logout_revoga_sessao_e_limpa_cookie(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+    session_id = login.json()["data"]["session_id"]
+
+    logout = client.post("/api/v1/auth/logout", json={"session_id": session_id})
+
+    assert logout.status_code == 200
+    assert logout.json()["data"]["logged_out"] is True
+    set_cookie = logout.headers["set-cookie"].lower()
+    assert constants.COOKIE_REFRESH_TOKEN in set_cookie
+    assert "max-age=0" in set_cookie
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 401
+
+
+def test_me_nao_expoe_campos_sensiveis(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+
+    response = client.get("/api/v1/auth/me", params={"session_id": login.json()["data"]["session_id"]})
+    data = response.json()["data"]
+    serialized = str(data).lower()
+
+    assert response.status_code == 200
+    assert "password" not in serialized
+    assert "hash" not in serialized
+    assert "refresh" not in serialized
+
+
+def test_login_emite_access_credential_quando_jwt_experimental_ligado(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_JWT_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_JWT_SIGNING_KEY, "secret-dev-only")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+
+    response = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+    data = response.json()["data"]
+
+    assert response.status_code == 200
+    assert data["jwt_issued"] is True
+    assert data["access_credential"]["type"] == "jwt"
+    assert data["access_credential"]["value"].count(".") == 2
+    assert "refresh_token" not in data
+
+
+def test_csrf_experimental_bloqueia_refresh_sem_header(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_CSRF_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+
+    assert constants.COOKIE_CSRF_TOKEN in login.cookies
+    blocked = client.post("/api/v1/auth/refresh")
+    allowed = client.post(
+        "/api/v1/auth/refresh",
+        headers={settings.CSRF_HEADER_NAME: login.cookies.get(constants.COOKIE_CSRF_TOKEN)},
+    )
+
+    assert blocked.status_code == 403
+    assert allowed.status_code == 200
 
 
 def test_rotas_read_only_continuam_sem_autenticacao(monkeypatch, tmp_path):

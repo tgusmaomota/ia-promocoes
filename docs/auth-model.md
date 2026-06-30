@@ -505,7 +505,7 @@ Rotas previstas nesta fase:
 
 Limites:
 
-- não há JWT;
+- JWT access credential nao e emitida por padrao;
 - não há cookie real de produção;
 - não há login utilizável fora do desenvolvimento local;
 - rotas read-only continuam públicas e não protegidas;
@@ -528,14 +528,13 @@ A Fase 4A adiciona contratos internos para preparar JWT e cookies seguros sem at
 - `api_promogg/auth/jwt_provider.py`: provider JWT experimental, interno e explicito. Ele documenta issuer, audience, subject, issued_at, expires_at, not_before, token_id, algoritmo permitido, versao do token e claims privadas.
 - `api_promogg/auth/cookies.py`: helpers que retornam especificacoes de cookie `HttpOnly`, `Secure`, `SameSite`, `Path`, `Max-Age` e limpeza de logout.
 
-Limites atuais:
+Limites apos Fase 5A:
 
 - `JWT_ENABLED` continua `False` por padrao;
 - o provider so emite quando chamado explicitamente em `PROMOGG_ENV=development` com `PROMOGG_JWT_ENABLED=true`;
 - producao nao emite JWT mesmo com configuracao parcial;
-- nenhuma rota usa JWT;
-- nenhum endpoint envia cookie;
-- nenhuma autenticacao foi ativada.
+- apenas o router experimental pode emitir access credential/cookie em development;
+- nenhuma autenticacao de producao foi ativada.
 
 Configuracoes novas:
 
@@ -568,16 +567,17 @@ Condicoes obrigatorias antes de qualquer emissao:
 - `PROMOGG_AUTH_ENABLED=true`;
 - `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`;
 - `PROMOGG_JWT_ENABLED=true`;
+- `PROMOGG_JWT_SIGNING_KEY` definido;
 - `PROMOGG_ENV=development`;
 - provider habilitado.
 
-A recusa ocorre antes de chamar o provider, evitando geracao acidental de token quando qualquer flag ou ambiente bloqueia. O servico interno experimental pode chamar a fachada em testes, mas nenhuma rota HTTP usa a fachada nesta fase.
+A recusa ocorre antes de chamar o provider, evitando geracao acidental de token quando qualquer flag ou ambiente bloqueia. A partir da Fase 5A, somente o router experimental pode chamar a fachada, e apenas para access credential em development.
 
 Limites atuais:
 
-- nenhuma rota retorna JWT;
-- nenhuma rota escreve cookie;
-- nenhuma autenticacao publica foi ativada;
+- nenhuma rota retorna JWT por padrao;
+- cookies existem apenas no router experimental de development;
+- nenhuma autenticacao de producao foi ativada;
 - producao continua sem emissao de credenciais, mesmo com configuracao parcial.
 
 Teste:
@@ -605,16 +605,52 @@ Configuracoes novas:
 - `PROMOGG_SESSION_IDLE_TIMEOUT`;
 - `PROMOGG_SESSION_ABSOLUTE_TIMEOUT`.
 
-Limites:
+Limites atuais:
 
 - CSRF continua desativado por padrao;
-- cookies continuam passivos;
+- cookies continuam passivos fora do router experimental;
 - session fixation ja esta prevista por contrato, mas ainda nao integrada ao servico;
-- nenhuma rota usa essa infraestrutura;
+- apenas o router experimental usa parte dessa infraestrutura em development;
 - producao continua sem emitir cookies.
 
 Teste:
 
 ```bash
 python3 -m pytest tests/test_csrf_infra.py
+```
+
+## Integracao Experimental Local da Fase 5A
+
+A Fase 5A conecta o router `/api/v1/auth/*` ao servico interno somente quando as duas condicoes sao verdadeiras:
+
+- `PROMOGG_ENV=development`;
+- `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`.
+
+Fora disso, inclusive em producao com flags ligadas, as rotas retornam `404 Not Found`, nao emitem cookies e nao ativam autenticacao.
+
+Rotas:
+
+- `POST /api/v1/auth/login`;
+- `POST /api/v1/auth/refresh`;
+- `POST /api/v1/auth/logout`;
+- `GET /api/v1/auth/me`.
+
+Contrato experimental:
+
+- usa `ExperimentalAuthService` e banco `auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`;
+- nao cria admin automatico nem senha hardcoded;
+- nao retorna senha, hash, refresh token hash ou refresh token bruto no JSON;
+- login cria sessao experimental e refresh token opaco, persistido apenas como hash;
+- refresh token e enviado por cookie experimental `HttpOnly`, `SameSite=Lax` e `Secure` quando a requisicao usa HTTPS;
+- `refresh` nao aceita refresh token em URL, rotaciona token a cada uso e revoga a sessao quando detecta reuso;
+- `logout` revoga sessao e prepara expiracao do cookie;
+- `me` retorna apenas dados minimos de usuario e sessao;
+- access credential experimental so e emitida se `PROMOGG_AUTH_ENABLED=true`, `PROMOGG_JWT_ENABLED=true` e `PROMOGG_JWT_SIGNING_KEY` estiver configurado em development;
+- rotas read-only continuam publicas;
+- `banco.db`, Streamlit e workflows permanecem inalterados.
+
+Testes:
+
+```bash
+python3 -m pytest tests/test_auth_experimental_routes.py tests/test_auth_experimental_security.py
 ```

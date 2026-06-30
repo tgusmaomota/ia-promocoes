@@ -180,10 +180,9 @@ def test_servico_interno_emite_credenciais_apenas_via_facade(monkeypatch, tmp_pa
     assert provider.refresh_calls == 1
 
 
-def test_nenhuma_rota_usa_auth_facade_jwt_ou_cookies():
+def test_apenas_router_auth_experimental_usa_auth_facade_jwt_ou_cookies():
     route_files = (
         Path("api_promogg/main.py"),
-        Path("api_promogg/routers/auth.py"),
         Path("api_promogg/routers/health.py"),
         Path("api_promogg/routers/ofertas.py"),
     )
@@ -200,3 +199,8 @@ def test_nenhuma_rota_usa_auth_facade_jwt_ou_cookies():
         content = path.read_text(encoding="utf-8")
         for marker in forbidden_markers:
             assert marker not in content, f"{path} nao deve usar {marker}"
+
+    auth_content = Path("api_promogg/routers/auth.py").read_text(encoding="utf-8")
+    assert "AuthCredentialFacade" in auth_content
+    assert "ExperimentalJWTProvider" in auth_content
+    assert "set_cookie" in auth_content

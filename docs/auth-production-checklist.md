@@ -2,12 +2,13 @@
 
 Este checklist define o que ainda falta antes de qualquer autenticacao do Promogg ser considerada pronta para producao.
 
-As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de producao. Elas devem permanecer desativadas por padrao, retornar `404 Not Found` fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`, e nunca devem ser usadas para operar o sistema real.
+As rotas experimentais `/api/v1/auth/*` da Fase 5A nao sao autenticacao de producao. Elas devem permanecer desativadas por padrao, retornar `404 Not Found` fora de `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`, nao emitir cookies em producao e nunca devem ser usadas para operar o sistema real.
 
 ## Condicoes Bloqueantes
 
 - [ ] `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` nao pode ser usado como controle unico de ativacao.
 - [ ] Producao e staging devem continuar sem login experimental.
+- [ ] Producao deve continuar sem `/api/v1/auth/*`, sem cookies e sem autenticacao ativa ate a fase de hardening final.
 - [ ] Nenhuma rota read-only deve ser protegida por autenticacao parcial.
 - [ ] Nenhuma rota privada deve entrar em producao sem teste de autenticacao, autorizacao e auditoria.
 - [ ] `banco.db` operacional nao deve receber tabelas ou dados de autenticacao.
@@ -25,7 +26,7 @@ As rotas experimentais `/api/v1/auth/*` da Fase 3E nao sao autenticacao de produ
 
 ## Cookies HttpOnly
 
-- [ ] Integrar helpers de cookie somente quando a autenticacao estiver pronta para producao.
+- [ ] Revisar a integracao experimental de cookies antes de qualquer promocao para producao.
 - [ ] Enviar refresh token somente em cookie `HttpOnly`.
 - [ ] Exigir `Secure` em producao.
 - [ ] Definir `SameSite=Strict` ou `SameSite=Lax` conforme fluxo.

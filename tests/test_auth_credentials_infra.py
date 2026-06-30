@@ -157,10 +157,9 @@ def test_jwt_experimental_emite_somente_quando_chamado_explicitamente(monkeypatc
     assert payload["permissions"] == ["workers:run"]
 
 
-def test_nenhuma_rota_utiliza_jwt_ou_cookies_experimentais():
+def test_apenas_router_auth_experimental_utiliza_jwt_ou_cookies_experimentais():
     route_files = (
         Path("api_promogg/main.py"),
-        Path("api_promogg/routers/auth.py"),
         Path("api_promogg/routers/health.py"),
         Path("api_promogg/routers/ofertas.py"),
     )
@@ -176,3 +175,8 @@ def test_nenhuma_rota_utiliza_jwt_ou_cookies_experimentais():
         content = path.read_text(encoding="utf-8")
         for marker in forbidden_markers:
             assert marker not in content, f"{path} nao deve usar {marker}"
+
+    auth_content = Path("api_promogg/routers/auth.py").read_text(encoding="utf-8")
+    assert "ExperimentalJWTProvider" in auth_content
+    assert "build_refresh_cookie_spec" in auth_content
+    assert "set_cookie" in auth_content

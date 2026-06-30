@@ -40,6 +40,7 @@ def test_auth_experimental_default_fail_safe_404(monkeypatch):
         response = _call(client, method, path, kwargs)
         assert response.status_code == 404
         assert response.status_code not in {401, 403, 500}
+        assert "set-cookie" not in response.headers
 
 
 def test_auth_experimental_producao_com_flag_ligada_continua_404(monkeypatch):
@@ -51,6 +52,7 @@ def test_auth_experimental_producao_com_flag_ligada_continua_404(monkeypatch):
         response = _call(client, method, path, kwargs)
         assert response.status_code == 404
         assert response.status_code not in {401, 403, 500}
+        assert "set-cookie" not in response.headers
 
 
 def test_auth_experimental_ambiente_desconhecido_com_flag_ligada_continua_404(monkeypatch):
@@ -95,6 +97,12 @@ def test_auth_experimental_development_com_flag_ligada_fica_disponivel(monkeypat
     response = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
     assert response.status_code == 200
     assert response.json()["data"]["jwt_issued"] is False
+    assert response.json()["data"]["access_credential"] is None
+    assert "refresh_token" not in response.json()["data"]
+    assert constants.COOKIE_REFRESH_TOKEN in response.cookies
+    set_cookie = response.headers["set-cookie"].lower()
+    assert "httponly" in set_cookie
+    assert "samesite=lax" in set_cookie
 
 
 def test_auth_router_nao_interfere_em_rotas_existentes(monkeypatch, tmp_path):
