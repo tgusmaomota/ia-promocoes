@@ -655,9 +655,9 @@ Testes:
 python3 -m pytest tests/test_auth_experimental_routes.py tests/test_auth_experimental_security.py
 ```
 
-## RBAC Persistente Experimental da Fase 6A
+## RBAC Persistente Experimental da Fase 6B
 
-A Fase 6A conecta papéis e permissões ao banco experimental de autenticação, sem proteger rotas públicas atuais e sem ativar produção.
+A Fase 6B conecta o `PersistentRBACAuthorizer` ao router experimental de autenticação, sem proteger rotas públicas atuais e sem ativar produção. O RBAC experimental só pode atuar quando `PROMOGG_ENV=development`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true` e `PROMOGG_RBAC_ENABLED=true`.
 
 Componentes:
 
@@ -670,12 +670,16 @@ Componentes:
 - `PersistentRBACAuthorizer.has_permission(user_id, permission)`;
 - `PersistentRBACAuthorizer.has_any_permission(user_id, permissions)`;
 - `PersistentRBACAuthorizer.has_all_permissions(user_id, permissions)`.
+- `PersistentRBACAuthorizer.can_authorize_user(user_id)`.
 
 Regras:
 
 - nega por padrão quando usuário, papel ou permissão não existe;
 - nega para usuário inativo, bloqueado ou desabilitado;
 - nega fora de `PROMOGG_ENV=development` com `PROMOGG_RBAC_ENABLED=true`;
+- `/auth/me` e `/auth/logout` exigem sessão válida;
+- `/auth/refresh` exige refresh token e sessão válidos;
+- ações administrativas futuras devem exigir permissões explícitas, sem criar essas rotas nesta fase;
 - não cria admin hardcoded;
 - não altera `/health`, `/ofertas`, `/categorias`;
 - não toca no `banco.db`.
@@ -683,5 +687,5 @@ Regras:
 Teste:
 
 ```bash
-python3 -m pytest tests/test_rbac_persistence.py
+python3 -m pytest tests/test_auth_experimental_routes.py tests/test_rbac_persistence.py
 ```

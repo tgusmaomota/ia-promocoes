@@ -42,7 +42,7 @@ Este documento descreve o estado atual, os riscos conhecidos e a arquitetura fut
 | Rate limiting de analytics | Parcial | Limite simples por item/evento/minuto. |
 | JWT e refresh token | Parcial | Refresh opaco rotativo existe no laboratório local; JWT access credential ainda não é produção. |
 | Sessões seguras | Parcial | Sessões experimentais revogáveis existem em `auth_dev.db`; política definitiva de produção ainda pendente. |
-| RBAC | Parcial | Papéis/permissões persistentes existem no banco experimental e helpers negam por padrão; produção e rotas read-only seguem sem RBAC ativo. |
+| RBAC | Parcial | Papéis/permissões persistentes existem no banco experimental; `/api/v1/auth/*` usa RBAC apenas em development com flags experimentais ligadas; produção e rotas read-only seguem sem RBAC ativo. |
 | OAuth2 Google/GitHub | Planejado | Ainda não implementado para login do Promogg. |
 | MFA/TOTP | Planejado | Ainda não implementado. |
 | Senhas com Argon2id/bcrypt | Planejado | Ainda não há autenticação por senha no Promogg. |
@@ -184,7 +184,9 @@ Cada login deve criar uma sessão persistida com `session_id`, usuário, IP apro
 
 Toda rota, comando crítico e ação de painel deve exigir permissão explícita.
 
-Na Fase 6A, essa regra ainda não é aplicada às rotas atuais. O que existe é um autorizador experimental persistente para testes e futuras rotas de development: ele usa papéis/permissões do banco de autenticação isolado, exige `PROMOGG_ENV=development` e `PROMOGG_RBAC_ENABLED=true`, e nega por padrão fora desse contexto. Produção continua sem RBAC ativo.
+Na Fase 6B, essa regra é aplicada somente ao router experimental `/api/v1/auth/*` em development. O autorizador experimental persistente usa papéis/permissões do banco de autenticação isolado, exige `PROMOGG_ENV=development`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true` e `PROMOGG_RBAC_ENABLED=true`, e nega por padrão fora desse contexto. Produção continua sem auth/RBAC ativo.
+
+`/auth/me` e `/auth/logout` exigem sessão válida; `/auth/refresh` exige refresh token e sessão válidos. As rotas públicas `/health`, `/health/detalhada`, `/ofertas`, `/ofertas/{id}` e `/categorias` continuam abertas e não consultam RBAC.
 
 | Papel | Permissões |
 |---|---|

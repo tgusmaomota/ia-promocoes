@@ -35,7 +35,11 @@ class PersistentRBACAuthorizer:
             return self._enabled
         from api_promogg.security import constants, feature_flags, settings
 
-        return feature_flags.rbac_enabled() and settings.PROMOGG_ENV == constants.ENVIRONMENT_DEVELOPMENT
+        return (
+            feature_flags.auth_experimental_enabled()
+            and feature_flags.rbac_enabled()
+            and settings.PROMOGG_ENV == constants.ENVIRONMENT_DEVELOPMENT
+        )
 
     def list_user_permissions(self, user_id: str) -> set[str]:
         if not self._can_authorize_user(user_id):
@@ -60,6 +64,9 @@ class PersistentRBACAuthorizer:
         return all(permission in effective for permission in permissions if permission in DEFAULT_PERMISSIONS) and all(
             permission in DEFAULT_PERMISSIONS for permission in permissions
         )
+
+    def can_authorize_user(self, user_id: str) -> bool:
+        return self._can_authorize_user(user_id)
 
     def _can_authorize_user(self, user_id: str) -> bool:
         if not user_id or not self.is_enabled():

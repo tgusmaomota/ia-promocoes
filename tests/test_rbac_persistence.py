@@ -104,6 +104,20 @@ def test_producao_continua_sem_rbac_ativo(monkeypatch, tmp_path):
     assert not authorizer.has_permission(user.id, "system:admin")
 
 
+def test_rbac_exige_auth_experimental_ligada(monkeypatch, tmp_path):
+    repo = _repo(tmp_path)
+    user = _criar_usuario(repo)
+    repo.atribuir_papel_usuario(user.id, "Administrador")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "false")
+    importlib.reload(settings)
+    importlib.reload(feature_flags)
+    authorizer = PersistentRBACAuthorizer(repo)
+
+    assert not authorizer.has_permission(user.id, "system:admin")
+
+
 def test_rotas_read_only_seguem_publicas(monkeypatch):
     monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
     monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")

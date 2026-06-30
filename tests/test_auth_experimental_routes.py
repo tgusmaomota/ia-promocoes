@@ -65,6 +65,20 @@ def test_auth_experimental_ambiente_nao_development_retorna_404(monkeypatch, tmp
     assert response.status_code == 404
 
 
+def test_auth_experimental_producao_com_rbac_ligado_continua_404(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_PRODUCTION)
+    _reload_security()
+    client = _client_for_current_env()
+
+    assert client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha"}).status_code == 404
+    assert client.get("/api/v1/auth/me", params={"session_id": "ses_inexistente"}).status_code == 404
+    assert client.post("/api/v1/auth/logout", json={"session_id": "ses_inexistente"}).status_code == 404
+    assert client.post("/api/v1/auth/refresh", json={"refresh_token": "token"}).status_code == 404
+
+
 def test_auth_experimental_development_com_flag_desligada_retorna_404(monkeypatch, tmp_path):
     _auth_db_env(monkeypatch, tmp_path)
     monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "false")
@@ -112,6 +126,83 @@ def test_auth_experimental_development_com_flag_ligada_disponibiliza_rotas(monke
     logout = client.post("/api/v1/auth/logout", json={"session_id": login_data["session_id"]})
     assert logout.status_code == 200
     assert logout.json()["data"]["logged_out"] is True
+
+
+def test_auth_experimental_development_com_rbac_desligado_mantem_fluxo_atual(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "false")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+    session_id = login.json()["data"]["session_id"]
+    refresh_token = login.cookies.get(constants.COOKIE_REFRESH_TOKEN)
+
+    assert login.status_code == 200
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 200
+    assert client.post("/api/v1/auth/refresh", json={"refresh_token": refresh_token}).status_code == 200
+    assert client.post("/api/v1/auth/logout", json={"session_id": session_id}).status_code == 200
+
+
+def test_auth_experimental_development_com_rbac_ligado_exige_sessao_valida(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    service.criar_usuario_experimental("user@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "senha-correta"})
+    session_id = login.json()["data"]["session_id"]
+
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 200
+    assert client.post("/api/v1/auth/logout", json={"session_id": session_id}).status_code == 200
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 401
+    assert client.post("/api/v1/auth/logout", json={"session_id": session_id}).status_code == 401
+
+
+def test_auth_experimental_development_com_rbac_ligado_nega_sessao_invalida(monkeypatch, tmp_path):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    assert client.get("/api/v1/auth/me", params={"session_id": "ses_inexistente"}).status_code == 401
+    assert client.post("/api/v1/auth/logout", json={"session_id": "ses_inexistente"}).status_code == 401
+
+
+@pytest.mark.parametrize("status", ["disabled", "locked"])
+def test_auth_experimental_development_com_rbac_ligado_nega_usuario_inativo_ou_bloqueado(
+    monkeypatch, tmp_path, status
+):
+    _auth_db_env(monkeypatch, tmp_path)
+    monkeypatch.setenv(constants.ENV_AUTH_EXPERIMENTAL_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_RBAC_ENABLED, "true")
+    monkeypatch.setenv(constants.ENV_PROMOGG_ENV, constants.ENVIRONMENT_DEVELOPMENT)
+    _reload_security()
+    client = _client_for_current_env()
+
+    service = criar_experimental_auth_service()
+    user = service.criar_usuario_experimental(f"{status}@example.com", "senha-correta")
+    login = client.post("/api/v1/auth/login", json={"email": f"{status}@example.com", "password": "senha-correta"})
+    session_id = login.json()["data"]["session_id"]
+    refresh_token = login.cookies.get(constants.COOKIE_REFRESH_TOKEN)
+
+    service.repository.conn.execute("UPDATE users SET status = ? WHERE id = ?", (status, user.id))
+    service.repository.conn.commit()
+
+    assert client.get("/api/v1/auth/me", params={"session_id": session_id}).status_code == 401
+    assert client.post("/api/v1/auth/logout", json={"session_id": session_id}).status_code == 401
+    assert client.post("/api/v1/auth/refresh", json={"refresh_token": refresh_token}).status_code == 401
 
 
 def test_login_senha_errada_retorna_erro_generico(monkeypatch, tmp_path):

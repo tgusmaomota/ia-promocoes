@@ -1,13 +1,16 @@
 # RBAC
 
-Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. A Fase 6A implementa RBAC experimental persistente no banco de autenticação isolado (`auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`), mas ainda não aplica autorização nas rotas read-only, não ativa RBAC em produção e não cria rotas operacionais mutáveis. O modelo detalhado de entidades, sessões, refresh tokens e auditoria futura está em [Modelo de Identidade e Auditoria](auth-model.md).
+Este documento define a matriz inicial de controle de acesso baseado em papéis para o Promogg. A Fase 6B aplica o RBAC experimental persistente somente ao router local `/api/v1/auth/*`, usando o banco de autenticação isolado (`auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`). Ela não aplica autorização nas rotas read-only, não ativa RBAC em produção e não cria rotas operacionais mutáveis. O modelo detalhado de entidades, sessões, refresh tokens e auditoria futura está em [Modelo de Identidade e Auditoria](auth-model.md).
 
-## Estado da Fase 6A
+## Estado da Fase 6B
 
 - Papéis e permissões padrão são semeados no banco experimental.
 - Usuários podem receber ou perder papéis pelo repository experimental.
 - Helpers internos listam permissões efetivas e checam uma ou múltiplas permissões.
 - A autorização nega por padrão quando usuário, papel ou permissão não existe, quando o usuário não está ativo, ou quando o ambiente não é `development` com `PROMOGG_RBAC_ENABLED=true`.
+- O router experimental de auth usa `PersistentRBACAuthorizer` apenas em `development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true` e `PROMOGG_RBAC_ENABLED=true`.
+- `/api/v1/auth/me` e `/api/v1/auth/logout` exigem sessão válida; `/api/v1/auth/refresh` exige refresh/sessão válidos.
+- Futuras ações administrativas deverão exigir permissões explícitas, mas essas rotas ainda não existem.
 - Produção continua sem RBAC ativo.
 - `/api/v1/health`, `/api/v1/ofertas` e `/api/v1/categorias` continuam públicas.
 - `banco.db`, Streamlit e workflows não são alterados.

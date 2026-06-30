@@ -9,12 +9,13 @@ O Promogg ainda não possui API autenticada própria para operação administrat
 - Status deste documento: contrato planejado.
 - Backend API: esqueleto read-only inicial criado em paralelo, com endurecimento básico de segurança.
 - Autenticação própria: rotas experimentais existem somente para desenvolvimento local e ficam inativas por padrão.
-- RBAC próprio: ainda não implementado.
+- RBAC próprio: experimental persistente, aplicado somente ao router local `/api/v1/auth/*` em development.
 - Painel atual: continua sendo Streamlit/local.
 - CLI atual: continua sendo `ia_promocoes.py`.
 - Fonte inicial da API: `catalogo_publico/ofertas.json`.
 - Banco SQLite: não é consultado pela API read-only inicial.
 - Banco de autenticação experimental: separado do `banco.db`, usado apenas quando `PROMOGG_ENV=development` e `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`.
+- RBAC experimental: só atua quando `PROMOGG_ENV=development`, `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true` e `PROMOGG_RBAC_ENABLED=true`; produção continua sem auth/RBAC ativo.
 
 ## Execução Local da API Read-only
 
@@ -48,6 +49,8 @@ O CLI usa `127.0.0.1` e porta `8001` por padrão. `--host` e `--porta` são acei
 
 `auth-teste` usa `TestClient`, banco temporário em `/tmp` e variáveis experimentais somente no processo do comando. Ele testa login, `/me`, refresh, logout, senha incorreta, ausência de dados sensíveis nas respostas e produção 404 em auth. A saída segura esperada é apenas `AUTH_TESTE=ok`.
 
+Com RBAC experimental ligado, somente o router `/api/v1/auth/*` consulta o autorizador persistente. `/auth/me` e `/auth/logout` exigem sessão válida, e `/auth/refresh` exige refresh token e sessão válidos. Nenhuma permissão administrativa é aplicada ainda porque não há rotas operacionais mutáveis nesta fase.
+
 ## Testes Automatizados
 
 A API read-only possui testes de contrato e segurança em `tests/test_api_readonly.py`.
@@ -59,6 +62,8 @@ Cobertura atual:
 - listagem de categorias;
 - comando `api-teste` do CLI;
 - comando `auth-teste` do CLI;
+- auth experimental com RBAC desligado preservando o fluxo atual;
+- auth experimental com RBAC ligado negando sessão inválida e usuário inativo/bloqueado;
 - validação padronizada para parâmetros inválidos;
 - `NOT_FOUND` padronizado;
 - preservação de `X-Request-ID`;
@@ -214,7 +219,7 @@ Limitações atuais:
 
 - não há login utilizável em produção;
 - as rotas `/api/v1/auth/*` respondem 404 fora de desenvolvimento local com feature flag experimental ligada;
-- RBAC e MFA ainda não estão ativos;
+- RBAC só está ativo no router experimental de auth em development; MFA ainda não está ativo;
 - não há rotas mutáveis;
 - a API read-only não consulta o banco SQLite;
 - CORS padrão não usa `"*"`.
@@ -235,7 +240,7 @@ Rotas experimentais:
 - `POST /api/v1/auth/refresh`;
 - `GET /api/v1/auth/me`.
 
-Contrato da Fase 5A:
+Contrato das Fases 5A/6B:
 
 - `login` usa `ExperimentalAuthService` e o banco `auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`;
 - não cria admin automático nem usuário hardcoded;
@@ -244,6 +249,7 @@ Contrato da Fase 5A:
 - `refresh` aceita token opaco no corpo JSON ou cookie, nunca em query string, rotaciona o token e revoga a sessão em caso de reuso;
 - `logout` revoga a sessão e expira o cookie experimental;
 - `me` retorna apenas dados mínimos de usuário e sessão;
+- com `PROMOGG_RBAC_ENABLED=true`, `/me` e `/logout` exigem sessão válida, e `/refresh` exige refresh/sessão válidos;
 - se `PROMOGG_AUTH_ENABLED=true`, `PROMOGG_JWT_ENABLED=true` e `PROMOGG_JWT_SIGNING_KEY` estiver definido em `development`, login/refresh podem emitir access credential experimental;
 - não protege rotas read-only;
 - não altera Streamlit, CLI, catálogo público, GitHub Pages ou workflows;

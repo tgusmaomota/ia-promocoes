@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from api_promogg.auth.auth_facade import AuthCredentialFacade, AuthFacadeError
 from api_promogg.auth.cookies import build_clear_refresh_cookie_spec, build_csrf_cookie_spec, build_refresh_cookie_spec
 from api_promogg.auth.jwt_provider import ExperimentalJWTProvider
+from api_promogg.auth.rbac import PersistentRBACAuthorizer
 from api_promogg.auth.service import AuthError, criar_experimental_auth_service
 from api_promogg.security import constants, csrf, feature_flags, settings, validators
 
@@ -37,6 +38,20 @@ def _experimental_auth_available_at_startup() -> bool:
 
 def _service():
     return criar_experimental_auth_service()
+
+
+def _authorizer_for(service):
+    return PersistentRBACAuthorizer(service.repository)
+
+
+def _ensure_session_allowed(service, session_id: str):
+    user = service.obter_usuario_da_sessao(session_id)
+    if not user:
+        raise HTTPException(status_code=401)
+    authorizer = _authorizer_for(service)
+    if authorizer.is_enabled() and not authorizer.can_authorize_user(user.id):
+        raise HTTPException(status_code=403)
+    return user
 
 
 def _request_id_from(request: Request) -> str:
@@ -115,8 +130,9 @@ def login(payload: LoginRequest, request: Request, response: Response):
     if not validators.validate_max_input_size(payload.password, 1024):
         raise HTTPException(status_code=400)
 
+    service = _service()
     try:
-        result = _service().autenticar_credenciais(payload.email, payload.password)
+        result = service.autenticar_credenciais(payload.email, payload.password)
     except AuthError:
         raise HTTPException(status_code=401) from None
 
@@ -133,7 +149,9 @@ def logout(payload: LogoutRequest, request: Request, response: Response):
     _validate_csrf_if_enabled(request)
     if not validators.validate_request_id(payload.session_id):
         raise HTTPException(status_code=400)
-    logged_out = _service().logout(payload.session_id)
+    service = _service()
+    _ensure_session_allowed(service, payload.session_id)
+    logged_out = service.logout(payload.session_id)
     _clear_refresh_cookie(response, request)
     return {
         "data": {
@@ -150,8 +168,9 @@ def refresh(request: Request, response: Response, payload: RefreshRequest | None
     refresh_token = (payload.refresh_token if payload else None) or request.cookies.get(constants.COOKIE_REFRESH_TOKEN)
     if not refresh_token or not validators.validate_max_input_size(refresh_token, 4096):
         raise HTTPException(status_code=400)
+    service = _service()
     try:
-        result = _service().rotacionar_refresh_token(refresh_token)
+        result = service.rotacionar_refresh_token(refresh_token)
     except AuthError:
         raise HTTPException(status_code=401) from None
 
@@ -159,8 +178,9 @@ def refresh(request: Request, response: Response, payload: RefreshRequest | None
         _clear_refresh_cookie(response, request)
         raise HTTPException(status_code=401)
 
+    _ensure_session_allowed(service, result.session_id)
     _set_refresh_cookie(response, request, result.refresh_token)
-    session = _service().obter_sessao_ativa(result.session_id)
+    session = service.obter_sessao_ativa(result.session_id)
     access_credential = _issue_access_credential_if_enabled(session) if session else None
     return {
         "data": {
@@ -176,9 +196,8 @@ def refresh(request: Request, response: Response, payload: RefreshRequest | None
 def me(session_id: str, request: Request):
     if not validators.validate_request_id(session_id):
         raise HTTPException(status_code=400)
-    user = _service().obter_usuario_da_sessao(session_id)
-    if not user:
-        raise HTTPException(status_code=401)
+    service = _service()
+    user = _ensure_session_allowed(service, session_id)
     return {
         "data": {
             "session": {

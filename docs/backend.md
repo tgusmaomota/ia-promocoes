@@ -46,6 +46,8 @@ A Fase 4C adiciona helpers para CSRF, validação de origem/host/referer e prote
 
 A Fase 6A adiciona RBAC persistente experimental sobre o banco de autenticação isolado. O repository atribui/remove papéis, lista papéis do usuário e lista permissões efetivas; `PersistentRBACAuthorizer` checa uma ou múltiplas permissões e nega por padrão. A autorização só funciona em `development` com `PROMOGG_RBAC_ENABLED=true` ou em testes explícitos, e não é aplicada a `/health`, `/ofertas` ou `/categorias`.
 
+A Fase 6B conecta esse autorizador somente ao router experimental `/api/v1/auth/*`, exigindo também `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`. `/auth/me` e `/auth/logout` exigem sessão válida; `/auth/refresh` exige refresh token e sessão válidos. Produção continua sem auth/RBAC ativo, e nenhuma rota operacional mutável é criada.
+
 Objetivos:
 
 - preservar o backend atual durante a transição;
@@ -80,6 +82,8 @@ python3 ia_promocoes.py auth-teste
 `api` inicia o Uvicorn localmente em `127.0.0.1:8001` por padrão e bloqueia `0.0.0.0`. `api-teste` usa chamada interna com `TestClient`, valida health, ofertas, categorias, `X-Request-ID`, erro `NOT_FOUND` padronizado e ausência de rotas mutáveis.
 
 `auth-teste` usa `TestClient`, força `PROMOGG_ENV=development` e flags experimentais apenas dentro do processo, cria banco temporário em `/tmp`, executa login, `/me`, refresh, logout e senha incorreta, valida que produção continua 404 em auth e imprime somente `AUTH_TESTE=ok`. Ele não inicia servidor externo, não altera Streamlit/workflows e não toca no `banco.db`.
+
+Testes automatizados cobrem também produção com RBAC ligado retornando 404 em `/auth/*`, development com RBAC desligado preservando o fluxo experimental, development com RBAC ligado exigindo sessão válida, negação de usuário inativo/bloqueado e rotas públicas abertas sem autenticação.
 
 Rotas iniciais:
 
