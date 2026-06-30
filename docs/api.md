@@ -36,9 +36,17 @@ Smoke test interno sem depender de servidor rodando:
 python3 ia_promocoes.py api-teste
 ```
 
+Smoke test seguro da autenticação experimental local:
+
+```bash
+python3 ia_promocoes.py auth-teste
+```
+
 Essa API inicial é paralela ao fluxo existente. Ela não substitui CLI, Streamlit, geração do site, GitHub Pages ou banco SQLite.
 
 O CLI usa `127.0.0.1` e porta `8001` por padrão. `--host` e `--porta` são aceitos, mas `0.0.0.0` é bloqueado para evitar exposição acidental antes de autenticação real.
+
+`auth-teste` usa `TestClient`, banco temporário em `/tmp` e variáveis experimentais somente no processo do comando. Ele testa login, `/me`, refresh, logout, senha incorreta, ausência de dados sensíveis nas respostas e produção 404 em auth. A saída segura esperada é apenas `AUTH_TESTE=ok`.
 
 ## Testes Automatizados
 
@@ -50,6 +58,7 @@ Cobertura atual:
 - listagem e detalhe de ofertas;
 - listagem de categorias;
 - comando `api-teste` do CLI;
+- comando `auth-teste` do CLI;
 - validação padronizada para parâmetros inválidos;
 - `NOT_FOUND` padronizado;
 - preservação de `X-Request-ID`;

@@ -72,9 +72,12 @@ Comandos oficiais no CLI:
 ```bash
 python3 ia_promocoes.py api
 python3 ia_promocoes.py api-teste
+python3 ia_promocoes.py auth-teste
 ```
 
 `api` inicia o Uvicorn localmente em `127.0.0.1:8001` por padrão e bloqueia `0.0.0.0`. `api-teste` usa chamada interna com `TestClient`, valida health, ofertas, categorias, `X-Request-ID`, erro `NOT_FOUND` padronizado e ausência de rotas mutáveis.
+
+`auth-teste` usa `TestClient`, força `PROMOGG_ENV=development` e flags experimentais apenas dentro do processo, cria banco temporário em `/tmp`, executa login, `/me`, refresh, logout e senha incorreta, valida que produção continua 404 em auth e imprime somente `AUTH_TESTE=ok`. Ele não inicia servidor externo, não altera Streamlit/workflows e não toca no `banco.db`.
 
 Rotas iniciais:
 

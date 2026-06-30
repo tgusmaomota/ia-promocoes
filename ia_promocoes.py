@@ -1292,6 +1292,142 @@ def comando_api_teste():
     return 0
 
 
+def _auth_teste_recarregar_app():
+    import importlib
+
+    from api_promogg.security import feature_flags, settings
+
+    importlib.reload(settings)
+    importlib.reload(feature_flags)
+
+    from api_promogg.routers import auth as auth_router
+    from api_promogg import main as main_module
+
+    importlib.reload(auth_router)
+    main_module = importlib.reload(main_module)
+    return main_module.app
+
+
+def _auth_teste_payload_tem_dado_sensivel(payload):
+    def sanitizar(valor):
+        if isinstance(valor, dict):
+            sanitizado = {}
+            for chave, item in valor.items():
+                if chave == "access_credential" and isinstance(item, dict):
+                    sanitizado[chave] = {
+                        "type": item.get("type"),
+                        "expires_at": item.get("expires_at"),
+                    }
+                else:
+                    sanitizado[chave] = sanitizar(item)
+            return sanitizado
+        if isinstance(valor, list):
+            return [sanitizar(item) for item in valor]
+        return valor
+
+    texto = json.dumps(sanitizar(payload), ensure_ascii=False, sort_keys=True).lower()
+    termos_proibidos = (
+        "password",
+        "senha",
+        "password_hash",
+        "refresh_token",
+        "refresh_token_hash",
+        "token_hash",
+        "signing_key",
+        "secret",
+    )
+    return any(termo in texto for termo in termos_proibidos)
+
+
+def comando_auth_teste():
+    import secrets
+    import tempfile
+
+    from fastapi.testclient import TestClient
+
+    env_keys = (
+        "PROMOGG_ENV",
+        "PROMOGG_AUTH_ENABLED",
+        "PROMOGG_AUTH_EXPERIMENTAL_ENABLED",
+        "PROMOGG_JWT_ENABLED",
+        "PROMOGG_JWT_SIGNING_KEY",
+        "PROMOGG_AUTH_DB_PATH",
+    )
+    env_original = {key: os.environ.get(key) for key in env_keys}
+
+    def restaurar_env():
+        for key, value in env_original.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="promogg-auth-teste-", dir="/tmp") as tmpdir:
+            auth_db = Path(tmpdir) / "auth_teste.sqlite"
+            os.environ["PROMOGG_ENV"] = "development"
+            os.environ["PROMOGG_AUTH_ENABLED"] = "true"
+            os.environ["PROMOGG_AUTH_EXPERIMENTAL_ENABLED"] = "true"
+            os.environ["PROMOGG_JWT_ENABLED"] = "true"
+            os.environ["PROMOGG_JWT_SIGNING_KEY"] = secrets.token_urlsafe(48)
+            os.environ["PROMOGG_AUTH_DB_PATH"] = str(auth_db)
+
+            app = _auth_teste_recarregar_app()
+            cliente = TestClient(app)
+
+            from api_promogg.auth.service import criar_experimental_auth_service
+            from api_promogg.security import constants
+
+            senha = secrets.token_urlsafe(24)
+            email = "auth-teste@example.invalid"
+            service = criar_experimental_auth_service()
+            service.criar_usuario_experimental(email, senha)
+
+            login = cliente.post("/api/v1/auth/login", json={"email": email, "password": senha})
+            if login.status_code != 200 or constants.COOKIE_REFRESH_TOKEN not in login.cookies:
+                raise RuntimeError("login experimental falhou")
+            login_payload = login.json()
+            if _auth_teste_payload_tem_dado_sensivel(login_payload):
+                raise RuntimeError("payload de login contem dado sensivel")
+            session_id = login_payload["data"]["session_id"]
+            if not login_payload["data"].get("jwt_issued"):
+                raise RuntimeError("jwt experimental nao foi emitido")
+
+            me = cliente.get("/api/v1/auth/me", params={"session_id": session_id})
+            if me.status_code != 200 or _auth_teste_payload_tem_dado_sensivel(me.json()):
+                raise RuntimeError("me experimental invalido")
+
+            refresh = cliente.post("/api/v1/auth/refresh")
+            if refresh.status_code != 200 or _auth_teste_payload_tem_dado_sensivel(refresh.json()):
+                raise RuntimeError("refresh experimental invalido")
+
+            logout = cliente.post("/api/v1/auth/logout", json={"session_id": session_id})
+            if logout.status_code != 200 or "max-age=0" not in logout.headers.get("set-cookie", "").lower():
+                raise RuntimeError("logout experimental invalido")
+
+            senha_errada = cliente.post("/api/v1/auth/login", json={"email": email, "password": "senha-incorreta"})
+            if senha_errada.status_code != 401:
+                raise RuntimeError("falha de senha incorreta nao foi validada")
+            if _auth_teste_payload_tem_dado_sensivel(senha_errada.text):
+                raise RuntimeError("erro de senha incorreta vazou dado sensivel")
+
+            os.environ["PROMOGG_ENV"] = "production"
+            app_producao = _auth_teste_recarregar_app()
+            cliente_producao = TestClient(app_producao)
+            producao = cliente_producao.post("/api/v1/auth/login", json={"email": email, "password": senha})
+            if producao.status_code != 404 or "set-cookie" in producao.headers:
+                raise RuntimeError("producao ativou auth experimental")
+    except Exception:
+        print("AUTH_TESTE=erro")
+        return 1
+    finally:
+        restaurar_env()
+        _auth_teste_recarregar_app()
+
+    print("AUTH_TESTE=ok")
+    return 0
+
+
 COMANDOS_PROMOGG = {
     "MASTER Produção": {
         "iniciar-producao": "Executa pré-voo e entra em ONLINE apenas se aprovado.",
@@ -1310,7 +1446,11 @@ COMANDOS_PROMOGG = {
     "Monitoramento": {"monitorar-precos": "Atualiza preços e histórico sem publicar.", "auditar-precos": "Audita histórico, variações e verificações inconclusivas.", "atualizar-categorias": "Consulta categorias por item_id.", "recuperar-indisponiveis": "Recupera indisponibilidades técnicas; use --dry-run primeiro.", "auditar-indisponiveis": "Audita indisponibilidades."},
     "IA": {"perguntar": "Consulta local de preços.", "treinar-memoria": "Atualiza memória local sem treinar modelo.", "revisar-ofertas": "Gera pareceres da IA revisora.", "treinar-revisora": "Atualiza estatísticas da revisora."},
     "Analytics e Saúde": {"supervisor": "Roda supervisor operacional seguro; use --dry-run.", "supervisor-loop": "Executa supervisor em loop pelo intervalo configurado.", "testar-alerta-telegram": "Testa alerta operacional sem oferta; use --dry-run para simular.", "analytics-teste": "Registra um clique de teste local sem dados pessoais.", "analytics-status": "Mostra métricas e a configuração do endpoint.", "saude": "Mostra saúde resumida do sistema.", "saude-detalhada": "Separa críticos, alertas, avisos e eventos.", "relatorio-operacional": "Mostra resumo diário.", "relatorio": "Mostra resumo operacional.", "relatorio-precos": "Mostra resumo de histórico.", "auditar-qualidade-catalogo": "Audita o catálogo público.", "simular": "Simula a próxima publicação Telegram.", "publicar-um": "Publica uma oferta elegível."},
-    "API Read-only": {"api": "Inicia a API local read-only em 127.0.0.1:8001.", "api-teste": "Testa a API internamente sem depender de servidor rodando."},
+    "API Read-only": {
+        "api": "Inicia a API local read-only em 127.0.0.1:8001.",
+        "api-teste": "Testa a API internamente sem depender de servidor rodando.",
+        "auth-teste": "Testa auth experimental local com TestClient, banco temporario e sem ativar producao.",
+    },
     "Segurança e Diagnóstico": {"login-mercadolivre": "Abre login manual e preserva a sessão Playwright.", "pausar-playwright": "Pausa Playwright/scheduler preservando perfil, cookies e checkpoints.", "retomar-coleta": "Retoma a coleta confiável do checkpoint sem publicar.", "testar-playwright-sessao": "Verifica login salvo sem coletar nem alterar banco.", "meli-auth": "Inicia OAuth Mercado Livre.", "meli-testar-token": "Testa token sem exibi-lo.", "meli-refresh-token": "Renova token local.", "diagnosticar-playwright": "Verifica perfil e locks.", "reparar-playwright": "Remove locks preservando sessão.", "auditar-seguranca-publicacao": "Audita Git, site, dist_site, frontend e relatórios contra vazamento de dados sensíveis.", "checklist-divulgacao": "Agrega pré-divulgação segura: segurança, validação, catálogo, serviços, Git, DNS leve, site/painel locais e flags reais desligadas.", "auditar-painel-remoto": "Audita configuração segura do painel remoto atrás de Cloudflare Access.", "painel-remoto": "Inicia/simula painel local em 127.0.0.1 para uso via túnel autenticado.", "publicar-alteracoes-painel": "Regenera, valida e prepara publicação após ações administrativas.", "ocultar-oferta": "Oculta oferta do site preservando histórico; exige ID.", "restaurar-oferta": "Restaura oferta ocultada pelo painel; exige ID.", "auditar-paginas-produto": "Compara catálogo e páginas individuais.", "corrigir-paginas-produto": "Regenera páginas e remove órfãs.", "auditar-base": "Resume saúde da base.", "auditar-sistema": "Audita arquitetura, segurança, banco, histórico, catálogo e automação sem publicar.", "reconstruir-base": "Reconstrói com backup e proteção; use --dry-run para simular.", "restaurar-catalogo-valido": "Restaura o melhor catálogo estático sem tocar no banco."},
     "Serviços e Modos V1": {"modo-estavel": "Ativa MODO_ESTAVEL_LOCAL: local seguro, sem publicação, loop, Telegram, Playwright automático ou coleta agressiva.", "modo-economico": "Para serviços externos/custosos e mantém apenas recursos locais permitidos.", "modo-operacao": "Roda operação controlada em dry-run, sem deploy automático.", "modo-divulgacao": "Só libera estado de divulgação após auditoria de segurança aprovada.", "status-servicos": "Mostra status ON/OFF, PID, CPU, memória, uptime, custo estimado e logs dos serviços.", "servicos": "Alias legado de status-servicos.", "iniciar <serviço>": "Inicia/habilita manualmente um serviço controlado.", "parar <serviço>": "Para/desabilita manualmente um serviço controlado.", "modo-producao": "Legado: inicia/habilita manualmente os serviços de produção; prefira modo-operacao ou modo-divulgacao."},
     "Backup e Manutenção": {"backup": "Cria backup operacional seguro.", "restaurar": "Lista backups disponíveis.", "limpar-seguro": "Quarentena segura de candidatos auditados.", "mapa": "Exibe o mapa do projeto.", "painel": "Abre o painel Streamlit.", "comandos": "Lista esta ajuda organizada."},
@@ -2261,6 +2401,7 @@ def main():
             "testar-alerta-telegram",
             "api",
             "api-teste",
+            "auth-teste",
             "comandos",
             "painel",
             "simular",
@@ -2375,6 +2516,7 @@ def main():
         "testar-alerta-telegram": lambda: comando_testar_alerta_telegram(args.dry_run),
         "api": lambda: comando_api(args.host, args.porta),
         "api-teste": comando_api_teste,
+        "auth-teste": comando_auth_teste,
         "comandos": comando_comandos,
         "painel": comando_painel,
         "simular": comando_simular,

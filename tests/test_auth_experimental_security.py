@@ -122,7 +122,6 @@ def test_modulos_read_only_e_operacionais_nao_importam_auth_experimental():
         Path("api_promogg/routers/health.py"),
         Path("api_promogg/routers/ofertas.py"),
         Path("api_promogg/catalogo.py"),
-        Path("ia_promocoes.py"),
         Path("gerar_site.py"),
         Path("gerar_site_publico.py"),
         Path("deploy_site.py"),

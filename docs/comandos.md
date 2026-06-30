@@ -40,9 +40,12 @@ python3 ia_promocoes.py parar
 ```bash
 python3 ia_promocoes.py api
 python3 ia_promocoes.py api-teste
+python3 ia_promocoes.py auth-teste
 ```
 
 O comando `api` inicia a API local em `127.0.0.1:8001` com Uvicorn e `--reload`. A API é somente leitura, não substitui o painel Streamlit e não implementa login/JWT nesta fase.
+
+O comando `auth-teste` exercita o fluxo experimental local de autenticação com `TestClient`, banco temporário em `/tmp` e variáveis de ambiente forçadas apenas dentro do processo. Ele não inicia servidor, não ativa produção, não toca no `banco.db` e imprime somente `AUTH_TESTE=ok` quando passa.
 
 Opções:
 

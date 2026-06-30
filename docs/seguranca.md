@@ -137,6 +137,8 @@ Elas retornam `404 Not Found` quando `PROMOGG_AUTH_EXPERIMENTAL_ENABLED` não es
 
 Em development, `login` usa o serviço experimental e o banco `auth_dev.db` ou `PROMOGG_AUTH_DB_PATH`, grava refresh token apenas como hash, envia refresh opaco em cookie `HttpOnly` com `SameSite=Lax` e `Secure` quando aplicável, e não retorna refresh token no JSON. `refresh` não aceita token em query string, rotaciona o refresh token e revoga a sessão em caso de reuso. `logout` revoga sessão e expira cookie. `me` retorna apenas dados mínimos de usuário e sessão.
 
+O comando `python3 ia_promocoes.py auth-teste` testa esse fluxo de forma local e descartável. Ele usa `TestClient`, força as flags experimentais somente dentro do processo, usa banco temporário em `/tmp`, valida que produção continua 404 em auth e imprime apenas `AUTH_TESTE=ok`, sem senha, token, cookie, signing key ou refresh token.
+
 A Fase 4A prepara infraestrutura interna para credenciais:
 
 - contratos `AccessCredential`, `RefreshCredential` e `CredentialProvider`;

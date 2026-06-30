@@ -42,7 +42,7 @@ Status: Fase 2D com comandos oficiais da API no CLI em andamento.
 - Padronizar erros, validação, sanitização, CORS e rate limiting.
 - Criar testes de contrato e segurança para a nova API.
 - Endurecer respostas read-only com headers de segurança, logs sem segredos e CORS sem wildcard default.
-- Adicionar comandos oficiais `api` e `api-teste` ao CLI sem substituir Streamlit.
+- Adicionar comandos oficiais `api`, `api-teste` e `auth-teste` ao CLI sem substituir Streamlit.
 - Manter autenticação real, JWT, sessões e RBAC para fases posteriores.
 
 ### Fase 3: Usuários, Senhas, JWT, Refresh Cookie e Sessões
@@ -62,6 +62,7 @@ Status: Fase 5A com integração experimental local em `/api/v1/auth/*`, sem log
 - Preparar infraestrutura passiva de CSRF, validação de origem e proteção contra session fixation, sem uso por rotas.
 - Integrar login, refresh, logout e me somente em `PROMOGG_ENV=development` com `PROMOGG_AUTH_EXPERIMENTAL_ENABLED=true`.
 - Enviar refresh token opaco em cookie experimental `HttpOnly`, rotacionar a cada refresh e revogar sessão em caso de reuso.
+- Criar comando `auth-teste` para exercitar auth experimental com `TestClient`, banco temporário e saída sem segredos.
 - Manter produção sem `/api/v1/auth/*`, sem cookies e sem autenticação ativa, mesmo com flags parciais ligadas.
 - Sem admin automático, senha hardcoded, endpoint de login ou proteção das rotas read-only.
 - Manter rotas read-only sem autenticação até a fase de integração planejada.
