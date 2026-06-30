@@ -70,6 +70,7 @@ site_promocoes.html
 
 # Relatórios e saídas operacionais
 RELATORIO_*.md
+!RELATORIO_ARQUITETURA_EMPRESAGPT.md
 relatorio_*.txt
 *.csv
 *.tsv
