@@ -64,7 +64,7 @@ class QualityReport:
 
     def area_statuses(self) -> dict[str, str]:
         statuses = {}
-        for area in ("Arquitetura", "Estrutura", "Seguranca", "Documentacao", "Contratos", "Promogg preservado", "Git"):
+        for area in ("Arquitetura", "Estrutura", "Seguranca", "Documentacao", "Contratos", "Promogg preservado", "Produto Promogg", "Git"):
             area_results = [result for result in self.results if result.area == area]
             if not area_results:
                 statuses[area] = "N/D"
@@ -171,4 +171,3 @@ def make_result(
 
 def _md(value: str) -> str:
     return str(value).replace("|", "\\|").replace("\n", "<br>")
-

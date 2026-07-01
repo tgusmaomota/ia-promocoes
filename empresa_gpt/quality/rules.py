@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_ROOT_DOCUMENTS = (
     "EMPRESAGPT_MASTER_PLAN.md",
+    "EMPRESAGPT_OPERATIONS_CENTER.md",
     "ARQUITETURA_EMPRESAGPT.md",
     "ROADMAP_EMPRESAGPT.md",
     "PADROES_DESENVOLVIMENTO.md",
@@ -33,6 +34,8 @@ REQUIRED_MANUAL_DOCUMENTS = (
     "empresa_gpt/docs/GUIA-revisao-de-codigo.md",
     "empresa_gpt/docs/CONVENCOES-ia.md",
     "empresa_gpt/docs/CRITERIOS-novas-funcionalidades.md",
+    "empresa_gpt/docs/PRODUCT_INTELLIGENCE_ENGINE.md",
+    "empresa_gpt/docs/PROMOGG_DESIGN_SYSTEM.md",
 )
 
 REQUIRED_CONTRACTS = (
@@ -43,6 +46,10 @@ REQUIRED_CONTRACTS = (
     "empresa_gpt/analytics/contract.py",
     "empresa_gpt/monitoring/contract.py",
     "empresa_gpt/services/contract.py",
+    "empresa_gpt/product_intelligence/contracts.py",
+    "empresa_gpt/product_intelligence/models.py",
+    "empresa_gpt/operations/contracts.py",
+    "empresa_gpt/operations/models.py",
 )
 
 REQUIRED_CONTRACT_PACKAGES = (
@@ -53,6 +60,8 @@ REQUIRED_CONTRACT_PACKAGES = (
     "empresa_gpt.analytics",
     "empresa_gpt.monitoring",
     "empresa_gpt.services",
+    "empresa_gpt.product_intelligence",
+    "empresa_gpt.operations",
 )
 
 QUALITY_AREAS = (
@@ -62,6 +71,8 @@ QUALITY_AREAS = (
     "security",
     "storage",
     "services",
+    "product_intelligence",
+    "operations",
     "monitoring",
     "deployment",
     "integrations",
@@ -160,3 +171,122 @@ GIT_ALLOWED_REPORTS = (
 
 MAX_REVIEW_FILE_BYTES = 1_500_000
 
+PROMOGG_HOME_REQUIRED_SIGNALS = (
+    ("Hero Banner", ("hero", "banner")),
+    ("Ofertas em destaque", ("ofertas em destaque", "ofertas do dia", "oferta do dia")),
+    ("Destaques", ("destaque", "destaques")),
+    ("Mais clicadas", ("mais clicadas", "mais vistos")),
+    ("Mais recentes", ("mais recentes", "recentes")),
+    ("Categorias populares", ("categorias populares", "categorias")),
+    ("Recomendacoes", ("recomend",)),
+    ("Busca inteligente", ("busca", "search")),
+    ("Menor preco historico", ("menor preco", "historico")),
+)
+
+PROMOGG_SEO_REQUIRED_SIGNALS = (
+    ("Open Graph", ("og:", "property=\"og")),
+    ("Schema.org", ("schema.org", "application/ld+json")),
+    ("Canonical", ("rel=\"canonical\"",)),
+    ("Meta Description", ("name=\"description\"",)),
+    ("Title", ("<title",)),
+    ("Twitter Cards", ("twitter:", "twitter:card")),
+)
+
+PROMOGG_V2_IMPLEMENTATION_SIGNALS = {
+    "Hero implementado": (
+        ("index", "hero-search"),
+        ("index", "hero-metrics"),
+        ("index", "ofertas verificadas"),
+        ("index", "ofertas-destaque"),
+    ),
+    "Cards Premium implementados": (
+        ("index", "premium-card"),
+        ("index", "premium-facts"),
+        ("style", ".premium-card"),
+        ("script", "intelligence-slots"),
+    ),
+    "Estados vazios implementados": (
+        ("script", "exibirskeleton"),
+        ("script", "skeleton-card"),
+        ("script", "empty-state"),
+        ("script", "nenhuma oferta encontrada"),
+    ),
+    "Responsividade basica": (
+        ("style", "@media (max-width: 1080px)"),
+        ("style", "@media (max-width: 760px)"),
+        ("style", ".hero-search"),
+        ("style", ".category-grid"),
+    ),
+    "SEO basico V2": (
+        ("index", "property=\"og:"),
+        ("index", "twitter:card"),
+        ("index", "rel=\"canonical\""),
+        ("index", "name=\"description\""),
+        ("index", "application/ld+json"),
+    ),
+}
+
+PROMOGG_EXPERIENCE_REQUIRED_DOCUMENTS = (
+    "PROMOGG_UX_AUDIT.md",
+    "empresa_gpt/docs/PROMOGG_DESIGN_SYSTEM.md",
+)
+
+PROMOGG_EXPERIENCE_PLAN_TERMS = {
+    "Design System documentado": ("tipografia", "espacamento", "cards", "botoes", "badges", "skeleton", "paginacao", "navegacao"),
+    "Cards Premium planejados": ("imagem grande", "preco atual", "menor preco", "score da ia", "ultima atualizacao", "estado de disponibilidade"),
+    "Home completa planejada": ("hero banner", "busca", "categorias", "ofertas do dia", "destaques", "mais recentes", "menor preco historico", "mais clicadas", "recomendacoes", "rodape institucional"),
+    "Painel de Confianca planejado": ("historico de preco", "origem", "transparencia", "politica de afiliados", "explicacao da ia", "nivel de confianca"),
+}
+
+EGOC_REQUIRED_FILES = (
+    "empresa_gpt/operations/README.md",
+    "empresa_gpt/operations/__init__.py",
+    "empresa_gpt/operations/dashboard.py",
+    "empresa_gpt/operations/contracts.py",
+    "empresa_gpt/operations/health.py",
+    "empresa_gpt/operations/services.py",
+    "empresa_gpt/operations/alerts.py",
+    "empresa_gpt/operations/metrics.py",
+    "empresa_gpt/operations/risk.py",
+    "empresa_gpt/operations/status.py",
+    "empresa_gpt/operations/backup.py",
+    "empresa_gpt/operations/audit.py",
+    "empresa_gpt/operations/report.py",
+    "empresa_gpt/operations/models.py",
+    "EMPRESAGPT_OPERATIONS_CENTER.md",
+)
+
+EGOC_REQUIRED_CONTRACTS = (
+    "ProductHealthContract",
+    "ProductStatusContract",
+    "ServiceContract",
+    "RiskContract",
+    "BackupContract",
+    "AuditContract",
+    "AlertContract",
+    "MetricsContract",
+)
+
+EGOC_REQUIRED_MODELS = (
+    "Product",
+    "Service",
+    "Metric",
+    "Health",
+    "Risk",
+    "Audit",
+    "Backup",
+    "Alert",
+)
+
+EGOC_DASHBOARD_TERMS = (
+    "EmpresaGPT",
+    "Produtos",
+    "Saude",
+    "Servicos",
+    "Backups",
+    "Alertas",
+    "Auditorias",
+    "Qualidade",
+    "Riscos",
+    "Uso de recursos",
+)
